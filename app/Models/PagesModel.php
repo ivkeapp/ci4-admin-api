@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Pages extends Model
+class PagesModel extends Model
 {
     protected $table            = 'pages';
     protected $primaryKey       = 'id';
@@ -12,7 +12,17 @@ class Pages extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'name',
+        'description',
+        'user_created',
+        'datetime_created',
+        'is_active',
+        'url_slug',
+        'datetime_updated',
+        'user_updated',
+        'content'
+    ];
 
     protected bool $allowEmptyInserts = false;
 
