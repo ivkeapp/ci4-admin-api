@@ -29,4 +29,8 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->post('login', 'AuthController::login');
     $routes->get('profile', 'AuthController::profile', ['filter' => 'apiauth']);
     $routes->get('logout', 'AuthController::logout', ['filter' => 'apiauth']);
+    $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
+    $routes->get('pages', 'PagesController::listPages', ['filter' => 'apiauth']);
+    $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
+    $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
 });
