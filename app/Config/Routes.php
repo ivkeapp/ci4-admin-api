@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'DashboardController::index');
 $routes->get('/users', 'Users::index');
 $routes->get('/insert-user', 'Users::insertUser');
 $routes->get('/update-user', 'Users::updateUser');

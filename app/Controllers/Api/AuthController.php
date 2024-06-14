@@ -49,7 +49,7 @@ class AuthController extends ResourceController
     }
 
     // POST
-    // Use to login and generate a JWT for the user
+    // Use to login and generate a token for the user
     public function login(){
 
         if(auth()->loggedIn()){
@@ -85,7 +85,7 @@ class AuthController extends ResourceController
                 $userObject = new UserModel();
                 $userData = $userObject->findById(auth()->id());
 
-                $token = $userData->generateAccessToken('SomeSecretKey');
+                $token = $userData->generateAccessToken(getenv('TOKEN_SECRET_KEY'));
 
                 $authToken = $token->raw_token;
 

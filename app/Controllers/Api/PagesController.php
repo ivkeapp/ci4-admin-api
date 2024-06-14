@@ -101,20 +101,29 @@ class PagesController extends ResourceController
 
     public function deletePage($id) {
         $pageObject = new PagesModel();
-        if($pageObject->delete($id)){
+        if(empty($id)) {
             $response = [
-                'status' => 200,
-                'error' => false,
-                'message' => 'Page deleted successfully',
+                'status' => 400,
+                'error' => true,
+                'message' => 'Page ID is required',
                 'data' => []
             ];
         } else {
-            $response = [
-                'status' => 500,
-                'error' => true,
-                'message' => 'Failed to delete page',
-                'data' => []
-            ];
+            if($pageObject->delete($id)){
+                $response = [
+                    'status' => 200,
+                    'error' => false,
+                    'message' => 'Page deleted successfully',
+                    'data' => []
+                ];
+            } else {
+                $response = [
+                    'status' => 500,
+                    'error' => true,
+                    'message' => 'Failed to delete page',
+                    'data' => []
+                ];
+            }
         }
         return $this->respond($response);
     }
