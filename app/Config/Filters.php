@@ -25,7 +25,9 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'apiauth'        => AuthFilter::class,
+        'apiauth'       => AuthFilter::class,
+        'cors'          => \App\Filters\CORSFilter::class,
+        'webauth'       => \App\Filters\WebAuthFilter::class,
     ];
 
     /**
@@ -36,12 +38,14 @@ class Filters extends BaseConfig
      */
     public array $globals = [
         'before' => [
+            'cors',
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
         ],
         'after' => [
             'toolbar',
+            'cors',
             // 'honeypot',
             // 'secureheaders',
         ],
@@ -71,5 +75,8 @@ class Filters extends BaseConfig
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        // 'apiauth' => ['before' => ['api/*']],
+        'webauth' => ['before' => ['/', 'home/*', 'profile/*', 'dashboard/*']],
+    ];
 }
