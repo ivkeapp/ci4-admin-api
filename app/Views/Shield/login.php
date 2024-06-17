@@ -71,7 +71,7 @@
                                     <hr>
                                     <?php if (setting('Auth.allowMagicLinkLogins')) : ?>
                                         <div class="text-center">
-                                            <a class="small" href="<?= url_to('magic-link') ?>">Forgot password?</a>
+                                            <a class="small" href="<?= url_to('login-magic-link') ?>">Forgot password?</a>
                                         </div>
                                     <?php endif ?>
 
