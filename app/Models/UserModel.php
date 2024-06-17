@@ -20,4 +20,8 @@ class UserModel extends ShieldUserModel
             'last_name'
         ];
     }
+    public function getUsers()
+    {
+        return $this->findAll();
+    }
 }
