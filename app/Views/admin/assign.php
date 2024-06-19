@@ -10,7 +10,7 @@
         <option value="admin">Admin</option>
         <option value="developer">Developer</option>
         <option value="user">User</option>
-        <option value="beta">Beta User</option>
+        <option value="editor">Editor</option>
     </select>
 
     <button type="submit">Assign</button>
