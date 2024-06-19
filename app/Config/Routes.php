@@ -25,21 +25,34 @@ $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAct
 $routes->get('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 
-$routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
-$routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
+// $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
+// $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
 
-// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], ['filter' => 'group:admin'], function($routes) {
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
+    $routes->get('get-role', 'AdminController::getRole');
+    $routes->get('groups', 'AdminController::assign');
+    $routes->post('assign', 'AdminController::assign');
+    $routes->get('add-user', 'AdminController::addUser');
+    $routes->post('add-user', 'AdminController::addUser');
+    $routes->get('edit-user/(:num)', 'AdminController::editUserForm/$1');
+    $routes->post('edit-user/(:num)', 'AdminController::editUser/$1');
+    $routes->get('remove-user/(:num)', 'AdminController::removeUser/$1');
+    $routes->get('users', 'AdminController::users');
+    $routes->post('update-user', 'AdminController::updateUser');
+});
+// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], ['filter' => 'groupfilter:developer'], function($routes) {
 //     $routes->get('get-role', 'AdminController::getRole');
-//     $routes->get('groups', 'GroupController::assign');
-//     $routes->post('admin', 'GroupController::assign');
+//     $routes->get('groups', 'AdminController::assign');
+//     $routes->post('assign', 'AdminController::assign');
+//     // $routes->post('admin', 'AdminController::assign');
 //     // other admin routes
 // });
-// $routes->get('groups', '\App\Controllers\Admin\GroupController::assign', ['filter' => 'groupfilter']);
+// // $routes->get('groups', '\App\Controllers\Admin\GroupController::assign', ['filter' => 'groupfilter']);
 
-$routes->group('superadmin', ['filter' => 'group:superadmin'], function($routes) {
-    $routes->get('dashboard', 'SuperAdmin\Dashboard::index');
-    // other superadmin routes
-});
+// $routes->group('superadmin', ['filter' => 'group:superadmin'], function($routes) {
+//     $routes->get('dashboard', 'SuperAdmin\Dashboard::index');
+//     // other superadmin routes
+// });
 
 // $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes){
     // $routes->get('set-role', 'AdminController::setRole', ['filter' => 'myAuth']);

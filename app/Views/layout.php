@@ -5,6 +5,11 @@
 </head>
 <body>
     <?= $this->renderSection('content') ?>
+
+
+    <!-- Modal scripts -->
+    <?= $this->renderSection('modals') ?>
+    
     <!-- Bootstrap core JavaScript-->
     <script src="<?= base_url('vendor/jquery/jquery.min.js') ?>"></script>
     <script src="<?= base_url('vendor/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>

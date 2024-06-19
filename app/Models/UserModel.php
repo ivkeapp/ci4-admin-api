@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 namespace App\Models;
 
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
@@ -12,14 +9,15 @@ class UserModel extends ShieldUserModel
     {
         parent::initialize();
 
-        $this->allowedFields = [
-            ...$this->allowedFields,
+        // Add additional fields to allowedFields
+        $this->allowedFields = array_merge($this->allowedFields, [
             'mobile_phone',
             'address',
             'first_name',
             'last_name'
-        ];
+        ]);
     }
+
     public function getUsers()
     {
         return $this->findAll();
