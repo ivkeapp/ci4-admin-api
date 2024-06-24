@@ -37,6 +37,18 @@
                         <label for="address">Address</label>
                         <input type="text" class="form-control" id="address" name="address" required>
                     </div>
+                    <div class="form-group">
+                        <label for="group">Group</label>
+                        <select class="form-control" id="group" name="group">
+                            <option value="" selected>Choose a group (optional)</option>
+                            <!-- Assuming you have a variable $groups which is an array of groups -->
+                            <?php foreach ($groups as $groupName => $groupDetails): ?>
+                                <?php if ($groupName !== 'superadmin'): ?>
+                                    <option value="<?= $groupName ?>"><?= $groupDetails['title'] ?></option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

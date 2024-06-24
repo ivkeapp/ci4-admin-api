@@ -10,12 +10,13 @@ class UserModel extends ShieldUserModel
         parent::initialize();
 
         // Add additional fields to allowedFields
-        $this->allowedFields = array_merge($this->allowedFields, [
+        $this->allowedFields = [
+            ...$this->allowedFields,
             'mobile_phone',
             'address',
             'first_name',
             'last_name'
-        ]);
+        ];
     }
 
     public function getUsers()

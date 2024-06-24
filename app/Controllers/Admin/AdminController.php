@@ -7,13 +7,14 @@ use CodeIgniter\Shield\Entities\User;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Entities\UserEntity; // Use custom UserEntity
-// use CodeIgniter\Shield\Entities\User;
+use Config\AuthGroups;
 
 class AdminController extends BaseController
 {
 
     protected $auth;
     protected $userModel;
+    protected $groupEntity;
 
     public function __construct()
     {
@@ -57,11 +58,16 @@ class AdminController extends BaseController
 
     public function users()
     {
-        if (!$this->auth->inGroup('superadmin')) {
-            // return redirect()->to('/no-access');
+        // Doble check if the user is in the superadmin group
+        $redirect = $this->checkSuperAdmin();
+        if ($redirect) {
+            return $redirect;
         }
 
         $data['users'] = $this->userModel->getUsers();
+        $authGroups = config(AuthGroups::class);
+        $data['groups'] = $authGroups->groups;
+        // print_r($data['groups']);
         $data['title'] = 'Web Tech - User Admin';
         $data['description'] = 'Web Tech - User Admin';
         return view('admin/users', $data);
@@ -145,7 +151,8 @@ class AdminController extends BaseController
                 }
 
                 // Get the complete user object with ID
-                $user = $users->findById($users->getInsertID());
+                $insertId = $users->getInsertID();
+                $user = $users->findById($insertId);
 
                 log_message('debug', 'Saved User after save: ' . print_r($user->toArray(), true));
 
@@ -156,8 +163,12 @@ class AdminController extends BaseController
                         'user' => [],
                     ]);
                 }
-
-                $this->userModel->addToDefaultGroup($user);
+                $groupId = $this->request->getPost('group');
+                if($groupId != null || $groupId != ''){
+                    $user->addGroup($groupId);
+                } else {
+                    $this->userModel->addToDefaultGroup($user);
+                }
 
                 return $this->response->setJSON([
                     'status' => 'success',
@@ -371,5 +382,21 @@ class AdminController extends BaseController
         }
 
         return view('admin/edit_user');
+    }
+
+    /**
+     * Checks if the user is in the superadmin group.
+     *
+     * @return \CodeIgniter\HTTP\RedirectResponse|null
+     */
+    private function checkSuperAdmin()
+    {
+        // Double check if the user is in the superadmin group
+        $userData = $this->userModel->find($this->auth->id());
+        if (!$userData->inGroup('superadmin')) {
+            return redirect()->to('/no-access');
+        }
+    
+        return null;
     }
 }

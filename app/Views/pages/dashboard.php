@@ -29,26 +29,46 @@
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Interface
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>Components</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Components:</h6>
-                    <a class="collapse-item" href="buttons.html">Buttons</a>
-                    <a class="collapse-item" href="cards.html">Cards</a>
+        <?php if (!empty($userGroups)): ?>
+            <?php if (in_array('admin', $userGroups) || in_array('superadmin', $userGroups)): ?>
+                <!-- Content visible only to admin users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Admin
                 </div>
-            </div>
-        </li>
+                <!-- Nav Item - Pages Collapse Menu -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                        aria-expanded="true" aria-controls="collapseTwo">
+                        <i class="fas fa-fw fa-cog"></i>
+                        <span>Manage</span>
+                    </a>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Users & Groups:</h6>
+                            <a class="collapse-item" href="<?= site_url('admin/users') ?>">Users</a>
+                            <a class="collapse-item" href="<?= site_url('admin/groups') ?>">Groups</a>
+                        </div>
+                    </div>
+                </li>
+            <?php endif; ?>
+
+            <?php if (in_array('editor', $userGroups)): ?>
+                <!-- Content visible only to editor users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Editor
+                </div>
+            <?php endif; ?>
+
+            <?php if (in_array('user', $userGroups)): ?>
+                <!-- Content visible only to subscriber users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    User
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
 
         <!-- Nav Item - Utilities Collapse Menu -->
         <li class="nav-item">

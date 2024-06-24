@@ -9,7 +9,7 @@
         <div class="col-md-12">
             <h2>User Management</h2>
             <hr>
-            <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addUserModal">Add User</a>
+            <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addUserModal" data-groups='<?= json_encode($groups) ?>'>Add User</a>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead>
@@ -77,6 +77,23 @@
             error: function () {
                 alert('Something went wrong.');
             }
+        });
+    });
+
+    $('#addUserModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var groups = button.data('groups'); // Extract info from data-* attributes
+
+        // Update the modal's content.
+        var modal = $(this);
+        var select = modal.find('.modal-body select[name="group"]');
+        select.empty();
+
+        $.each(groups, function (i, group) {
+            select.append($('<option>', {
+                value: group.id,
+                text : group.name
+            }));
         });
     });
 
