@@ -30,6 +30,7 @@ class GroupFilter implements FilterInterface
         
         if (!empty($arguments)) {
             $userData = $this->user->find($this->auth->id());
+            // $userData2 = $this->user->find(9);
             // $userData->syncGroups('admin');
             foreach ($arguments as $group) {
                 
@@ -44,6 +45,7 @@ class GroupFilter implements FilterInterface
 
                 // echo '<br>getGroups ';
                 // print_r($userData->getGroups());
+                // print_r($userData2->getGroups());
 
                 // echo '<br>isActivated ';
                 // print_r($userData->isActivated());
