@@ -5,22 +5,31 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\PagesModel;
+use App\Models\UserModel;
 
 class PagesController extends BaseController
 {
     protected $pagesModel;
+    protected $userModel;
     protected $auth;
 
     public function __construct()
     {
         $this->pagesModel = new PagesModel();
+        $this->userModel = new UserModel();
         $this->auth = service('auth');
     }
     // Display a list of all pages
     public function index()
     {
-        $data['pages'] = $this->pagesModel->findAll();
-        print_r($data['pages']);
+        $userData = $this->userModel->find($this->auth->id());
+        $data = [
+            'title' => 'Pages - WebTech Admin',
+            'pages' => $this->pagesModel->findAll(),
+            'description' => 'This is a dynamic description for SEO',
+            'userGroups' => $userData->getGroups(),
+            'userData' => $userData
+        ];
         return view('pages/index', $data);
     }
     // Show a single page
