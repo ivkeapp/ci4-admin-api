@@ -49,4 +49,22 @@ class PagesModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Method to create a new page
+    public function createPage($data)
+    {
+        return $this->insert($data);
+    }
+
+    // Method to update an existing page
+    public function updatePage($id, $data)
+    {
+        return $this->update($id, $data);
+    }
+
+    // Method to delete a page
+    public function deletePage($id)
+    {
+        return $this->delete($id);
+    }
 }
