@@ -15,7 +15,8 @@ class UserModel extends ShieldUserModel
             'mobile_phone',
             'address',
             'first_name',
-            'last_name'
+            'last_name',
+            'image_path'
         ];
     }
 

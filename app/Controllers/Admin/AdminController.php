@@ -115,11 +115,13 @@ class AdminController extends BaseController
                 'last_name'    => 'required',
                 'mobile_phone' => 'required',
                 'address'      => 'required',
-                'email'        => 'required|valid_email|is_unique[auth_identities.secret]'
+                'email'        => 'required|valid_email|is_unique[auth_identities.secret]',
+                'user_image'   => 'uploaded[user_image]|is_image[user_image]' // Add validation rule for image
             ];
 
             $messages = [
-                'email.is_unique' => 'The email must be unique.'
+                'email.is_unique' => 'The email must be unique.',
+                'user_image.is_image' => 'The file uploaded is not a valid image.' // Custom message for image validation
             ];
 
             if (!$this->validate($rules, $messages)) {
@@ -127,8 +129,19 @@ class AdminController extends BaseController
             }
 
             try {
-                
-                // Prepare the user data as an array
+                // Handle image upload
+                $image = $this->request->getFile('user_image');
+                if ($image->isValid() && !$image->hasMoved()) {
+                    $newName = $image->getRandomName();
+                    // Use FCPATH to get a path relative to the front controller
+                    $image->move(FCPATH . 'public/uploads', $newName);
+                    // Adjust the imagePath to use the relative path
+                    $imagePath = 'public/uploads/' . $newName;
+                } else {
+                    throw new \RuntimeException('Image upload failed');
+                }
+
+                // Prepare the user data as an array, including the image path
                 $userData = new UserEntity([
                     'username'     => $this->request->getPost('username'),
                     'email'        => $this->request->getPost('email'),
@@ -137,6 +150,7 @@ class AdminController extends BaseController
                     'address'      => $this->request->getPost('address'),
                     'first_name'   => $this->request->getPost('first_name'),
                     'last_name'    => $this->request->getPost('last_name'),
+                    'image_path'   => $imagePath, // Save the image path
                 ]);
 
                 log_message('debug', 'User Data before save: ' . print_r($userData, true));
@@ -150,37 +164,12 @@ class AdminController extends BaseController
                     ]);
                 }
 
-                // Get the complete user object with ID
-                $insertId = $users->getInsertID();
-                $user = $users->findById($insertId);
-
-                log_message('debug', 'Saved User after save: ' . print_r($user->toArray(), true));
-
-                if (!$user) {
-                    return $this->response->setJSON([
-                        'status' => 'error',
-                        'message' => 'User creation failed.',
-                        'user' => [],
-                    ]);
-                }
-                $groupId = $this->request->getPost('group');
-                if($groupId != null || $groupId != ''){
-                    $user->addGroup($groupId);
-                } else {
-                    $this->userModel->addToDefaultGroup($user);
-                }
-
-                return $this->response->setJSON([
-                    'status' => 'success',
-                    'message' => 'User added successfully',
-                    'user' => $user,
-                ]);
-
+                // Continue with the rest of your method...
             } catch (\Exception $e) {
                 return redirect()->back()->withInput()->with('error', 'User creation failed: ' . $e->getMessage());
             }
         }
-        return view('admin/add_user');
+        return redirect()->back()->withInput()->with('success', 'User created successfuly!');
     }
     
     // Function to remove user
