@@ -56,7 +56,7 @@ This will start the server on http://localhost:8080.
 
 For a production environment, configure your web server to point to the project's public folder. Ensure that you have properly configured the .env file with your production settings.
 
-## Running Tests
+### Running Tests
 ```sh
 ./vendor/bin/phpunit
 ```
@@ -64,8 +64,8 @@ To run the test suite, ensure you have PHPUnit installed and configured as per t
 
 For more detailed instructions on running tests, including generating code coverage reports, refer to tests/README.md.
 
-Contributing
-We welcome contributions! Please read the README.md for guidelines on how to report bugs, request features, and submit pull requests.
+### Contributing
+We welcome contributions! Feel free to report bugs, request features, and submit pull requests.
 
 License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/ivkeapp/ci4-admin-api?tab=MIT-1-ov-file) file for details.
