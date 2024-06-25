@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use CodeIgniter\Events\Events;
 
 /**
  * Class BaseController
@@ -27,6 +28,7 @@ abstract class BaseController extends Controller
      * @var CLIRequest|IncomingRequest
      */
     protected $request;
+    protected $auth;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -50,9 +52,42 @@ abstract class BaseController extends Controller
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
-
+        $this->auth = service('auth');
+        
         // Preload any models, libraries, etc, here.
-
         // E.g.: $this->session = \Config\Services::session();
+
+        // Initialize the UserAgent
+        $userAgent = $request->getUserAgent();
+
+        // IP Address
+        $ipAddress = $request->getIPAddress();
+
+        $device = $userAgent->getPlatform();
+        $browser = $userAgent->getBrowser();
+        $version = $userAgent->getVersion();
+        $mobile = $userAgent->isMobile() ? 'Mobile' : 'Not Mobile';
+
+        $location = 'to_do_use_geolocation';
+
+        $metadata = [
+            'ip_address' => $ipAddress,
+            'device' => $device,
+            'browser' => $browser,
+            'version' => $version,
+            'mobile' => $mobile,
+            'location' => $location,
+        ];
+
+        // Convert the array to a JSON string
+        $metadataJson = json_encode($metadata);
+
+        // Prepare log activity data
+        $userId = $this->auth->id();
+        $actionType = 'page_visit';
+        $description = 'Visited page: ' . current_url();
+
+        // Trigger the event
+        Events::trigger('log_activity', $userId, $actionType, $description, $metadataJson);
     }
 }
