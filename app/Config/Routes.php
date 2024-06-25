@@ -12,6 +12,9 @@ $routes->get('/update-user', 'Users::updateUser');
 $routes->get('/delete-user', 'Users::deleteUser');
 $routes->get('/users', 'Users::getAllUsers');
 
+// Error handling
+$routes->set404Override('App\Controllers\Errors::show404');
+
 // Exclude Shield's default routes for login, register, and magic link login
 service('auth')->routes($routes, ['except' => ['login', 'register', 'magic-link']]);
 
