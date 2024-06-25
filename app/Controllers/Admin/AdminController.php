@@ -63,13 +63,21 @@ class AdminController extends BaseController
         if ($redirect) {
             return $redirect;
         }
-
-        $data['users'] = $this->userModel->getUsers();
+        $userData = $this->userModel->find($this->auth->id());
+        // $data['users'] = $this->userModel->getUsers();
         $authGroups = config(AuthGroups::class);
-        $data['groups'] = $authGroups->groups;
-        // print_r($data['groups']);
+        // $data['groups'] = $authGroups->groups;
+        // print_r($authGroups->groups);
         $data['title'] = 'Web Tech - User Admin';
         $data['description'] = 'Web Tech - User Admin';
+        $data = [
+            'title' => 'Web Tech - User Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userData' => $userData,
+            'userGroups' => $userData->getGroups(),
+            'groups' => $authGroups->groups,
+            'users' => $this->userModel->getUsers(),
+        ];
         return view('admin/users', $data);
     }
 

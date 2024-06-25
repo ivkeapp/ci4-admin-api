@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
+use Config\AuthGroups;
 
 class UserController extends BaseController
 {
@@ -19,6 +20,7 @@ class UserController extends BaseController
         // if (!$this->auth->loggedIn()) {
         //     return redirect()->to('/login');
         // }
+        $authGroups = config(AuthGroups::class);
 
         $userData = $this->userModel->find($this->auth->id());
         $data = [
@@ -26,6 +28,7 @@ class UserController extends BaseController
             'description' => 'This is a dynamic description for SEO',
             'userData' => $userData,
             'userGroups' => $userData->getGroups(),
+            'groups' => $authGroups->groups,
         ];
 
         return view('user/profile', $data);
