@@ -69,6 +69,14 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     // $routes->get('logout', 'AdminController::logout');
 // });
 
+$routes->get('pages', 'PagesController::index');
+$routes->get('pages/view/(:segment)', 'PagesController::view/$1');
+$routes->get('pages/create', 'PagesController::create');
+$routes->post('pages/store', 'PagesController::store');
+$routes->get('pages/edit/(:segment)', 'PagesController::edit/$1');
+$routes->post('pages/update/(:segment)', 'PagesController::update/$1');
+$routes->get('pages/delete/(:segment)', 'PagesController::delete/$1');
+
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('invalid-access', 'AuthController::accesDenied');
     $routes->post('register', 'AuthController::register');
@@ -76,7 +84,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('profile', 'AuthController::profile', ['filter' => 'apiauth']);
     $routes->get('logout', 'AuthController::logout', ['filter' => 'apiauth']);
     $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
-    $routes->get('pages', 'PagesController::listPages', ['filter' => 'apiauth']);
+    // $routes->get('pages', 'PagesController::listPages', ['filter' => 'apiauth']);
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
 });
