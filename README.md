@@ -1,4 +1,81 @@
-# CodeIgniter 4 Application Starter
+# CodeIgniter 4 Admin App
+
+This project is based on CodeIgniter 4, a PHP full-stack web framework that is light, fast, flexible, and secure. It is designed to provide a solid foundation for developing web applications quickly and efficiently.
+
+## Server Requirements
+
+- PHP version 7.4 or higher.
+- Extensions: intl, mbstring, json (enabled by default), mysqlnd (if using MySQL), libcurl (if using HTTP\CURLRequest library).
+
+> **Warning:** PHP 7.4 and PHP 8.0 have reached their end of life. It is recommended to upgrade to a newer version of PHP for continued support and security updates.
+
+## Installation
+
+### 1. **Clone the Repository**
+
+   First, clone this repository to your local machine using Git:
+
+   ```sh
+   git clone https://github.com/ivkeapp/ci4-admin-api.git
+   ```
+### 2. **Install Dependencies**
+
+Navigate to the project directory and install the PHP dependencies using Composer:
+```sh
+cd your-project-directory
+composer install
+```
+### 3. **Environment Configuration**
+
+Copy the .env.example file to .env and customize it according to your environment:
+```sh
+cp .env.example .env
+```
+Make sure to set the baseURL and configure your database settings in the .env file.
+
+### 4. **Database Setup**
+
+```sh
+php spark migrate
+php spark db:seed YourSeeder
+```
+
+If your application uses a database, run the migrations and seeders to set up your database:
+
+### 5. **Running the Application**
+
+- #### Development Server:
+```
+php spark serve
+```
+You can start the built-in development server by running:
+
+This will start the server on http://localhost:8080.
+
+- #### Production Environment:
+
+For a production environment, configure your web server to point to the project's public folder. Ensure that you have properly configured the .env file with your production settings.
+
+## Running Tests
+```sh
+./vendor/bin/phpunit
+```
+To run the test suite, ensure you have PHPUnit installed and configured as per the instructions in tests/README.md. You can run the tests using the following command:
+
+For more detailed instructions on running tests, including generating code coverage reports, refer to tests/README.md.
+
+Contributing
+We welcome contributions! Please read the README.md for guidelines on how to report bugs, request features, and submit pull requests.
+
+License
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/ivkeapp/ci4-admin-api?tab=MIT-1-ov-file) file for details.
+
+Additional Resources
+- [CodeIgniter 4 User Guide](https://codeigniter.com/user_guide/)
+- [CodeIgniter 4 Forums](https://forum.codeigniter.com/)
+- [Composer](https://getcomposer.org/)
+
+This README provides a comprehensive guide for setting up and running the CodeIgniter 4 application on another machine, including server requirements, installation steps, database setup, running the application, and running tests.
 
 ## What is CodeIgniter?
 
