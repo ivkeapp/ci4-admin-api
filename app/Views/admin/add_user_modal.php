@@ -7,7 +7,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addUserForm" method="post" action="<?= site_url('admin/add-user') ?>">
+            <form id="addUserForm" method="post" action="<?= site_url('admin/add-user') ?>" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="username">Username</label>
@@ -36,6 +36,10 @@
                     <div class="form-group">
                         <label for="address">Address</label>
                         <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_image">User Image</label>
+                        <input type="file" class="form-control" id="user_image" name="user_image">
                     </div>
                     <div class="form-group">
                         <label for="group">Group</label>

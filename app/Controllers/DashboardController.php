@@ -22,7 +22,8 @@ class DashboardController extends BaseController
         $data = [
             'title' => 'Dashboard - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups()
+            'userGroups' => $userData->getGroups(),
+            'userData' => $userData
         ];
         return view('pages/dashboard', $data);
     }
