@@ -1,4 +1,4 @@
-<?= $this->extend('header') ?>
+<?= $this->extend('header_public') ?>
 
 <?= $this->section('content') ?>
 

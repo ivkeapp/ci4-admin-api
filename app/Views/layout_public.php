@@ -6,27 +6,14 @@
 </head>
 <body>
     <div id="wrapper">
-        <?= $this->include('layout/sidebar') ?>
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-                <?= $this->include('layout/topbar') ?>
                 <?= $this->renderSection('content') ?>
             </div>
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; <?= date('Y') ?> Webtech Admin</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
         </div>
     </div>
-    <!-- Modal scripts -->
-    <?= $this->renderSection('modals') ?>
     
     <!-- Bootstrap core JavaScript-->
     <script src="<?= base_url('vendor/jquery/jquery.min.js') ?>"></script>

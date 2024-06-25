@@ -2,60 +2,53 @@
 
 <?= $this->extend('header') ?>
 
-<?= $this->section('content') ?>
-<div id="wrapper">
-    <?= $this->include('layout/sidebar') ?>
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
+<?= $this->section('custom_styles') ?>
+<link rel="stylesheet" href="/css/user-profile.css">
+<?= $this->endSection() ?>
 
-        <!-- Main Content -->
-        <div id="content">
-            <?= $this->include('layout/topbar') ?>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h2>User Management</h2>
-                        <hr>
-                        <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addUserModal" data-groups='<?= json_encode($groups) ?>'>Add User</a>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Username</th>
-                                        <th>Email</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Mobile Phone</th>
-                                        <th>Address</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($users as $user) : ?>
-                                    <tr>
-                                        <td><?= $user->id ?></td>
-                                        <td><?= $user->username ?></td>
-                                        <td><?= $user->email ?></td>
-                                        <td><?= $user->first_name ?></td>
-                                        <td><?= $user->last_name ?></td>
-                                        <td><?= $user->mobile_phone ?></td>
-                                        <td><?= $user->address ?></td>
-                                        <td>
-                                        <button class="btn btn-primary btn-sm" onclick="editUserModal(<?= $user->id ?>, '<?= $user->username ?>', '<?= $user->email ?>', '<?= $user->first_name ?>', '<?= $user->last_name ?>', '<?= $user->mobile_phone ?>', '<?= $user->address ?>')">Edit</button>
-                                            <a href="<?= site_url('admin/remove-user/' . $user->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+<?= $this->section('content') ?>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>User Management</h2>
+                <hr>
+                <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addUserModal" data-groups='<?= json_encode($groups) ?>'>Add User</a>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Mobile Phone</th>
+                                <th>Address</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($users as $user) : ?>
+                            <tr>
+                                <td><?= $user->id ?></td>
+                                <td><?= $user->username ?></td>
+                                <td><?= $user->email ?></td>
+                                <td><?= $user->first_name ?></td>
+                                <td><?= $user->last_name ?></td>
+                                <td><?= $user->mobile_phone ?></td>
+                                <td><?= $user->address ?></td>
+                                <td>
+                                <button class="btn btn-primary btn-sm" onclick="editUserModal(<?= $user->id ?>, '<?= $user->username ?>', '<?= $user->email ?>', '<?= $user->first_name ?>', '<?= $user->last_name ?>', '<?= $user->mobile_phone ?>', '<?= $user->address ?>')">Edit</button>
+                                    <a href="<?= site_url('admin/remove-user/' . $user->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Include Edit User Modal -->
 <?= $this->include('admin/edit_user') ?>
