@@ -53,3 +53,7 @@ Events::on('pre_system', static function () {
         }
     }
 });
+Events::on('log_activity', function ($userId, $actionType, $description, $metadata = null) {
+    $activityLogModel = new \App\Models\ActivityLogModel();
+    $activityLogModel->logActivity($userId, $actionType, $description, $metadata);
+});
