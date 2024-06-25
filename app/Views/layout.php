@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <?= $this->renderSection('head') ?>
+    <?= $this->renderSection('custom_styles') ?>
 </head>
 <body>
     <?= $this->renderSection('content') ?>

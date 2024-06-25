@@ -25,6 +25,8 @@ $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAct
 $routes->get('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 
+$routes->get('user/profile', 'UserController::profile');
+
 // $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
 // $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
 

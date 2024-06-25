@@ -1,0 +1,32 @@
+.user-profile {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.user-profile h2 {
+    color: #333;
+    text-align: center;
+}
+
+.user-profile p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.user-profile a.btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.user-profile a.btn:hover {
+    background-color: #0056b3;
+}
