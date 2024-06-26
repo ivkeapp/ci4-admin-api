@@ -1,4 +1,4 @@
-<!-- app/Views/admin/users.php -->
+<!-- app/Views/admin/index.php -->
 
 <?= $this->extend('header') ?>
 
