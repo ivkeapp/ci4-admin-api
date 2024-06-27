@@ -162,7 +162,6 @@ class AdminController extends BaseController
                 ]);
 
                 log_message('debug', 'User Data before save: ' . print_r($userData, true));
-
                 // Save the user using the model
                 if (!$users->save($userData)) {
                     return $this->response->setJSON([
@@ -170,6 +169,15 @@ class AdminController extends BaseController
                         'message' => 'User creation failed.',
                         'user' => [],
                     ]);
+                } else {
+                    $newUserId = $users->getInsertID();
+                    $activityLogModel = new \App\Models\ActivityLogModel();
+                    $activityLogModel->logActivity(
+                        $this->auth->id(),
+                        \App\Models\ActivityLogModel::ACTIVITY_USER_ADDED,
+                        "User {$newUserId} added",
+                        ['target_user_id' => $newUserId] // Additional metadata if needed
+                    );
                 }
 
                 // Continue with the rest of your method...
@@ -207,6 +215,14 @@ class AdminController extends BaseController
                     'status' => 'error',
                     'message' => 'Failed to delete user.',
                 ]);
+            } else {
+                $activityLogModel = new \App\Models\ActivityLogModel();
+                $activityLogModel->logActivity(
+                    $this->auth->id(),
+                    \App\Models\ActivityLogModel::ACTIVITY_USER_DELETED,
+                    "User {$userId} deleted",
+                    ['target_user_id' => $userId]
+                );
             }
 
             return $this->response->setJSON([
@@ -264,6 +280,14 @@ class AdminController extends BaseController
             $user->address = $this->request->getPost('address');
 
             $this->userModel->save($user);
+
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $this->auth->id(),
+                \App\Models\ActivityLogModel::ACTIVITY_USER_EDITED,
+                "User {$userId} updated",
+                ['target_user_id' => $userId]
+            );
 
             return $this->response->setJSON([
                 'status' => 'success',
