@@ -23,37 +23,22 @@ class AdminController extends BaseController
     }
     public function setRole()
     {
-        echo 'Test setRole method';
+        echo 'setRole method';
     }
 
     public function getRole()
     {
-        echo 'Test getRole method';
+        echo 'getRole method';
     }
 
     public function deleteRole()
     {
-        echo 'Test deleteRole method';
+        echo 'deleteRole method';
     }
 
     public function updateRole()
     {
-        echo 'Test updateRole method';
-    }
-
-    public function login()
-    {
-
-        // $session = session();
-        // $session->set('isLoggedIn', 1);
-        // echo 'Test login method';
-    }
-
-    public function logout()
-    {
-        // $session = session();
-        // $session->remove('isLoggedIn');
-        // echo 'Test logout method';
+        echo 'updateRole method';
     }
 
     public function users()
@@ -89,13 +74,6 @@ class AdminController extends BaseController
             $userId = $this->request->getPost('user_id');
             $groupName = $this->request->getPost('group');
             $user = $this->userModel->find($userId);
-            // print_r($user);
-            // echo('<br>');
-            // echo($userId);
-            // echo('<br>');
-            // echo('<br>');
-            // echo($groupName);
-            // echo('<br>');
             if ($user) {
                 $user->addGroup($groupName);
                 return "User assigned to {$groupName} successfully.";
@@ -180,7 +158,6 @@ class AdminController extends BaseController
                     );
                 }
 
-                // Continue with the rest of your method...
             } catch (\Exception $e) {
                 return redirect()->back()->withInput()->with('error', 'User creation failed: ' . $e->getMessage());
             }

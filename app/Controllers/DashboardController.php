@@ -23,13 +23,15 @@ class DashboardController extends BaseController
     {
         $userData = $this->userModel->find($this->auth->id());
         $messages = $this->messageModel->getAllMessages($this->auth->id());
+        $messageNo = count($messages);
 
         $data = [
             'title' => 'Dashboard - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'userGroups' => $userData->getGroups(),
             'userData' => $userData,
-            'messages' => $messages
+            'messages' => $messages,
+            'messageNo' => $messageNo
         ];
         return view('pages/dashboard', $data);
     }
