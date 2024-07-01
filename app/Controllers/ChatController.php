@@ -56,7 +56,7 @@ class ChatController extends BaseController
         $messageModel = new MessageModel();
 
         $data = [
-            'sender_user_id' => $this->request->getPost('sender_user_id'),
+            'sender_user_id' => $this->auth->id(),
             'receiver_user_id' => $this->request->getPost('receiver_user_id'),
             'content' => $this->request->getPost('content'),
             'timestamp' => new Time('now'),
