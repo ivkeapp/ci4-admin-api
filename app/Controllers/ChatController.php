@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Models\MessageModel;
 use App\Controllers\BaseController;
 use CodeIgniter\I18n\Time;
 use App\Models\UserModel;
+use App\Models\MessageModel;
 
 class ChatController extends BaseController
 {
@@ -14,7 +14,6 @@ class ChatController extends BaseController
 
     public function __construct()
     {
-        // $this->auth = service('auth');
         $this->messageModel = new MessageModel();
         $this->userModel = new UserModel();
     }
