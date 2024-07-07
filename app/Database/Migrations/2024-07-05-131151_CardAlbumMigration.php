@@ -5,36 +5,40 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class ExampleTable extends Migration
+class CardAlbumMigration extends Migration
 {
     public function up()
     {
         $this->forge->addField([
-            'id' => [
+            'id'          => [
                 'type'           => 'INT',
                 'constraint'     => 5,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'field1' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '100',
+            'user_id'       => [
+                'type'           => 'INT',
+                'constraint'     => 5,
+                'unsigned'       => true,
             ],
-            'field2' => [
-                'type' => 'TEXT',
-                'null' => true,
+            'title'       => [
+                'type'           => 'VARCHAR',
+                'constraint'     => '255',
             ],
-            'field3' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'null' => true,
+            'description' => [
+                'type'           => 'TEXT',
+                'null'           => true,
+            ],
+            'cards' => [
+                'type'           => 'TEXT', // JSON data
+                'null'           => true,
             ],
             'created_at' => [
-                'type' => 'TIMESTAMP',
+                'type'           => 'DATETIME',
                 'default' => new RawSql('CURRENT_TIMESTAMP')
             ],
             'updated_at' => [
-                'type' => 'TIMESTAMP',
+                'type'           => 'DATETIME',
                 'null' => true,
                 'default' => new RawSql('CURRENT_TIMESTAMP'),
                 'on update' => new RawSql('CURRENT_TIMESTAMP')
@@ -45,13 +49,13 @@ class ExampleTable extends Migration
                 'on delete' => new RawSql('CURRENT_TIMESTAMP')
             ],
         ]);
-
         $this->forge->addKey('id', true);
-        $this->forge->createTable('example_table');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('card_albums');
     }
 
     public function down()
     {
-        $this->forge->dropTable('example_table');
+        $this->forge->dropTable('card_albums');
     }
 }

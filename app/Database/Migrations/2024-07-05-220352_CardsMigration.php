@@ -5,36 +5,32 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class ExampleTable extends Migration
+class CardsMigration extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
-                'type'           => 'INT',
-                'constraint'     => 5,
-                'unsigned'       => true,
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'field1' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '100',
-            ],
-            'field2' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'field3' => [
+            'album_id' => [
                 'type' => 'INT',
-                'constraint' => 11,
+                'constraint' => 5,
+                'unsigned' => true,
+            ],
+            'cards' => [
+                'type' => 'JSON',
                 'null' => true,
             ],
             'created_at' => [
-                'type' => 'TIMESTAMP',
+                'type' => 'DATETIME',
                 'default' => new RawSql('CURRENT_TIMESTAMP')
             ],
             'updated_at' => [
-                'type' => 'TIMESTAMP',
+                'type' => 'DATETIME',
                 'null' => true,
                 'default' => new RawSql('CURRENT_TIMESTAMP'),
                 'on update' => new RawSql('CURRENT_TIMESTAMP')
@@ -46,12 +42,15 @@ class ExampleTable extends Migration
             ],
         ]);
 
+        // Add Primary Key
         $this->forge->addKey('id', true);
-        $this->forge->createTable('example_table');
+
+        // Create Table
+        $this->forge->createTable('tb_cards');
     }
 
     public function down()
     {
-        $this->forge->dropTable('example_table');
+        $this->forge->dropTable('tb_cards');
     }
 }
