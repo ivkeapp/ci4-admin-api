@@ -38,6 +38,17 @@ $routes->get('user/profile', 'UserController::profile');
 // Table example route
 $routes->get('/example-table', 'ExampleTablesController::index');
 
+// My collection routes
+$routes->get('/my-collection', 'CardAlbumsController::index');
+$routes->get('/albums/edit/(:num)', 'CardAlbumsController::edit/$1');
+$routes->post('/albums/update/(:num)', 'CardAlbumsController::update/$1');
+$routes->get('/albums/show/(:num)', 'CardAlbumsController::show/$1');
+$routes->post('/albums/delete/(:num)', 'CardAlbumsController::delete/$1');
+$routes->get('/albums/add', 'CardAlbumsController::create');
+$routes->post('/albums/store', 'CardAlbumsController::store');
+$routes->get('/albums/add-cards', 'CardAlbumsController::addCards');
+$routes->post('/albums/add-cards', 'CardAlbumsController::addCards');
+
 
 // $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
 // $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
@@ -53,6 +64,15 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->get('remove-user/(:num)', 'AdminController::removeUser/$1');
     $routes->get('users', 'AdminController::users');
     $routes->post('update-user', 'AdminController::updateUser');
+    $routes->get('albums/add', 'AdminController::addAlbum');
+    $routes->post('albums/add', 'AdminController::addAlbum');
+    $routes->get('albums/edit/(:num)', 'AdminController::editAlbum/$1');
+    $routes->post('albums/edit/(:num)', 'AdminController::editAlbum/$1');
+    $routes->get('albums', 'AdminController::albums');
+
+    // TODO: Divide users and admin adding
+    // $routes->get('albums/add-cards', 'CardAlbumsController::addCards');
+    // $routes->post('albums/add-cards', 'CardAlbumsController::addCards');
 });
 // $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], ['filter' => 'groupfilter:developer'], function($routes) {
 //     $routes->get('get-role', 'AdminController::getRole');

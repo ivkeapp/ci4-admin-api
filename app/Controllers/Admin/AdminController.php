@@ -8,6 +8,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Entities\UserEntity; // Use custom UserEntity
 use Config\AuthGroups;
+use App\Models\AlbumCollectionModel;
 
 class AdminController extends BaseController
 {
@@ -15,11 +16,13 @@ class AdminController extends BaseController
     protected $auth;
     protected $userModel;
     protected $groupEntity;
+    protected $albumModel;
 
     public function __construct()
     {
         $this->auth = service('auth');
         $this->userModel = new UserModel();
+        $this->albumModel = new AlbumCollectionModel();
     }
     public function setRole()
     {
@@ -396,5 +399,98 @@ class AdminController extends BaseController
         }
     
         return null;
+    }
+    /**
+     * MANAGING ALBUMS
+     */
+    public function albums()
+    {
+        $userId = $this->auth->id();
+        $userData = $this->userModel->find($userId);
+
+        // Fetch all albums from the model
+        $albums = $this->albumModel->findAll();
+
+        // Prepare data to pass to the view
+        $data = [
+            'title' => 'Manage Albums - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userData' => $userData,
+            'albums' => $albums
+        ];
+
+        // Render the view with data
+        return view('admin/albums', $data);
+    }
+    public function addAlbum()
+    {
+        if ($this->request->getMethod() === 'post') {
+            // Handle image upload
+            $image = $this->request->getFile('image');
+            if ($image->isValid() && ! $image->hasMoved()) {
+                $newName = $image->getRandomName();
+                $image->move(ROOTPATH . 'public/uploads', $newName);
+                $imagePath = 'uploads/' . $newName;
+            } else {
+                $imagePath = '';
+            }
+
+            // Prepare data for insertion
+            $data = [
+                'title' => $this->request->getPost('title'),
+                'image' => $imagePath,
+                'description' => $this->request->getPost('description'),
+                'publisher' => $this->request->getPost('publisher'),
+            ];
+
+            // Insert data into database
+            $this->albumModel->insert($data);
+
+            // Redirect with success message
+            echo ('Album collection added successfully.');
+            // return redirect()->to('/admin/albums')->with('success', 'Album collection added successfully.');
+        }
+
+        $userId = $this->auth->id();
+        $userData = $this->userModel->find($userId);
+
+        $data = [
+            'title' => 'Add Album - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userData' => $userData,
+        ];
+
+        return view('admin/albums/add', $data);
+    }
+   
+    public function editAlbum($id)
+    {
+        $album = $this->albumModel->find($id);
+
+        if ($this->request->getMethod() === 'post') {
+            $data = [
+                'title' => $this->request->getPost('title'),
+                'image' => $this->request->getPost('image'),
+                'description' => $this->request->getPost('description'),
+                'publisher' => $this->request->getPost('publisher'),
+            ];
+
+            $this->albumModel->update($id, $data);
+
+            return redirect()->to('/admin/albums')->with('success', 'Album collection updated successfully.');
+        }
+
+        $userId = $this->auth->id();
+        $userData = $this->userModel->find($userId);
+        
+        // Prepare data to pass to the view
+        $data = [
+            'title' => 'Manage Albums - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userData' => $userData,
+            'album' => $album
+        ];
+
+        return view('admin/albums/edit', $data);
     }
 }
