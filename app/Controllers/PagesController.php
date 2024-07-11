@@ -42,7 +42,7 @@ class PagesController extends BaseController
             'userData' => $userData
         ];
 
-        return view('pages/index', $data);
+        return view('admin/pages/index', $data);
 
     }
     // Show a single page
@@ -57,23 +57,36 @@ class PagesController extends BaseController
 
     // Show the form for creating a new page
     public function create()
-    {
-        return view('pages/create');
+    {        
+        $userData = $this->userModel->find($this->auth->id());
+
+        $data = [
+            'title' => 'Create page - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userGroups' => $userData->getGroups(),
+            'userData' => $userData
+        ];
+        return view('admin/pages/create', $data);
     }
 
     // Store a newly created page in storage
     public function store()
     {
+        helper('html_sanitize');
+
         $data = $this->request->getPost();
-    
+
         $userId = $this->auth->id();
         $data['user_created'] = $userId; // Add the user ID to the data array
-    
+
         if (!$userId) {
             // Handle the case where there is no authenticated user
             return redirect()->back()->with('error', 'You must be logged in to create a page.');
         }
-    
+
+        // Sanitize the content field
+        $data['content'] = sanitize_html($data['content']);
+
         $this->pagesModel->createPage($data);
         return redirect()->to('/pages');
     }
@@ -81,17 +94,31 @@ class PagesController extends BaseController
     // Show the form for editing the specified page
     public function edit($id = null)
     {
+        $userData = $this->userModel->find($this->auth->id());
+
+        $data = [
+            'title' => 'Page edit - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userGroups' => $userData->getGroups(),
+            'userData' => $userData
+        ];
         $data['page'] = $this->pagesModel->find($id);
         if (empty($data['page'])) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Page Not Found');
         }
-        return view('pages/edit', $data);
+        return view('admin/pages/edit', $data);
     }
 
     // Update the specified page in storage
     public function update($id = null)
     {
+        helper('html_sanitize');
+
         $data = $this->request->getPost();
+
+        // Sanitize the content field
+        $data['content'] = sanitize_html($data['content']);
+
         $this->pagesModel->updatePage($id, $data);
         return redirect()->to('/pages');
     }
