@@ -35,6 +35,10 @@ $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::lo
 // User profile route
 $routes->get('user/profile', 'UserController::profile');
 
+// Table example route
+$routes->get('/example-table', 'ExampleTablesController::index');
+
+
 // $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
 // $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
 

@@ -11,4 +11,5 @@
     <!-- Custom styles for this template-->
     <link href="<?= base_url('css/sb-admin-2.min.css') ?>" rel="stylesheet">
     <script src="<?= base_url('vendor/jquery/jquery.min.js') ?>"></script>
+    <link href="<?= base_url('vendor/datatables/dataTables.bootstrap4.css') ?>" rel="stylesheet" type="text/css">
 <?= $this->endSection() ?>
