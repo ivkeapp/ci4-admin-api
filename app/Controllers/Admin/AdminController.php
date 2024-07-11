@@ -49,12 +49,8 @@ class AdminController extends BaseController
             return $redirect;
         }
         $userData = $this->userModel->find($this->auth->id());
-        // $data['users'] = $this->userModel->getUsers();
         $authGroups = config(AuthGroups::class);
-        // $data['groups'] = $authGroups->groups;
-        // print_r($authGroups->groups);
-        $data['title'] = 'Web Tech - User Admin';
-        $data['description'] = 'Web Tech - User Admin';
+
         $data = [
             'title' => 'Web Tech - User Admin',
             'description' => 'This is a dynamic description for SEO',
@@ -380,6 +376,23 @@ class AdminController extends BaseController
         }
 
         return view('admin/edit_user');
+    }
+    // Function to show the groups
+    public function groups()
+    {
+        $userData = $this->userModel->find($this->auth->id());
+        $authGroups = config(AuthGroups::class);
+
+        $data = [
+            'title' => 'Web Tech - User Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'userData' => $userData,
+            'userGroups' => $userData->getGroups(),
+            'groups' => $authGroups->groups,
+        ];
+
+        // print_r($groups);
+        return view('admin/groups', $data);
     }
 
     /**
