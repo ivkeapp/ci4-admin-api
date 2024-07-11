@@ -28,7 +28,7 @@ class Filters extends BaseConfig
         'apiauth'       => AuthFilter::class,
         'cors'          => \App\Filters\CORSFilter::class,
         'webauth'       => \App\Filters\WebAuthFilter::class,
-        'groupfilter'         => \App\Filters\GroupFilter::class,
+        'groupfilter'   => \App\Filters\GroupFilter::class,
     ];
 
     /**
@@ -79,6 +79,6 @@ class Filters extends BaseConfig
     public array $filters = [
         // 'apiauth' => ['before' => ['api/*']],
         // 'groupfilter:admin' => ['before' => ['admin/*']],
-        'webauth' => ['before' => ['/', 'home/*', 'profile/*', 'dashboard/*']],
+        'webauth' => ['before' => ['/', 'home/*', 'profile/*', 'dashboard/*', 'pages/*']],
     ];
 }
