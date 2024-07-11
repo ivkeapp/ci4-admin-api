@@ -67,4 +67,24 @@ class PagesModel extends Model
     {
         return $this->delete($id);
     }
+    // Method to paginate pages
+    public function getPaginatedPages($perPage, $page, $search = null)
+    {
+        if ($search) {
+            return $this->like('name', $search)
+                        ->orLike('description', $search)
+                        ->paginate($perPage, 'group1', $page);
+        }
+        return $this->paginate($perPage, 'group1', $page);
+    }
+    // Method to get the total number of pages
+    public function getTotalPages($search = null)
+    {
+        if ($search) {
+            return $this->like('name', $search)
+                        ->orLike('description', $search)
+                        ->countAllResults();
+        }
+        return $this->countAllResults();
+    }
 }

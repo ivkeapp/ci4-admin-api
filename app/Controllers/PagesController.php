@@ -22,15 +22,28 @@ class PagesController extends BaseController
     // Display a list of all pages
     public function index()
     {
+        $pagesModel = new PagesModel();
         $userData = $this->userModel->find($this->auth->id());
+        $page = $this->request->getVar('page') ?? 1;
+        $search = $this->request->getVar('search') ?? '';
+        $perPage = 10;
+
+        $pages = $pagesModel->getPaginatedPages($perPage, $page, $search);
+        $total = $pagesModel->getTotalPages($search);
+
         $data = [
             'title' => 'Pages - WebTech Admin',
-            'pages' => $this->pagesModel->findAll(),
+            'pages' => $pages,
+            'pager' => $pagesModel->pager,
+            'total' => $total,
+            'search' => $search,
             'description' => 'This is a dynamic description for SEO',
             'userGroups' => $userData->getGroups(),
             'userData' => $userData
         ];
+
         return view('pages/index', $data);
+
     }
     // Show a single page
     public function view($id = null)
@@ -53,7 +66,6 @@ class PagesController extends BaseController
     {
         $data = $this->request->getPost();
     
-        // Assuming you have a method to get the current authenticated user's ID
         $userId = $this->auth->id();
         $data['user_created'] = $userId; // Add the user ID to the data array
     

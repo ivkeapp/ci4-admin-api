@@ -13,45 +13,37 @@
                 <h2>Page Management</h2>
                 <hr>
                 <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addPageModal">Add Page</a>
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead>
+                <form method="get" action="/pages" class="form-inline mb-4">
+                    <input type="text" name="search" value="<?= esc($search) ?>" class="form-control mr-2" placeholder="Search pages">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pages as $page): ?>
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Created By</th>
-                                <th>Creation Date</th>
-                                <th>Active</th>
-                                <th>URL Slug</th>
-                                <th>Last Updated</th>
-                                <th>Updated By</th>
-                                <th>Content</th>
-                                <th>Action</th>
+                                <td><?= esc($page['name']) ?></td>
+                                <td><?= esc($page['description']) ?></td>
+                                <td><?= esc($page['datetime_created']) ?></td>
+                                <td>
+                                    <a href="/pages/view/<?= $page['id'] ?>" class="btn btn-info btn-sm">View</a>
+                                    <a href="/pages/edit/<?= $page['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="/pages/delete/<?= $page['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($pages as $page) : ?>
-                                <tr>
-                                    <td><?= $page['id'] ?></td>
-                                    <td><?= $page['name'] ?></td>
-                                    <td><?= $page['description'] ?></td>
-                                    <td><?= $page['user_created'] ?></td>
-                                    <td><?= $page['datetime_created'] ?></td>
-                                    <td><?= $page['is_active'] ? 'Yes' : 'No' ?></td>
-                                    <td><?= $page['url_slug'] ?></td>
-                                    <td><?= $page['datetime_updated'] ?></td>
-                                    <td><?= $page['user_updated'] ?></td>
-                                    <td><?= $page['content'] ?></td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" onclick="editPageModal(<?= $page['id'] ?>)">Edit</button>
-                                        <a href="<?= site_url('pages/delete/' . $page['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this page?')">Delete</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <?= $pager->links() ?>
             </div>
         </div>
     </div>
