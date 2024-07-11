@@ -86,10 +86,11 @@ class AdminController extends BaseController
         if (!$this->auth->inGroup('superadmin')) {
             // return redirect()->to('/no-access');
         }
-
+    
         if ($this->request->getMethod() === 'post') {
             $users = new UserModel;
-
+            $newUser = new \App\Entities\UserEntity();
+            log_message('debug', 'Starting user insertation.');
             $rules = [
                 'username'     => 'required|min_length[3]|is_unique[users.username]',
                 'password'     => 'required|min_length[5]',
@@ -98,33 +99,49 @@ class AdminController extends BaseController
                 'mobile_phone' => 'required',
                 'address'      => 'required',
                 'email'        => 'required|valid_email|is_unique[auth_identities.secret]',
-                'user_image'   => 'uploaded[user_image]|is_image[user_image]' // Add validation rule for image
+                // Keep the user_image validation rules here, but actual validation will happen after checking file upload success
+                'user_image'   => 'permit_empty|uploaded[user_image]|max_size[user_image,1024]|is_image[user_image]|mime_in[user_image,image/jpg,image/jpeg,image/png]',
             ];
-
+    
             $messages = [
                 'email.is_unique' => 'The email must be unique.',
-                'user_image.is_image' => 'The file uploaded is not a valid image.' // Custom message for image validation
+                'user_image.is_image' => 'The file uploaded is not a valid image. Try another one!'
             ];
-
+    
             if (!$this->validate($rules, $messages)) {
+                log_message('debug', 'Validation failed: ' . print_r($this->validator->getErrors(), true));
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
-
+    
             try {
-                // Handle image upload
                 $image = $this->request->getFile('user_image');
-                if ($image->isValid() && !$image->hasMoved()) {
+                if ($image !== null && $image->isValid() && !$image->hasMoved()) {
                     $newName = $image->getRandomName();
-                    // Use FCPATH to get a path relative to the front controller
                     $image->move(FCPATH . 'public/uploads', $newName);
-                    // Adjust the imagePath to use the relative path
                     $imagePath = 'public/uploads/' . $newName;
+                    log_message('debug', 'Image upload success.');
                 } else {
-                    throw new \RuntimeException('Image upload failed');
+                    // Handle cases where no image is uploaded or there is an error with the uploaded file
+                    if ($image !== null) {
+                        log_message('error', 'Image upload failed: ' . $image->getErrorString());
+                        return redirect()->back()->withInput()->with('error', 'Image upload failed: ' . $image->getErrorString());
+                    } else {
+                        // No file was uploaded, proceed without setting an image path or handle accordingly
+                        $imagePath = null; // TODO: add default image path
+                    }
                 }
 
-                // Prepare the user data as an array, including the image path
-                $userData = new UserEntity([
+                // Fill the UserEntity with the POST data
+                $newUser->username = $this->request->getPost('username');
+                $newUser->email = $this->request->getPost('email');
+                $newUser->password = $this->request->getPost('password');
+                $newUser->first_name = $this->request->getPost('first_name');
+                $newUser->last_name = $this->request->getPost('last_name');
+                $newUser->mobile_phone = $this->request->getPost('mobile_phone');
+                $newUser->address = $this->request->getPost('address');
+                $newUser->image_path = $imagePath;
+    
+                $userData = [
                     'username'     => $this->request->getPost('username'),
                     'email'        => $this->request->getPost('email'),
                     'password'     => $this->request->getPost('password'),
@@ -132,12 +149,12 @@ class AdminController extends BaseController
                     'address'      => $this->request->getPost('address'),
                     'first_name'   => $this->request->getPost('first_name'),
                     'last_name'    => $this->request->getPost('last_name'),
-                    'image_path'   => $imagePath, // Save the image path
-                ]);
-
+                    'image_path'   => $imagePath,
+                ];
+    
                 log_message('debug', 'User Data before save: ' . print_r($userData, true));
-                // Save the user using the model
-                if (!$users->save($userData)) {
+                if (!$this->userModel->save($newUser)) {
+                    log_message('debug', 'User creation failed: ' . print_r($userData, true));
                     return $this->response->setJSON([
                         'status' => 'error',
                         'message' => 'User creation failed.',
@@ -150,15 +167,21 @@ class AdminController extends BaseController
                         $this->auth->id(),
                         \App\Models\ActivityLogModel::ACTIVITY_USER_ADDED,
                         "User {$newUserId} added",
-                        ['target_user_id' => $newUserId] // Additional metadata if needed
+                        ['target_user_id' => $newUserId]
                     );
+                    log_message('debug', 'User creation success. New ID: ' . $newUserId);
+                    return $this->response->setJSON([
+                        'status' => 'success',
+                        'message' => 'User created successfully.',
+                        'user' => $newUserId,
+                    ]);
                 }
-
+    
             } catch (\Exception $e) {
+                log_message('error', 'User creation failed: ' . $e->getMessage());
                 return redirect()->back()->withInput()->with('error', 'User creation failed: ' . $e->getMessage());
             }
         }
-        return redirect()->back()->withInput()->with('success', 'User created successfuly!');
     }
     
     // Function to remove user
@@ -384,7 +407,7 @@ class AdminController extends BaseController
         $authGroups = config(AuthGroups::class);
 
         $data = [
-            'title' => 'Web Tech - User Admin',
+            'title' => 'Web Tech - Groups',
             'description' => 'This is a dynamic description for SEO',
             'userData' => $userData,
             'userGroups' => $userData->getGroups(),

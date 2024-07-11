@@ -38,10 +38,6 @@ $routes->get('user/profile', 'UserController::profile');
 // Table example route
 $routes->get('/example-table', 'ExampleTablesController::index');
 
-
-// $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
-// $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
-
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
     $routes->get('get-role', 'AdminController::getRole');
     $routes->get('groups', 'AdminController::groups');
@@ -54,28 +50,6 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->get('users', 'AdminController::users');
     $routes->post('update-user', 'AdminController::updateUser');
 });
-// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], ['filter' => 'groupfilter:developer'], function($routes) {
-//     $routes->get('get-role', 'AdminController::getRole');
-//     $routes->get('groups', 'AdminController::assign');
-//     $routes->post('assign', 'AdminController::assign');
-//     // $routes->post('admin', 'AdminController::assign');
-//     // other admin routes
-// });
-// // $routes->get('groups', '\App\Controllers\Admin\GroupController::assign', ['filter' => 'groupfilter']);
-
-// $routes->group('superadmin', ['filter' => 'group:superadmin'], function($routes) {
-//     $routes->get('dashboard', 'SuperAdmin\Dashboard::index');
-//     // other superadmin routes
-// });
-
-// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes){
-    // $routes->get('set-role', 'AdminController::setRole', ['filter' => 'myAuth']);
-    // $routes->get('get-role', 'AdminController::getRole');
-    // $routes->get('delete-role', 'AdminController::deleteRole');
-    // $routes->get('update-role', 'AdminController::updateRole');
-    // $routes->get('login', 'AdminController::login');
-    // $routes->get('logout', 'AdminController::logout');
-// });
 
 $routes->get('/pages', 'PagesController::index');
 $routes->get('/pages/view/(:segment)', 'PagesController::view/$1');
