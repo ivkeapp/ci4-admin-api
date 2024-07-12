@@ -1,28 +1,22 @@
-<?php namespace App\Controllers;
+<?php 
 
-use CodeIgniter\Controller;
-use App\Models\UserModel;
+namespace App\Controllers;
 
-class Errors extends Controller
+use App\Controllers\BaseController;
+
+class Errors extends BaseController
 {
-    protected $userModel;
-    protected $auth;
-
-    public function __construct()
-    {
-        $this->auth = service('auth');
-        $this->userModel = new UserModel();
-    }
 
     public function show404()
     {
-        $userData = $this->userModel->find($this->auth->id());
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Page Not Found - WebTech Admin',
             'description' => 'It looks like you found a glitch in the matrix...',
-            'userData' => $userData,
-            'userGroups' => $userData->getGroups(),
         ];
-        echo view('errors/custom_404', $data); // Make sure this path matches your view file
+
+        $data = array_merge($commonData, $specificData);
+
+        echo view('errors/custom_404', $data);
     }
 }

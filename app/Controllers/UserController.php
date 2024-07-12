@@ -22,14 +22,14 @@ class UserController extends BaseController
         // }
         $authGroups = config(AuthGroups::class);
 
-        $userData = $this->userModel->find($this->auth->id());
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'User Profile - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
-            'userGroups' => $userData->getGroups(),
             'groups' => $authGroups->groups,
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         return view('user/profile', $data);
     }

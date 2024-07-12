@@ -9,6 +9,8 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use CodeIgniter\Events\Events;
+use App\Models\MessageModel;
+use App\Models\UserModel;
 
 /**
  * Class BaseController
@@ -29,6 +31,8 @@ abstract class BaseController extends Controller
      */
     protected $request;
     protected $auth;
+    protected $userModel;
+    protected $messageModel;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -53,6 +57,8 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
         $this->auth = service('auth');
+        $this->userModel = new UserModel();
+        $this->messageModel = new MessageModel();
         
         // Preload any models, libraries, etc, here.
         // E.g.: $this->session = \Config\Services::session();
@@ -64,5 +70,23 @@ abstract class BaseController extends Controller
 
         // Trigger the event
         Events::trigger('log_activity', $userId, $actionType, $description);
+    }
+    /**
+     * Get common data for all controllers
+     * @return array<string, mixed>
+     */
+    protected function getCommonData()
+    {
+        $userId = $this->auth->id();
+        $userData = $this->userModel->find($userId);
+        $messages = $this->messageModel->getAllMessages($userId);
+        $messageNo = count($messages);
+
+        return [
+            'userGroups' => $userData->getGroups(),
+            'userData' => $userData,
+            'messages' => $messages,
+            'messageNo' => $messageNo
+        ];
     }
 }

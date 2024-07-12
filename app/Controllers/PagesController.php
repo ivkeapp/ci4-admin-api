@@ -10,20 +10,15 @@ use App\Models\UserModel;
 class PagesController extends BaseController
 {
     protected $pagesModel;
-    protected $userModel;
-    protected $auth;
 
     public function __construct()
     {
         $this->pagesModel = new PagesModel();
-        $this->userModel = new UserModel();
-        $this->auth = service('auth');
     }
     // Display a list of all pages
     public function index()
     {
         $pagesModel = new PagesModel();
-        $userData = $this->userModel->find($this->auth->id());
         $page = $this->request->getVar('page') ?? 1;
         $search = $this->request->getVar('search') ?? '';
         $perPage = 10;
@@ -31,16 +26,17 @@ class PagesController extends BaseController
         $pages = $pagesModel->getPaginatedPages($perPage, $page, $search);
         $total = $pagesModel->getTotalPages($search);
 
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Pages - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
             'pages' => $pages,
             'pager' => $pagesModel->pager,
             'total' => $total,
             'search' => $search,
-            'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         return view('admin/pages/index', $data);
 
@@ -58,14 +54,15 @@ class PagesController extends BaseController
     // Show the form for creating a new page
     public function create()
     {        
-        $userData = $this->userModel->find($this->auth->id());
 
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Create page - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData
         ];
+
+        $data = array_merge($commonData, $specificData);
+        
         return view('admin/pages/create', $data);
     }
 
@@ -94,15 +91,16 @@ class PagesController extends BaseController
     // Show the form for editing the specified page
     public function edit($id = null)
     {
-        $userData = $this->userModel->find($this->auth->id());
 
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Page edit - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData
+            'page' =>  $this->pagesModel->find($id),
         ];
-        $data['page'] = $this->pagesModel->find($id);
+
+        $data = array_merge($commonData, $specificData);
+
         if (empty($data['page'])) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Page Not Found');
         }
