@@ -4,18 +4,15 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\I18n\Time;
-use App\Models\UserModel;
 use App\Models\MessageModel;
 
 class ChatController extends BaseController
 {
     protected $messageModel;
-    protected $userModel;
 
     public function __construct()
     {
         $this->messageModel = new MessageModel();
-        $this->userModel = new UserModel();
     }
 
     public function index($messageId)
@@ -24,19 +21,14 @@ class ChatController extends BaseController
         $message = $this->messageModel->find($messageId);
 
         $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-
-        // TODO: Implement reading all messages in view
-        $messages = $this->messageModel->getAllMessages($userId);
-
-        $data = [
-            'title' => 'Dashboard - WebTech Admin',
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Chat - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData,
-            'messages' => $messages,
-            'message' => $message // TODO: Implement reading all messages in view
+            'message'
         ];
+
+        $data = array_merge($commonData, $specificData);
         // Check if the message exists and belongs to the authenticated user
         if ($message && $message['receiver_user_id'] == $userId) {
             // Update the message status to 'read'

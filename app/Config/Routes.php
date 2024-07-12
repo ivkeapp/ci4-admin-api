@@ -41,6 +41,7 @@ $routes->get('/example-table', 'ExampleTablesController::index');
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
     $routes->get('get-role', 'AdminController::getRole');
     $routes->get('groups', 'AdminController::groups');
+    $routes->get('assign', 'AdminController::assign');
     $routes->post('assign', 'AdminController::assign');
     $routes->get('add-user', 'AdminController::addUser');
     $routes->post('add-user', 'AdminController::addUser');

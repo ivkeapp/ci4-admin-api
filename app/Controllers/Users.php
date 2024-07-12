@@ -4,14 +4,14 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
-use App\Models\UsersModel;
+use App\Models\UserModel;
 
 class Users extends BaseController
 {
     private $userObject;
     public function __construct()
     {
-        $this->userObject = new UsersModel();
+        $this->userObject = new UserModel();
     }
     public function index()
     {

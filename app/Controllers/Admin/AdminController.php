@@ -48,23 +48,24 @@ class AdminController extends BaseController
         if ($redirect) {
             return $redirect;
         }
-        $userData = $this->userModel->find($this->auth->id());
+
         $authGroups = config(AuthGroups::class);
 
-        $data = [
-            'title' => 'Web Tech - User Admin',
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'User Admin - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
-            'userGroups' => $userData->getGroups(),
             'groups' => $authGroups->groups,
             'users' => $this->userModel->getUsers(),
         ];
+
+        $data = array_merge($commonData, $specificData);
+
         return view('admin/users', $data);
     }
 
     public function assign()
     {
-        $model = new User();
 
         if ($this->request->getMethod() === 'post') {
             $userId = $this->request->getPost('user_id');
@@ -77,7 +78,7 @@ class AdminController extends BaseController
             return "User not found.";
         }
 
-        $data['users'] = $model->getUsers();
+        $data['users'] = $this->userModel->getUsers();
         echo view('admin/assign', $data);
     }
 
@@ -403,18 +404,17 @@ class AdminController extends BaseController
     // Function to show the groups
     public function groups()
     {
-        $userData = $this->userModel->find($this->auth->id());
+        
         $authGroups = config(AuthGroups::class);
-
-        $data = [
-            'title' => 'Web Tech - Groups',
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Groups - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
-            'userGroups' => $userData->getGroups(),
             'groups' => $authGroups->groups,
         ];
 
-        // print_r($groups);
+        $data = array_merge($commonData, $specificData);
+
         return view('admin/groups', $data);
     }
 

@@ -8,25 +8,19 @@ use App\Models\UserModel;
 
 class ExampleTablesController extends BaseController
 {
-    protected $userModel;
-
-    public function __construct()
-    {
-        $this->userModel = new UserModel();
-    }
+    
     public function index()
     {
 
         $model = new ExampleTablesModel();
-        $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-
-        $data = [
-            'title' => 'Example Table - WebTech Admin',
-            'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Page Not Found - WebTech Admin',
+            'description' => 'It looks like you found a glitch in the matrix...',
             'tableData' => $model->findAll()
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         return view('pages/tables_example', $data);
 

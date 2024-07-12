@@ -21,18 +21,13 @@ class DashboardController extends BaseController
 
     public function index()
     {
-        $userData = $this->userModel->find($this->auth->id());
-        $messages = $this->messageModel->getAllMessages($this->auth->id());
-        $messageNo = count($messages);
-
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Dashboard - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData,
-            'messages' => $messages,
-            'messageNo' => $messageNo
         ];
+
+        $data = array_merge($commonData, $specificData);
         return view('pages/dashboard', $data);
     }
 }
