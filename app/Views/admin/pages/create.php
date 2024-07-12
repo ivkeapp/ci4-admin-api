@@ -51,6 +51,9 @@
                     promoButton.style.display = 'none';
                 }
             });
+            editor.on('change', function (e) {
+                editor.save();
+            });
         }
     });
 </script>

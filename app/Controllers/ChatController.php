@@ -25,7 +25,7 @@ class ChatController extends BaseController
         $specificData = [
             'title' => 'Chat - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'message'
+            'message' => $message
         ];
 
         $data = array_merge($commonData, $specificData);
@@ -33,7 +33,13 @@ class ChatController extends BaseController
         if ($message && $message['receiver_user_id'] == $userId) {
             // Update the message status to 'read'
             $this->messageModel->update($messageId, ['status' => 'read', 'status_timestamp' => date('Y-m-d H:i:s')]);
-            
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $userId,
+                \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_READ,
+                "Message has been viewed by user: {$userId}",
+                ['message_read' => true, 'message_id' => $messageId]
+            );
             // Load the view with the message data
             return view('pages/chat', $data);
         } else {
@@ -45,9 +51,10 @@ class ChatController extends BaseController
     public function sendMessage()
     {
         $messageModel = new MessageModel();
+        $userId = $this->auth->id();
 
         $data = [
-            'sender_user_id' => $this->auth->id(),
+            'sender_user_id' => $userId,
             'receiver_user_id' => $this->request->getPost('receiver_user_id'),
             'content' => $this->request->getPost('content'),
             'timestamp' => new Time('now'),
@@ -56,6 +63,13 @@ class ChatController extends BaseController
         ];
 
         if ($messageModel->insert($data)) {
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $userId,
+                \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_SENT,
+                "Message form user: {$userId} sent to user: {$data['receiver_user_id']}",
+                ['message_sent' => true, 'receiver_user_id' => $data['receiver_user_id'], 'content' => $data['content']]
+            );
             return $this->response->setJSON(['success' => true, 'message' => 'Message sent successfully']);
         } else {
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to send message']);

@@ -85,6 +85,15 @@ class PagesController extends BaseController
         $data['content'] = sanitize_html($data['content']);
 
         $this->pagesModel->createPage($data);
+        // Log the activity
+        $activityLogModel = new \App\Models\ActivityLogModel();
+        $activityLogModel->logActivity(
+            $this->auth->id(),
+            \App\Models\ActivityLogModel::ACTIVITY_PAGE_CREATED,
+            "Page created by user: {$userId}",
+            ['page_created' => true, 'page_title' => $data['name']]
+        );
+        // TODO: return JSON response
         return redirect()->to('/pages');
     }
 
@@ -118,13 +127,32 @@ class PagesController extends BaseController
         $data['content'] = sanitize_html($data['content']);
 
         $this->pagesModel->updatePage($id, $data);
+        // Log the activity
+        $activityLogModel = new \App\Models\ActivityLogModel();
+        $activityLogModel->logActivity(
+            $this->auth->id(),
+            \App\Models\ActivityLogModel::ACTIVITY_PAGE_EDITED,
+            "Page {$id} edited by user: {$this->auth->id()}",
+            ['page_edited' => true, 'page_id' => $id]
+        );
         return redirect()->to('/pages');
     }
 
     // Remove the specified page from storage
     public function delete($id = null)
     {
+        if($id === null) {
+            return redirect()->to('/pages');
+        }
         $this->pagesModel->deletePage($id);
+        // Log the activity
+        $activityLogModel = new \App\Models\ActivityLogModel();
+        $activityLogModel->logActivity(
+            $this->auth->id(),
+            \App\Models\ActivityLogModel::ACTIVITY_PAGE_DELETED,
+            "Page {$id} deleted by user: {$this->auth->id()}",
+            ['page_deleted' => true, 'page_id' => $id]
+        );
         return redirect()->to('/pages');
     }
 }
