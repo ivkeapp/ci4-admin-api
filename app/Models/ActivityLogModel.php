@@ -23,6 +23,12 @@ class ActivityLogModel extends Model
     const ACTIVITY_USER_EDITED = 'user_edited';
     const ACTIVITY_USER_DELETED = 'user_deleted';
     const ACTIVITY_PAGE_ADDED = 'page_added';
+    const ACTIVITY_MESSAGE_SENT = 'message_sent';
+    const ACTIVITY_MESSAGE_READ = 'message_read';
+    const ACTIVITY_USER_ASSIGNED = 'user_assigned_to_group';
+    const ACTIVITY_PAGE_CREATED = 'page_created';
+    const ACTIVITY_PAGE_EDITED = 'page_edited';
+    const ACTIVITY_PAGE_DELETED = 'page_deleted';
 
     // Dates
     protected $useTimestamps = true;
@@ -65,15 +71,17 @@ class ActivityLogModel extends Model
 
         // Ensure $additionalData is an array
         $additionalData = is_array($additionalData) ? $additionalData : [];
-
+        
         // Merge additional data with metadata
-        $data = array_merge($additionalData, ['metadata' => $metadata]);
+        $metadata = array_merge($additionalData, $metadata);
+
         $data = [
             'user_id' => $userId,
             'action_type' => $actionType,
             'description' => $description,
             'metadata' => $metadata ? json_encode($metadata) : null, // Encode metadata as JSON
         ];
+        log_message('debug', 'Logging data: ' . print_r($data, true));
 
         return $this->insert($data);
     }
@@ -93,8 +101,9 @@ class ActivityLogModel extends Model
         $version = $userAgent->getVersion();
         $mobile = $userAgent->isMobile() ? 'Mobile' : 'Not Mobile';
         $location = 'to_do_use_geolocation'; // Implement geolocation logic as needed
-
+        $method = $request->getMethod();
         $metadata = [
+            'request_method' => $method,
             'ip_address' => $ipAddress,
             'device' => $device,
             'browser' => $browser,

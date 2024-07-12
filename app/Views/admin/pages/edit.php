@@ -44,6 +44,18 @@
         toolbar: 'undo redo | blocks | bold italic forecolor backcolor | ' +
           'alignleft aligncenter alignright alignjustify | ' +
           'bullist numlist outdent indent | removeformat code importcss link | table | image media',
+        setup: function (editor) {
+            editor.on('init', function () {
+                // Remove the Promotion button if it is present
+                const promoButton = document.querySelector('.tox-promotion');
+                if (promoButton) {
+                    promoButton.style.display = 'none';
+                }
+            });
+            editor.on('change', function (e) {
+                editor.save();
+            });
+        }
     });
 </script>
 <?= $this->endSection() ?>

@@ -73,6 +73,13 @@ class AdminController extends BaseController
             $user = $this->userModel->find($userId);
             if ($user) {
                 $user->addGroup($groupName);
+                $activityLogModel = new \App\Models\ActivityLogModel();
+                $activityLogModel->logActivity(
+                    $this->auth->id(),
+                    \App\Models\ActivityLogModel::ACTIVITY_USER_ASSIGNED,
+                    "User {$userId} assigned to {$groupName} group",
+                    ['user_assigned_to_group' => true, 'group_name' => $groupName]
+                );
                 return "User assigned to {$groupName} successfully.";
             }
             return "User not found.";
@@ -205,15 +212,22 @@ class AdminController extends BaseController
                     'message' => 'User not found.',
                 ]);
             }
+            // Initialize the ActivityLogModel
+            $activityLogModel = new \App\Models\ActivityLogModel();
 
             // Delete the user
             if (!$users->delete($userId)) {
+                $activityLogModel->logActivity(
+                    $this->auth->id(),
+                    \App\Models\ActivityLogModel::ACTIVITY_USER_DELETED,
+                    "User {$userId} delete failed",
+                    ['target_user_id' => $userId]
+                );
                 return $this->response->setJSON([
                     'status' => 'error',
                     'message' => 'Failed to delete user.',
                 ]);
             } else {
-                $activityLogModel = new \App\Models\ActivityLogModel();
                 $activityLogModel->logActivity(
                     $this->auth->id(),
                     \App\Models\ActivityLogModel::ACTIVITY_USER_DELETED,
@@ -278,12 +292,13 @@ class AdminController extends BaseController
 
             $this->userModel->save($user);
 
+            // Log the activity
             $activityLogModel = new \App\Models\ActivityLogModel();
             $activityLogModel->logActivity(
                 $this->auth->id(),
                 \App\Models\ActivityLogModel::ACTIVITY_USER_EDITED,
-                "User {$userId} updated",
-                ['target_user_id' => $userId]
+                "User {$userId} updated successfully",
+                ['target_user_id' => $userId, 'is_successfull' => true, 'updated_user' => $user->toArray()]
             );
 
             return $this->response->setJSON([
@@ -292,6 +307,14 @@ class AdminController extends BaseController
                 'user' => $user,
             ]);
         } catch (\Exception $e) {
+            // Log the activity
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $this->auth->id(),
+                \App\Models\ActivityLogModel::ACTIVITY_USER_EDITED,
+                "User {$userId} update failed",
+                ['target_user_id' => $userId, 'is_successfull' => false, 'error' => $e->getMessage()]
+            );
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'User update failed: ' . $e->getMessage(),
@@ -374,8 +397,18 @@ class AdminController extends BaseController
 
                 log_message('debug', 'User Entity before save: ' . print_r($user->toArray(), true));
 
+                // Initialize the ActivityLogModel
+                $activityLogModel = new \App\Models\ActivityLogModel();
+
                 // Save the updated user using the UserModel
                 if (!$users->save($user)) {
+                    // Log the activity
+                    $activityLogModel->logActivity(
+                        $this->auth->id(),
+                        \App\Models\ActivityLogModel::ACTIVITY_USER_EDITED,
+                        "User {$userId} update failed",
+                        ['target_user_id' => $userId, 'is_successfull' => false]
+                    );
                     return $this->response->setJSON([
                         'status' => 'error',
                         'message' => 'User update failed.',
@@ -388,6 +421,13 @@ class AdminController extends BaseController
 
                 log_message('debug', 'Updated User after save: ' . print_r($updatedUser->toArray(), true));
 
+                // Log the activity
+                $activityLogModel->logActivity(
+                    $this->auth->id(),
+                    \App\Models\ActivityLogModel::ACTIVITY_USER_EDITED,
+                    "User {$userId} updated",
+                    ['target_user_id' => $userId, 'success' => true]
+                );
                 return $this->response->setJSON([
                     'status' => 'success',
                     'message' => 'User updated successfully',
