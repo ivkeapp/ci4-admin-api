@@ -28,6 +28,7 @@ $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAct
 // Route for messages
 $routes->get('chat/(:num)', 'ChatController::index/$1');
 $routes->post('chat/send-message', 'ChatController::sendMessage');
+$routes->get('view-messages', 'ChatController::viewMessages');
 
 $routes->get('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);

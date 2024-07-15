@@ -53,4 +53,20 @@ class MessageModel extends Model
                     ->orderBy('FIELD(status, "unread", "read", "replied") DESC, timestamp DESC')
                     ->findAll();
     }
+
+    public function getLimitedUnreadMessages($userId, $limit = 5)
+    {
+        return $this->where('receiver_user_id', $userId)
+            ->orderBy('FIELD(status, "unread", "read", "replied") ASC, timestamp DESC')
+            ->orderBy('timestamp', 'DESC')
+            ->findAll($limit);
+    }
+
+    public function getUserMessages($userId)
+    {
+        return $this->where('receiver_user_id', $userId)
+                    ->orderBy('timestamp', 'DESC')
+                    ->findAll();
+    }
+    
 }
