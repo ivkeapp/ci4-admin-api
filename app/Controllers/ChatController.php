@@ -4,18 +4,15 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\I18n\Time;
-use App\Models\UserModel;
 use App\Models\MessageModel;
 
 class ChatController extends BaseController
 {
     protected $messageModel;
-    protected $userModel;
 
     public function __construct()
     {
         $this->messageModel = new MessageModel();
-        $this->userModel = new UserModel();
     }
 
     public function index($messageId)
@@ -24,24 +21,25 @@ class ChatController extends BaseController
         $message = $this->messageModel->find($messageId);
 
         $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-
-        // TODO: Implement reading all messages in view
-        $messages = $this->messageModel->getAllMessages($userId);
-
-        $data = [
-            'title' => 'Dashboard - WebTech Admin',
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Chat - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userGroups' => $userData->getGroups(),
-            'userData' => $userData,
-            'messages' => $messages,
-            'message' => $message // TODO: Implement reading all messages in view
+            'message' => $message
         ];
+
+        $data = array_merge($commonData, $specificData);
         // Check if the message exists and belongs to the authenticated user
         if ($message && $message['receiver_user_id'] == $userId) {
             // Update the message status to 'read'
             $this->messageModel->update($messageId, ['status' => 'read', 'status_timestamp' => date('Y-m-d H:i:s')]);
-            
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $userId,
+                \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_READ,
+                "Message has been viewed by user: {$userId}",
+                ['message_read' => true, 'message_id' => $messageId]
+            );
             // Load the view with the message data
             return view('pages/chat', $data);
         } else {
@@ -53,9 +51,10 @@ class ChatController extends BaseController
     public function sendMessage()
     {
         $messageModel = new MessageModel();
+        $userId = $this->auth->id();
 
         $data = [
-            'sender_user_id' => $this->auth->id(),
+            'sender_user_id' => $userId,
             'receiver_user_id' => $this->request->getPost('receiver_user_id'),
             'content' => $this->request->getPost('content'),
             'timestamp' => new Time('now'),
@@ -64,6 +63,13 @@ class ChatController extends BaseController
         ];
 
         if ($messageModel->insert($data)) {
+            $activityLogModel = new \App\Models\ActivityLogModel();
+            $activityLogModel->logActivity(
+                $userId,
+                \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_SENT,
+                "Message form user: {$userId} sent to user: {$data['receiver_user_id']}",
+                ['message_sent' => true, 'receiver_user_id' => $data['receiver_user_id'], 'content' => $data['content']]
+            );
             return $this->response->setJSON(['success' => true, 'message' => 'Message sent successfully']);
         } else {
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to send message']);
@@ -83,4 +89,20 @@ class ChatController extends BaseController
 
         return $this->response->setJSON($messages);
     }
+    
+    public function viewMessages()
+    {
+        $userId = $this->auth->id();
+        $commonData = $this->getCommonData();
+        $messages = $this->messageModel->getUserMessages($userId);
+        $specificData = [
+            'title' => 'Messages - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'messages' => $messages
+        ];
+
+        $data = array_merge($commonData, $specificData);
+
+        return view('pages/view_messages', $data);
+}
 }

@@ -28,6 +28,7 @@ $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAct
 // Route for messages
 $routes->get('chat/(:num)', 'ChatController::index/$1');
 $routes->post('chat/send-message', 'ChatController::sendMessage');
+$routes->get('view-messages', 'ChatController::viewMessages');
 
 $routes->get('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
@@ -49,13 +50,10 @@ $routes->post('/albums/store', 'CardAlbumsController::store');
 $routes->get('/albums/add-cards', 'CardAlbumsController::addCards');
 $routes->post('/albums/add-cards', 'CardAlbumsController::addCards');
 
-
-// $routes->get('admin/groups', '\App\Controllers\Admin\GroupController::assign');
-// $routes->post('admin/assign', '\App\Controllers\Admin\GroupController::assign');
-
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
     $routes->get('get-role', 'AdminController::getRole');
-    $routes->get('groups', 'AdminController::assign');
+    $routes->get('groups', 'AdminController::groups');
+    $routes->get('assign', 'AdminController::assign');
     $routes->post('assign', 'AdminController::assign');
     $routes->get('add-user', 'AdminController::addUser');
     $routes->post('add-user', 'AdminController::addUser');
@@ -64,38 +62,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->get('remove-user/(:num)', 'AdminController::removeUser/$1');
     $routes->get('users', 'AdminController::users');
     $routes->post('update-user', 'AdminController::updateUser');
-    $routes->get('albums/add', 'AdminController::addAlbum');
-    $routes->post('albums/add', 'AdminController::addAlbum');
-    $routes->get('albums/edit/(:num)', 'AdminController::editAlbum/$1');
-    $routes->post('albums/edit/(:num)', 'AdminController::editAlbum/$1');
-    $routes->get('albums', 'AdminController::albums');
-
-    // TODO: Divide users and admin adding
-    // $routes->get('albums/add-cards', 'CardAlbumsController::addCards');
-    // $routes->post('albums/add-cards', 'CardAlbumsController::addCards');
 });
-// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], ['filter' => 'groupfilter:developer'], function($routes) {
-//     $routes->get('get-role', 'AdminController::getRole');
-//     $routes->get('groups', 'AdminController::assign');
-//     $routes->post('assign', 'AdminController::assign');
-//     // $routes->post('admin', 'AdminController::assign');
-//     // other admin routes
-// });
-// // $routes->get('groups', '\App\Controllers\Admin\GroupController::assign', ['filter' => 'groupfilter']);
-
-// $routes->group('superadmin', ['filter' => 'group:superadmin'], function($routes) {
-//     $routes->get('dashboard', 'SuperAdmin\Dashboard::index');
-//     // other superadmin routes
-// });
-
-// $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes){
-    // $routes->get('set-role', 'AdminController::setRole', ['filter' => 'myAuth']);
-    // $routes->get('get-role', 'AdminController::getRole');
-    // $routes->get('delete-role', 'AdminController::deleteRole');
-    // $routes->get('update-role', 'AdminController::updateRole');
-    // $routes->get('login', 'AdminController::login');
-    // $routes->get('logout', 'AdminController::logout');
-// });
 
 $routes->get('/pages', 'PagesController::index');
 $routes->get('/pages/view/(:segment)', 'PagesController::view/$1');

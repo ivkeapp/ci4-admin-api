@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <h2>Page Management</h2>
                 <hr>
-                <a href="#" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addPageModal">Add Page</a>
+                <a href="/pages/create" class="btn btn-primary mb-3">Add Page</a>
                 <form method="get" action="/pages" class="form-inline mb-4">
                     <input type="text" name="search" value="<?= esc($search) ?>" class="form-control mr-2" placeholder="Search pages">
                     <button type="submit" class="btn btn-primary">Search</button>
