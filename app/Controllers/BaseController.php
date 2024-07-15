@@ -79,7 +79,7 @@ abstract class BaseController extends Controller
     {
         $userId = $this->auth->id();
         $userData = $this->userModel->find($userId);
-        $messages = $this->messageModel->getAllMessages($userId);
+        $messages = $this->messageModel->getLimitedUnreadMessages($userId);
         $messageNo = count($messages);
 
         return [

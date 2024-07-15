@@ -89,4 +89,20 @@ class ChatController extends BaseController
 
         return $this->response->setJSON($messages);
     }
+    
+    public function viewMessages()
+    {
+        $userId = $this->auth->id();
+        $commonData = $this->getCommonData();
+        $messages = $this->messageModel->getUserMessages($userId);
+        $specificData = [
+            'title' => 'Messages - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'messages' => $messages
+        ];
+
+        $data = array_merge($commonData, $specificData);
+
+        return view('pages/view_messages', $data);
+}
 }
