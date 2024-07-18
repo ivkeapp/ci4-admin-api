@@ -14,6 +14,12 @@ The CodeIgniter 4 Admin App includes the following key features:
 
 - **API Support**: Build and consume APIs with the provided structure for API development, including request validation and response formatting.
 
+- **Performance Optimization**: Leverage CodeIgniter's performance features, including caching and efficient database querying, to ensure your application runs smoothly.
+
+- **Security**: Benefit from CodeIgniter 4's security practices, including input validation, CSRF protection, and XSS filtering.
+
+### TODO:
+
 - **Content Management**: Manage your application's content with an intuitive interface for creating, updating, and deleting articles, posts, or any custom content types.
 
 - **File Upload and Management**: Implement file upload functionality, including image and document management, with easy-to-use interfaces.
@@ -21,10 +27,6 @@ The CodeIgniter 4 Admin App includes the following key features:
 - **Theme and Layout**: Customize the look and feel of your application with theming support. Modify layouts, views, and assets to match your branding.
 
 - **Localization and Internationalization**: Make your application globally accessible with built-in support for multiple languages and locales.
-
-- **Performance Optimization**: Leverage CodeIgniter's performance features, including caching and efficient database querying, to ensure your application runs smoothly.
-
-- **Security**: Benefit from CodeIgniter 4's security practices, including input validation, CSRF protection, and XSS filtering.
 
 ## Server Requirements
 
