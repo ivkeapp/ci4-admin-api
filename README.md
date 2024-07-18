@@ -2,6 +2,30 @@
 
 This project is based on CodeIgniter 4, a PHP full-stack web framework that is light, fast, flexible, and secure. It is designed to provide a solid foundation for developing web applications quickly and efficiently.
 
+## Features
+
+The CodeIgniter 4 Admin App includes the following key features:
+
+- **User Management**: Easily manage user accounts, including creation, update, and deletion functionalities. Implement role-based access control to ensure users have the appropriate permissions.
+
+- **Authentication and Authorization**: Secure your application with built-in authentication and authorization features. Includes support for session management and secure password handling.
+
+- **Database Management**: Utilize CodeIgniter's migration and seeder functionalities to manage your database schema and initial data setup efficiently.
+
+- **API Support**: Build and consume APIs with the provided structure for API development, including request validation and response formatting.
+
+- **Content Management**: Manage your application's content with an intuitive interface for creating, updating, and deleting articles, posts, or any custom content types.
+
+- **File Upload and Management**: Implement file upload functionality, including image and document management, with easy-to-use interfaces.
+
+- **Theme and Layout**: Customize the look and feel of your application with theming support. Modify layouts, views, and assets to match your branding.
+
+- **Localization and Internationalization**: Make your application globally accessible with built-in support for multiple languages and locales.
+
+- **Performance Optimization**: Leverage CodeIgniter's performance features, including caching and efficient database querying, to ensure your application runs smoothly.
+
+- **Security**: Benefit from CodeIgniter 4's security practices, including input validation, CSRF protection, and XSS filtering.
+
 ## Server Requirements
 
 - PHP version 7.4 or higher.
