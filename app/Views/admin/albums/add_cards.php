@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="container">
     <h1 class="h3 mb-2 text-gray-800">Add Cards to Album</h1>
-    <form action="<?= site_url('albums/add-cards') ?>" method="post">
+    <form action="<?= site_url('admin/albums/add-cards') ?>" method="post">
         <div class="form-group">
             <label for="album_id">Select Album</label>
             <select name="album_id" id="album_id" class="form-control">

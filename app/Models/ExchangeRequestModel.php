@@ -4,15 +4,22 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class CardAlbumModel extends Model
+class ExchangeRequestModel extends Model
 {
-    protected $table            = 'card_albums';
+    protected $table            = 'exchange_requests';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields = ['user_id', 'album_id', 'title', 'description', 'cards', 'needed_cards'];
+    protected $allowedFields = [
+        'sender_id',
+        'receiver_id',
+        'album_id',
+        'cards_offered',
+        'cards_requested',
+        'status',
+    ];
 
     protected bool $allowEmptyInserts = false;
 

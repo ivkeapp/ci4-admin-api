@@ -9,6 +9,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Entities\UserEntity; // Use custom UserEntity
 use Config\AuthGroups;
 use App\Models\AlbumCollectionModel;
+use App\Models\TbCardsModel;
 
 class AdminController extends BaseController
 {
@@ -17,12 +18,14 @@ class AdminController extends BaseController
     protected $userModel;
     protected $groupEntity;
     protected $albumModel;
+    protected $tbCardsModel;
 
     public function __construct()
     {
         $this->auth = service('auth');
         $this->userModel = new UserModel();
         $this->albumModel = new AlbumCollectionModel();
+        $this->tbCardsModel = new TbCardsModel();
     }
     public function setRole()
     {
@@ -481,19 +484,19 @@ class AdminController extends BaseController
      */
     public function albums()
     {
-        $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
 
         // Fetch all albums from the model
         $albums = $this->albumModel->findAll();
 
         // Prepare data to pass to the view
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Manage Albums - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
             'albums' => $albums
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         // Render the view with data
         return view('admin/albums', $data);
@@ -527,14 +530,13 @@ class AdminController extends BaseController
             // return redirect()->to('/admin/albums')->with('success', 'Album collection added successfully.');
         }
 
-        $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Add Album - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         return view('admin/albums/add', $data);
     }
@@ -556,17 +558,86 @@ class AdminController extends BaseController
             return redirect()->to('/admin/albums')->with('success', 'Album collection updated successfully.');
         }
 
-        $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-        
-        // Prepare data to pass to the view
-        $data = [
-            'title' => 'Manage Albums - WebTech Admin',
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Edit Album - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
             'album' => $album
         ];
 
+        $data = array_merge($commonData, $specificData);
+
         return view('admin/albums/edit', $data);
+    }
+
+    public function addCards()
+    {
+        $userId = $this->auth->id();
+        $userData = $this->userModel->find($userId);
+
+        // Fetch all albums to populate the select dropdown
+        $albums = $this->albumModel->findAll();
+
+        if ($this->request->getMethod() === 'post') {
+            $validationRules = [
+                'album_id' => 'required|integer',
+                'cards' => 'required'
+            ];
+
+            if ($this->validate($validationRules)) {
+                $albumId = (int) $this->request->getPost('album_id');
+                $cards = $this->request->getPost('cards');
+                $album = $this->albumModel->find($albumId);
+
+                if (!$album) {
+                    echo 'Album ID does not exist or is invalid.';
+                    return;
+                }
+
+                // Prepare data for tb_cards table
+                $cardData = [
+                    'album_id' => $albumId,
+                    'cards' => json_encode(json_decode($cards))
+                ];
+
+                try {
+                    // Check if an entry for the album already exists
+                    $existingCard = $this->tbCardsModel->where('album_id', $albumId)->first();
+
+                    if ($existingCard) {
+                        // Entry exists, update it
+                        $this->tbCardsModel->update($existingCard['id'], $cardData);
+                        $message = 'Cards updated successfully in the album collection!';
+                    } else {
+                        // No entry exists, insert new one
+                        $cardId = $this->tbCardsModel->insert($cardData);
+                        if ($cardId) {
+                            $message = 'Cards successfully added to an album collection!';
+                        } else {
+                            echo 'Error adding cards to a collection!';
+                            return;
+                        }
+                    }
+
+                    // Redirect to a success page or return a success message
+                    return redirect()->to('/admin/albums')->with('success', $message);
+                } catch (\Exception $e) {
+                    echo 'Exception: ' . $e->getMessage();
+                }
+            } else {
+                echo 'Validation Error while adding cards to a collection!';
+            }
+        }
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Add Cards to Album',
+            'description' => 'This is a dynamic description for SEO',
+            'albums' => $albums,
+            'validation' => $this->validator
+        ];
+
+        $data = array_merge($commonData, $specificData);
+
+        return view('admin/albums/add_cards', $data);
     }
 }

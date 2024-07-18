@@ -47,8 +47,9 @@ $routes->get('/albums/show/(:num)', 'CardAlbumsController::show/$1');
 $routes->post('/albums/delete/(:num)', 'CardAlbumsController::delete/$1');
 $routes->get('/albums/add', 'CardAlbumsController::create');
 $routes->post('/albums/store', 'CardAlbumsController::store');
-$routes->get('/albums/add-cards', 'CardAlbumsController::addCards');
-$routes->post('/albums/add-cards', 'CardAlbumsController::addCards');
+$routes->get('/albums/exchange-album/(:num)', 'CardAlbumsController::findCardExchanges/$1');
+$routes->get('/albums/exchange', 'CardAlbumsController::findAllCardExchanges');
+$routes->post('/albums/send-request', 'ExchangeRequestController::sendRequest');
 
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
     $routes->get('get-role', 'AdminController::getRole');
@@ -62,6 +63,13 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->get('remove-user/(:num)', 'AdminController::removeUser/$1');
     $routes->get('users', 'AdminController::users');
     $routes->post('update-user', 'AdminController::updateUser');
+    $routes->get('albums/add', 'AdminController::addAlbum');
+    $routes->post('albums/add', 'AdminController::addAlbum');
+    $routes->get('albums/edit/(:num)', 'AdminController::editAlbum/$1');
+    $routes->post('albums/edit/(:num)', 'AdminController::editAlbum/$1');
+    $routes->get('albums', 'AdminController::albums');
+    $routes->get('albums/add-cards', 'AdminController::addCards');
+    $routes->post('albums/add-cards', 'AdminController::addCards');
 });
 
 $routes->get('/pages', 'PagesController::index');
