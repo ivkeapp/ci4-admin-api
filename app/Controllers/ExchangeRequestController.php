@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\ExchangeRequestModel;
+use App\Models\ActivityLogModel;
 
 class ExchangeRequestController extends BaseController
 {
@@ -13,6 +15,15 @@ class ExchangeRequestController extends BaseController
     // Ratings and Reviews: Allow users to rate and review each other after an exchange is completed. This can help in identifying reliable users.
     // Automated Matching: Enhance the findCardExchanges method to periodically check for matches and notify users automatically when a potential exchange is found.
     // User Preferences: Allow users to set preferences for how they wish to be contacted (e.g., email, in-app notification) when an exchange request is made or when a match is found.
+
+    protected $exchangeRequestModel;
+    protected $activityLogModel;
+
+    public function __construct()
+    {
+        $this->exchangeRequestModel = new ExchangeRequestModel();
+        $this->activityLogModel = new ActivityLogModel();
+    }
 
     public function index()
     {
@@ -42,11 +53,8 @@ class ExchangeRequestController extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        // Load the model
-        $exchangeRequestModel = new \App\Models\ExchangeRequestModel();
-
         // Check for existing request
-        $existingRequest = $exchangeRequestModel->where('sender_id', $json->sender_id)
+        $existingRequest = $this->exchangeRequestModel->where('sender_id', $json->sender_id)
             ->where('receiver_id', $json->receiver_id)
             ->where('album_id', $json->album_id)
             ->first();
@@ -69,7 +77,7 @@ class ExchangeRequestController extends BaseController
         ];
 
         // Insert the request
-        if ($exchangeRequestModel->insert($data)) {
+        if ($this->exchangeRequestModel->insert($data)) {
             return $this->response->setJSON([
                 'status' => 1,
                 'message' => 'Exchange request sent successfully.',
@@ -80,5 +88,77 @@ class ExchangeRequestController extends BaseController
                 'message' => 'Failed to send exchange request.',
             ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+    public function viewAllRequests() {
+        $userId = $this->auth->id();
+        $exchangeRequests = $this->exchangeRequestModel->getAllExchangeRequests($userId);
+        foreach ($exchangeRequests as $key => $request) {
+            // Decode JSON and convert to comma-separated strings
+            $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
+            $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+        }
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Potential Card Exchanges - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'exchangeRequests' => $exchangeRequests,
+        ];
+    
+        $data = array_merge($commonData, $specificData);
+        return view('albums/view_requests', $data);
+    }
+    public function acceptRequest($id)
+    {
+        if ($this->request->isAJAX()) {
+            if ($this->exchangeRequestModel->update($id, ['status' => 'accepted'])) {
+            // Log the activity
+            $this->activityLogModel->logActivity(
+                $this->auth->id(),
+                $this->activityLogModel::ACTIVITY_REQUEST_ACCEPTED,
+                "User {$this->auth->id()} accepted exchange request #{$id}",
+                ['target_user_id' => $this->auth->id(), 'success' => true, 'status' => 'accepted']
+            );
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Request accepted successfully.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to accept request.']);
+            }
+        }
+        // TODO: Fallback for non-AJAX request if needed
+    }
+    public function declineRequest($id)
+    {
+        if ($this->request->isAJAX()) {
+            if ($this->exchangeRequestModel->update($id, ['status' => 'declined'])) {
+                // Log the activity
+                $this->activityLogModel->logActivity(
+                    $this->auth->id(),
+                    $this->activityLogModel::ACTIVITY_REQUEST_DECLINED,
+                    "User {$this->auth->id()} declined exchange request #{$id}",
+                    ['target_user_id' => $this->auth->id(), 'success' => true, 'status' => 'declined']
+                );
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Request declined successfully.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to decline request.']);
+            }
+        }
+        // TODO: Fallback for non-AJAX request if needed
+    }
+    public function deleteRequest($id)
+    {
+        if ($this->request->isAJAX()) {
+            if ($this->exchangeRequestModel->update($id, ['status' => 'deleted'])) {
+                // Log the activity
+                $this->activityLogModel->logActivity(
+                    $this->auth->id(),
+                    $this->activityLogModel::ACTIVITY_REQUEST_DELETED,
+                    "User {$this->auth->id()} deleted exchange request #{$id}",
+                    ['target_user_id' => $this->auth->id(), 'success' => true, 'status' => 'deleted']
+                );
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Request deleted successfully.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to delete request.']);
+            }
+        }
+        // TODO: Fallback for non-AJAX request if needed
     }
 }

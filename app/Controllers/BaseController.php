@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use CodeIgniter\Events\Events;
 use App\Models\MessageModel;
 use App\Models\UserModel;
+use App\Models\ExchangeRequestModel;
 
 /**
  * Class BaseController
@@ -33,6 +34,7 @@ abstract class BaseController extends Controller
     protected $auth;
     protected $userModel;
     protected $messageModel;
+    protected $exchangeRequestModel;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -59,6 +61,7 @@ abstract class BaseController extends Controller
         $this->auth = service('auth');
         $this->userModel = new UserModel();
         $this->messageModel = new MessageModel();
+        $this->exchangeRequestModel = new ExchangeRequestModel();
         
         // Preload any models, libraries, etc, here.
         // E.g.: $this->session = \Config\Services::session();
@@ -82,11 +85,27 @@ abstract class BaseController extends Controller
         $messages = $this->messageModel->getLimitedUnreadMessages($userId);
         $messageNo = count($messages);
 
+         // Fetch unread exchange requests
+        $exchangeRequests = $this->exchangeRequestModel->getLimitedPendingExchangeRequests($userId);
+        $exchangeRequestNo = $this->exchangeRequestModel->getPendingExchangeRequestCount($userId);
+
+        if($exchangeRequestNo > 0){
+            if ($exchangeRequestNo > 99) {
+                $exchangeRequestNo = '99+';
+            } else {
+                $exchangeRequestNo = $exchangeRequestNo;
+            }
+        } else {
+            $exchangeRequestNo = 0;
+        }
+
         return [
             'userGroups' => $userData->getGroups(),
             'userData' => $userData,
             'messages' => $messages,
-            'messageNo' => $messageNo
+            'messageNo' => $messageNo,
+            'exchangeRequests' => $exchangeRequests,
+            'exchangeRequestNo' => $exchangeRequestNo,
         ];
     }
 }

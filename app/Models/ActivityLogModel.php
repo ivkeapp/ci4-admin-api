@@ -29,6 +29,9 @@ class ActivityLogModel extends Model
     const ACTIVITY_PAGE_CREATED = 'page_created';
     const ACTIVITY_PAGE_EDITED = 'page_edited';
     const ACTIVITY_PAGE_DELETED = 'page_deleted';
+    const ACTIVITY_REQUEST_ACCEPTED = 'request_accepted';
+    const ACTIVITY_REQUEST_DECLINED = 'request_declined';
+    const ACTIVITY_REQUEST_DELETED = 'request_deleted';
 
     // Dates
     protected $useTimestamps = true;
