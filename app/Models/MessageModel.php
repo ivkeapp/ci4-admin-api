@@ -56,9 +56,11 @@ class MessageModel extends Model
 
     public function getLimitedUnreadMessages($userId, $limit = 5)
     {
-        return $this->where('receiver_user_id', $userId)
-            ->orderBy('FIELD(status, "unread", "read", "replied") ASC, timestamp DESC')
-            ->orderBy('timestamp', 'DESC')
+        return $this->select('messages.*, users.first_name, users.last_name')
+            ->join('users', 'users.id = messages.sender_user_id')
+            ->where('messages.receiver_user_id', $userId)
+            ->orderBy('FIELD(messages.status, "unread", "read", "replied") ASC, messages.timestamp DESC')
+            ->orderBy('messages.timestamp', 'DESC')
             ->findAll($limit);
     }
 
