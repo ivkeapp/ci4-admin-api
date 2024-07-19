@@ -26,16 +26,16 @@ class CardAlbumsController extends BaseController
 
     public function index()
     {
-
         $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
-
-        $data = [
+        
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'My Collections - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
             'cardAlbums' => $this->cardAlbumModel->where('user_id', $userId)->findAll()
         ];
+    
+        $data = array_merge($commonData, $specificData);
         
         return view('pages/my_collection', $data);
     }

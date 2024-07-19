@@ -15,7 +15,7 @@
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>User ID</th>
+                        <th>User</th>
                         <th>Album ID</th>
                         <th>Status</th>
                         <th>Cards Offered</th>
@@ -26,7 +26,7 @@
                 <tbody>
                     <?php foreach ($exchangeRequests as $request): ?>
                     <tr>
-                        <td><?= esc($request['receiver_id']) ?></td>
+                        <td><?= esc($request['first_name']) . ' '. esc($request['last_name']); ?></td>
                         <td><?= esc($request['album_id']) ?></td>
                         <td><?= esc($request['status']) ?></td>
                         <td><?= esc($request['cards_offered']) ?></td>

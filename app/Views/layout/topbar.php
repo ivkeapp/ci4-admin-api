@@ -70,7 +70,7 @@
                     </div>
                     <div>
                         <div class="small text-gray-500"><?= $request['updated_at']; ?></div>
-                        <span class="font-weight-bold">New exchange request from <?= $request['sender_id']; ?>!</span>
+                        <span class="font-weight-bold">New exchange request from  <?= esc($request['first_name']) . ' '. esc($request['last_name']); ?>!</span>
                     </div>
                 </a>
                 <?php endforeach; ?>
@@ -143,7 +143,7 @@
                             <div class="font-weight-bold">
                                 <div class="text-truncate"><?= esc($message['content']); ?></div>
                                 <div class="small text-gray-500">
-                                    <?= esc($message['sender_user_id']); ?> · 
+                                    <?= esc($message['first_name']) . ' '. esc($message['last_name']); ?> · 
                                     <?= \CodeIgniter\I18n\Time::parse($message['timestamp'])->humanize(); ?>
                                 </div>
                             </div>

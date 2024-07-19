@@ -50,9 +50,11 @@ class ExchangeRequestModel extends Model
 
     public function getLimitedPendingExchangeRequests($userId, $limit = 5)
     {
-        return $this->where('receiver_id', $userId)
-            ->where('status =', 'pending')
-            ->orderBy('updated_at', 'DESC')
+        return $this->select('exchange_requests.*, users.first_name, users.last_name')
+            ->join('users', 'users.id = exchange_requests.sender_id')
+            ->where('exchange_requests.receiver_id', $userId)
+            ->where('exchange_requests.status =', 'pending')
+            ->orderBy('exchange_requests.updated_at', 'DESC')
             ->findAll($limit);
     }
     public function getExchangeRequests($userId)
@@ -70,8 +72,10 @@ class ExchangeRequestModel extends Model
             ->countAllResults();
     }
     public function getAllExchangeRequests($userId) {
-        return $this->where('receiver_id', $userId)
-                    ->where('status !=', 'deleted')
-                    ->findAll();
+        return $this->select('exchange_requests.*, users.first_name, users.last_name')
+        ->join('users', 'users.id = exchange_requests.sender_id')
+        ->where('exchange_requests.receiver_id', $userId)
+        ->where('exchange_requests.status !=', 'deleted')
+        ->findAll();
     }
 }
