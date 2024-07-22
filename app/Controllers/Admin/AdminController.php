@@ -169,7 +169,14 @@ class AdminController extends BaseController
                         'user' => [],
                     ]);
                 } else {
-                    $newUserId = $users->getInsertID();
+                    $newUserId = $this->userModel->getInsertID();
+                    $addedUser = $this->userModel->findById($newUserId);
+                    $groupName = $this->request->getPost('group');
+                    if(isset($groupName) && !empty($groupName)) {
+                        $addedUser->addGroup($groupName);
+                    } else {
+                        $this->userModel->addToDefaultGroup($addedUser);
+                    }
                     $activityLogModel = new \App\Models\ActivityLogModel();
                     $activityLogModel->logActivity(
                         $this->auth->id(),
