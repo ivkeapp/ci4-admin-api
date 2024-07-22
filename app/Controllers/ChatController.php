@@ -94,7 +94,7 @@ class ChatController extends BaseController
     {
         $userId = $this->auth->id();
         $commonData = $this->getCommonData();
-        $messages = $this->messageModel->getUserMessages($userId);
+        $messages = $this->messageModel->getLimitedUnreadMessages($userId);
         $specificData = [
             'title' => 'Messages - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',

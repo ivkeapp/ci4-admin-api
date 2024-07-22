@@ -69,8 +69,10 @@
                         </div>
                     </div>
                     <div>
-                        <div class="small text-gray-500"><?= $request['updated_at']; ?></div>
-                        <span class="font-weight-bold">New exchange request from  <?= esc($request['first_name']) . ' '. esc($request['last_name']); ?>!</span>
+                        <?php if (isset($request) && !empty($request)): ?>
+                            <div class="small text-gray-500"><?= $request['updated_at']; ?></div>
+                            <span class="font-weight-bold">New exchange request from  <?= esc($request['first_name']) . ' '. esc($request['last_name']); ?>!</span>
+                        <?php endif; ?>
                     </div>
                 </a>
                 <?php endforeach; ?>
