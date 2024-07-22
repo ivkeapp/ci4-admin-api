@@ -103,6 +103,35 @@
 
         <!-- Heading -->
         <div class="sidebar-heading">
+            My Collection
+        </div>
+
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAlbums"
+                aria-expanded="true" aria-controls="collapseAlbums">
+                <i class="fas fa-fw fa-folder"></i>
+                <span>My Collection</span>
+            </a>
+            <div id="collapseAlbums" class="collapse" aria-labelledby="headingAlbums" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Albums:</h6>
+                    <a class="collapse-item" href="<?= site_url('albums') ?>">View Albums</a>
+                    <a class="collapse-item" href="<?= site_url('albums/add') ?>">Add Album</a>
+                    <a class="collapse-item" href="<?= site_url('albums/exchange') ?>">Exchange Albums</a>
+                    <div class="collapse-divider"></div>
+                    <h6 class="collapse-header">Requests:</h6>
+                    <a class="collapse-item" href="<?= site_url('albums/received-requests') ?>">Received Requests</a>
+                    <a class="collapse-item" href="<?= site_url('albums/sent-requests') ?>">Sent Requests</a>
+                </div>
+            </div>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
             Addons
         </div>
 
