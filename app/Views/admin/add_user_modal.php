@@ -67,12 +67,14 @@
     // Handle form submission with AJAX
     $('#addUserForm').submit(function(e) {
         e.preventDefault();
-
+        var formData = new FormData(this); // Create a FormData object passing the form
         $.ajax({
             type: 'POST',
             url: $(this).attr('action'),
-            data: $(this).serialize(),
+            data: formData,
             dataType: 'json',
+            processData: false,
+            contentType: false,
             success: function(response) {
                 if (response.status === 'success') {
                     $('#addUserModal').modal('hide');
