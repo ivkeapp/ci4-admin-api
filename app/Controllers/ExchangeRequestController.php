@@ -102,10 +102,30 @@ class ExchangeRequestController extends BaseController
             'title' => 'Potential Card Exchanges - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'exchangeRequests' => $exchangeRequests,
+            'currentUser' => $userId,
         ];
     
         $data = array_merge($commonData, $specificData);
         return view('albums/view_requests', $data);
+    }
+    public function viewAllSentRequests() {
+        $userId = $this->auth->id();
+        $exchangeRequests = $this->exchangeRequestModel->getAllSentExchangeRequests($userId);
+        foreach ($exchangeRequests as $key => $request) {
+            // Decode JSON and convert to comma-separated strings
+            $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
+            $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+        }
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Potential Card Exchanges - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'exchangeRequests' => $exchangeRequests,
+            'currentUser' => $userId,
+        ];
+    
+        $data = array_merge($commonData, $specificData);
+        return view('albums/view_sent_requests', $data);
     }
     public function acceptRequest($id)
     {
@@ -160,5 +180,20 @@ class ExchangeRequestController extends BaseController
             }
         }
         // TODO: Fallback for non-AJAX request if needed
+    }
+    public function markAsCompleted()
+    {
+        $data = $this->request->getJSON();
+        $requestId = $data->requestId;
+        $userId = $this->auth->id();
+
+        log_message('debug', 'REQUEST_ID_2: ' . print_r($requestId, true));
+
+        $model = new ExchangeRequestModel();
+        if($model->markAsCompleted($requestId, $userId)) {
+            return $this->response->setJSON(['status' => 'success', 'message' => 'Marked as completed.']);
+        } else {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to mark as completed.']);
+        }
     }
 }

@@ -9,7 +9,7 @@
     <h1 class="h3 mb-2 text-gray-800">Exchange Requests</h1>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Received Exchange Requests</h6>
+            <h6 class="m-0 font-weight-bold text-primary">My Exchange Requests</h6>
         </div>
         <div class="card-body">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -33,23 +33,14 @@
                         <td><?= esc($request['cards_requested']) ?></td>
                         <td>
                             <?php if ($request['status'] == 'pending'): ?>
-                                <!-- Action buttons for pending requests -->
-                                <div class="btn btn-success btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="accept">Accept</div>
-                                <div class="btn btn-warning btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="decline">Decline</div>
                                 <div class="btn btn-danger btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div>
                             <?php elseif ($request['status'] == 'accepted'): ?>
-                                <!-- Additional check for completion status -->
                                 <?php if (!$request['sender_completed'] && $currentUser == $request['sender_id']): ?>
                                     <button onclick="markAsCompleted(<?= $request['id'] ?>, <?= $currentUser ?>)">Mark as Completed</button>
                                 <?php endif; ?>
                                 <?php if (!$request['receiver_completed'] && $currentUser == $request['receiver_id']): ?>
                                     <button onclick="markAsCompleted(<?= $request['id'] ?>, <?= $currentUser ?>)">Mark as Completed</button>
                                 <?php endif; ?>
-                                <!-- Keep the delete button for all statuses -->
-                                <div class="btn btn-danger btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div>
-                            <?php else: ?>
-                                <!-- For other statuses, just show the delete button -->
-                                <!-- <div class="btn btn-danger btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div> -->
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -106,5 +97,6 @@
             }
         });
     }
+
 </script>
 <?= $this->endSection() ?>

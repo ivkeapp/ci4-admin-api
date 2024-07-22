@@ -27,7 +27,7 @@ class CardAlbumsController extends BaseController
     public function index()
     {
         $userId = $this->auth->id();
-        
+
         $commonData = $this->getCommonData();
         $specificData = [
             'title' => 'My Collections - WebTech Admin',
@@ -72,12 +72,15 @@ class CardAlbumsController extends BaseController
         $albums = $this->albumModel->findAll();
 
         // Prepare data to pass to the view
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Add New User Album Collection',
             'description' => 'This is a dynamic description for SEO',
             'userData' => $userData,
             'albums' => $albums,
         ];
+
+        $data = array_merge($commonData, $specificData);
 
         // Load view for adding new user album collection
         return view('albums/add', $data);
@@ -148,8 +151,10 @@ class CardAlbumsController extends BaseController
                 'selected' => in_array($cardId, $selectedNeededCards)
             ];
         }
-    
-        $data = [
+
+        // Prepare data to pass to the view
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'Edit - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'userData' => $userData,
@@ -157,6 +162,8 @@ class CardAlbumsController extends BaseController
             'albumCards' => $cardsForView,
             'neededAlbumCards' => $neededCardsForView, // Add needed cards to the view data
         ];
+
+        $data = array_merge($commonData, $specificData);
     
         return view('albums/edit', $data);
     }

@@ -41,6 +41,7 @@ $routes->get('/example-table', 'ExampleTablesController::index');
 
 // My collection routes
 $routes->get('/my-collection', 'CardAlbumsController::index');
+$routes->get('/albums', 'CardAlbumsController::index');
 $routes->get('/albums/edit/(:num)', 'CardAlbumsController::edit/$1');
 $routes->post('/albums/update/(:num)', 'CardAlbumsController::update/$1');
 $routes->get('/albums/show/(:num)', 'CardAlbumsController::show/$1');
@@ -50,10 +51,12 @@ $routes->post('/albums/store', 'CardAlbumsController::store');
 $routes->get('/albums/exchange-album/(:num)', 'CardAlbumsController::findCardExchanges/$1');
 $routes->get('/albums/exchange', 'CardAlbumsController::findAllCardExchanges');
 $routes->post('/albums/send-request', 'ExchangeRequestController::sendRequest');
-$routes->get('/albums/my-requests', 'ExchangeRequestController::viewAllRequests');
+$routes->get('/albums/received-requests', 'ExchangeRequestController::viewAllRequests');
+$routes->get('/albums/sent-requests', 'ExchangeRequestController::viewAllSentRequests');
 $routes->post('/exchange-requests/accept/(:num)', 'ExchangeRequestController::acceptRequest/$1');
 $routes->post('/exchange-requests/decline/(:num)', 'ExchangeRequestController::declineRequest/$1');
 $routes->post('/exchange-requests/delete/(:num)', 'ExchangeRequestController::deleteRequest/$1');
+$routes->post('/exchange-requests/mark-as-completed', 'ExchangeRequestController::markAsCompleted');
 
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
     $routes->get('get-role', 'AdminController::getRole');
