@@ -42,8 +42,6 @@ class CardAlbumsController extends BaseController
 
     public function show($id)
     {
-        $userId = $this->auth->id();
-        $userData = $this->userModel->find($userId);
 
         $cardAlbum = $this->cardAlbumModel->find($id);
         $cards = $this->tbCardsModel->where('album_id', $id)->first();
@@ -51,13 +49,15 @@ class CardAlbumsController extends BaseController
             $cards = ['cards' => '[]']; // Provide a default empty JSON array
         }
 
-        $data = [
+        $commonData = $this->getCommonData();
+        $specificData = [
             'title' => 'View Album - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'userData' => $userData,
             'cardAlbum' => $cardAlbum,
             'cards' => $cards,
         ];
+    
+        $data = array_merge($commonData, $specificData);
         
         return view('albums/show', $data);
     }
@@ -200,6 +200,17 @@ class CardAlbumsController extends BaseController
     
     public function delete($id)
     {
+
+        // Cascading Deletes or Status Updates: When an album is deleted, automatically delete or update the status of any related exchange requests to reflect that the album is no longer available. This could involve setting the exchange request's status to "cancelled" or "invalid".
+
+        // Notification System: Notify both the sender and receiver of the exchange request about the deletion of the album. This could be done via email, in-app notifications, or both, informing them that the exchange cannot proceed due to the album's deletion.
+
+        // Data Integrity Checks: Before performing any operations related to an exchange request (e.g., viewing, accepting, completing), verify the existence and availability of the related albums. If an album involved in the request is missing, handle the situation appropriately (e.g., by displaying a message to the user or automatically cancelling the request).
+
+        // Archival Instead of Deletion: Instead of permanently deleting albums, consider marking them as "archived" or "inactive". This way, the data remains intact for historical or auditing purposes, and the system can easily identify and handle exchange requests involving archived albums.
+
+        // User Confirmation: Before allowing a user to delete an album, check if there are any pending exchange requests involving that album. Prompt the user with a confirmation dialog explaining the consequences of the deletion on pending exchanges and require explicit confirmation to proceed.
+        
         $this->cardAlbumModel->delete($id);
         
         return redirect()->to('/my-collection');
@@ -246,8 +257,12 @@ class CardAlbumsController extends BaseController
     }
     public function findAllCardExchanges() {
         $currentUser = $this->auth->id();
-        // Fetch all albums for the current user
-        $currentUserAlbums = $this->cardAlbumModel->where('user_id', $currentUser)->findAll();
+        // Fetch all albums for the current user with album names
+        $currentUserAlbums = $this->cardAlbumModel
+            ->select('card_albums.*, tb_album_collections.title as album_name')
+            ->join('tb_album_collections', 'tb_album_collections.id = card_albums.album_id')
+            ->where('card_albums.user_id', $currentUser)
+            ->findAll();
     
         $potentialExchanges = [];
     
@@ -255,8 +270,14 @@ class CardAlbumsController extends BaseController
             $currentUserNeededCards = json_decode($currentUserAlbum['needed_cards'], true) ?: [];
             $currentUserDuplicateCards = json_decode($currentUserAlbum['cards'], true) ?: [];
     
-            // Fetch all other users' albums except the current user's for the same album_id
-            $allOtherUsersAlbums = $this->cardAlbumModel->where('album_id', $currentUserAlbum['album_id'])->where('user_id !=', $currentUser)->findAll();
+            // Fetch all other users' albums except the current user's for the same album_id, including user names and album names
+            $allOtherUsersAlbums = $this->cardAlbumModel
+                ->select('card_albums.*, users.first_name, users.last_name, tb_album_collections.title as album_name')
+                ->join('users', 'users.id = card_albums.user_id')
+                ->join('tb_album_collections', 'tb_album_collections.id = card_albums.album_id')
+                ->where('card_albums.album_id', $currentUserAlbum['album_id'])
+                ->where('card_albums.user_id !=', $currentUser)
+                ->findAll();
     
             foreach ($allOtherUsersAlbums as $userAlbum) {
                 $userNeededCards = json_decode($userAlbum['needed_cards'], true) ?: [];
@@ -267,7 +288,9 @@ class CardAlbumsController extends BaseController
     
                 if (!empty($matchesForCurrentUser) || !empty($matchesForOtherUser)) {
                     $potentialExchanges[] = [
-                        'user_id' => $userAlbum['user_id'],
+                        'user_id' => $userAlbum['user_id'], // Include user_id in the potential exchanges
+                        'user_name' => $userAlbum['first_name'] . ' ' . $userAlbum['last_name'], // Combine first and last name
+                        'album_name' => $currentUserAlbum['album_name'], // Include album name in the potential exchanges
                         'album_id' => $currentUserAlbum['album_id'], // Include album_id in the potential exchanges
                         'matchesForCurrentUser' => $matchesForCurrentUser,
                         'matchesForOtherUser' => $matchesForOtherUser,

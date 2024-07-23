@@ -34,6 +34,19 @@ class ExchangeRequestController extends BaseController
     public function sendRequest()
     {
         $json = $this->request->getJSON();
+        $senderId = $this->auth->id();
+
+        // Check for existing exchange requests in either direction
+        $existingRequest = $this->exchangeRequestModel
+            ->where('album_id', $json->album_id)
+            ->where("((sender_id = {$json->sender_id} AND receiver_id = {$json->receiver_id}) OR (sender_id = {$json->receiver_id} AND receiver_id = {$json->sender_id}))", null, false)
+            ->first();
+
+        if ($existingRequest) {
+            // An exchange request already exists in either direction, handle accordingly
+            return $this->response->setJSON(['status' => 0, 'message' => 'An exchange request for this album already exists between these users.']);
+        }
+
         $validation = \Config\Services::validation();
 
         // Define validation rules

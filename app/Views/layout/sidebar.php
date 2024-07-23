@@ -33,14 +33,30 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                         aria-expanded="true" aria-controls="collapseTwo">
-                        <i class="fas fa-fw fa-cog"></i>
-                        <span>Manage</span>
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Users Managment</span>
                     </a>
                     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Users & Groups:</h6>
                             <a class="collapse-item" href="<?= site_url('admin/users') ?>">Users</a>
                             <a class="collapse-item" href="<?= site_url('admin/groups') ?>">Groups</a>
+                        </div>
+                    </div>
+                </li>
+                <!-- Nav Item - Admin Albums Collapse Menu -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
+                        aria-expanded="true" aria-controls="collapseThree">
+                        <i class="fas fa-fw fa-sticky-note"></i>
+                        <span>Albums</span>
+                    </a>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Albums Management:</h6>
+                            <a class="collapse-item" href="<?= site_url('admin/albums') ?>">All Albums</a>
+                            <a class="collapse-item" href="<?= site_url('admin/albums/add') ?>">Add Album</a>
+                            <a class="collapse-item" href="<?= site_url('admin/albums/add-cards') ?>">Add Cards to Album</a>
                         </div>
                     </div>
                 </li>

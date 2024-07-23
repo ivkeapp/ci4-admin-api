@@ -77,6 +77,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->get('albums', 'AdminController::albums');
     $routes->get('albums/add-cards', 'AdminController::addCards');
     $routes->post('albums/add-cards', 'AdminController::addCards');
+    $routes->get('album/show/(:num)', 'AdminController::showAlbum/$1');
 });
 
 $routes->get('/pages', 'PagesController::index');

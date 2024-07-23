@@ -527,6 +527,7 @@ class AdminController extends BaseController
                 'image' => $imagePath,
                 'description' => $this->request->getPost('description'),
                 'publisher' => $this->request->getPost('publisher'),
+                'publishing_year' => $this->request->getPost('publishing_year'),
             ];
 
             // Insert data into database
@@ -646,5 +647,29 @@ class AdminController extends BaseController
         $data = array_merge($commonData, $specificData);
 
         return view('admin/albums/add_cards', $data);
+    }
+    public function showAlbum($id)
+    {
+        $cardAlbum = $this->albumModel->find($id);
+
+        if (empty($cardAlbum) || $cardAlbum === null || $cardAlbum === false) {
+            return redirect()->to('/admin/albums')->with('error', 'Album not found.');
+        }
+        $cards = $this->tbCardsModel->where('album_id', $id)->first();
+        if ($cards === null) {
+            $cards = ['cards' => '[]']; // Provide a default empty JSON array
+        }
+
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'View Album - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'cardAlbum' => $cardAlbum,
+            'cards' => $cards,
+        ];
+    
+        $data = array_merge($commonData, $specificData);
+        
+        return view('admin/albums/show', $data);
     }
 }

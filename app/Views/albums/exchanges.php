@@ -14,8 +14,8 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>User ID</th>
-                                <th>Album ID</th>
+                                <th>User</th>
+                                <th>Album</th>
                                 <th>Cards You Can Get</th>
                                 <th>Cards You Can Give</th>
                                 <th>Action</th>
@@ -24,8 +24,8 @@
                         <tbody>
                             <?php foreach ($potentialExchanges as $exchange): ?>
                             <tr>
-                                <td><?= esc($exchange['user_id']) ?></td>
-                                <td><?= esc($exchange['album_id']) ?></td>
+                                <td><?= esc($exchange['user_name']) ?></td>
+                                <td><?= esc($exchange['album_name']) ?></td>
                                 <td><?= implode(', ', $exchange['matchesForCurrentUser']) ?></td>
                                 <td><?= implode(', ', $exchange['matchesForOtherUser']) ?></td>
                                 <td>
@@ -57,7 +57,7 @@
                 var albumId = btn.data('album-id');
                 var cardsOffered = btn.data('cards-offered');
                 var cardsRequested = btn.data('cards-requested');
-                console.log(senderId, receiverId, albumId, cardsOffered, cardsRequested);
+
                 $.ajax({
                     url: '/albums/send-request',
                     type: 'POST',
@@ -70,12 +70,16 @@
                         cards_requested: cardsRequested,
                     }),
                     success: function(response) {
-                        console.log(response, 'response');
-                        alert('Exchange request sent successfully.');
+                        // console.log(response, 'response');
+                        if(response.status === 1) {
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
                     },
                     error: function(xhr, status, error) {
-                        console.log(error, 'error');
-                        console.log(status, 'status');
+                        // console.log(error, 'error');
+                        // console.log(status, 'status');
                         alert('Failed to send exchange request.');
                     }
                 });

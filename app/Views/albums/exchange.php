@@ -56,8 +56,6 @@
                 var cardsOffered = btn.data('cards-offered');
                 var cardsRequested = btn.data('cards-requested');
 
-                console.log(senderId, receiverId, albumId, cardsOffered, cardsRequested);
-
                 $.ajax({
                     url: '/albums/send-request', // Adjust the URL as needed
                     type: 'POST',
@@ -70,12 +68,12 @@
                         cards_requested: JSON.parse("[" + cardsRequested + "]"),
                     }),
                     success: function(response) {
-                        console.log(response, 'response');
+                        // console.log(response, 'response');
                         alert('Exchange request sent successfully.');
                     },
                     error: function(xhr, status, error) {
-                        console.log(error, 'error');
-                        console.log(status, 'status');
+                        // console.log(error, 'error');
+                        // console.log(status, 'status');
                         alert('Failed to send exchange request.');
                     }
                 });

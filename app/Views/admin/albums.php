@@ -21,8 +21,8 @@
                     </thead>
                     <tbody>
                         <?php foreach ($albums as $album): ?>
-                            <tr>
-                                <td><?= esc($album['title']) ?></td>
+                            <tr data-id="<?= esc($album['id']) ?>">
+                                <td><a href="<?= site_url('admin/album/show/' . $album['id']) ?>"><?= esc($album['title']) ?></a></td>
                                 <td><?= esc($album['description']) ?></td>
                                 <td><?= esc($album['publisher']) ?></td>
                                 <td>

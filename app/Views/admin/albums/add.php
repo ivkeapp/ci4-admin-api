@@ -17,6 +17,17 @@
             <textarea name="description" id="description" class="form-control" rows="4"></textarea>
         </div>
         <div class="form-group">
+            <label for="publishing_year">Publishing Year</label>
+            <select name="publishing_year" id="publishing_year" class="form-control">
+                <?php
+                $currentYear = date('Y');
+                for ($i = $currentYear; $i >= $currentYear - 40; $i--) {
+                    echo "<option value=\"$i\">$i</option>";
+                }
+                ?>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="publisher">Publisher</label>
             <input type="text" name="publisher" id="publisher" class="form-control">
         </div>
