@@ -563,25 +563,35 @@ class AdminController extends BaseController
         if ($this->request->getMethod() === 'post') {
             $data = [
                 'title' => $this->request->getPost('title'),
-                'image' => $this->request->getPost('image'),
                 'description' => $this->request->getPost('description'),
                 'publisher' => $this->request->getPost('publisher'),
             ];
-
+    
+            // Check if a new image file is uploaded
+            $imageFile = $this->request->getFile('image');
+            if ($imageFile && $imageFile->isValid() && !$imageFile->hasMoved()) {
+                $newName = $imageFile->getRandomName();
+                $imageFile->move(ROOTPATH . 'public/uploads', $newName);
+                $imagePath = 'uploads/' . $newName;
+                $data['image'] = $imagePath;
+            } else {
+                $data['image'] = $album['image']; // Retain old image if not changed
+            }
+    
             $this->albumModel->update($id, $data);
-
+    
             return redirect()->to('/admin/albums')->with('success', 'Album collection updated successfully.');
         }
-
+    
         $commonData = $this->getCommonData();
         $specificData = [
             'title' => 'Edit Album - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'album' => $album
         ];
-
+    
         $data = array_merge($commonData, $specificData);
-
+    
         return view('admin/albums/edit', $data);
     }
 
