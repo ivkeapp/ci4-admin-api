@@ -29,9 +29,7 @@
                             <td>
                                 <a href="<?= site_url('albums/edit/' . $album['id']) ?>" class="btn btn-warning btn-sm">Edit</a>
                                 <a href="<?= site_url('albums/show/' . $album['id']) ?>" class="btn btn-info btn-sm">View</a>
-                                <form action="<?= site_url('albums/delete/' . $album['id']) ?>" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
+                                <div class="btn btn-danger btn-sm deleteAlbum" data-id="<?= $album['id'] ?>">Delete</div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -47,6 +45,26 @@
 <script>
 $(document).ready(function() {
     $('#dataTable').DataTable();
+    $('.deleteAlbum').click(function() {
+        var btn = $(this);
+        var id = btn.data('id');
+        $.ajax({
+            url: '/albums/delete/' + id,
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    infoMessage(response.message, response.status);
+                    btn.closest('tr').remove();
+                } else {
+                    infoMessage(response.message, response.status);
+                }
+            },
+            error: function() {
+                alert('There was an error processing your request.');
+            }
+        });
+    });
 });
 </script>
 <?= $this->endSection() ?>

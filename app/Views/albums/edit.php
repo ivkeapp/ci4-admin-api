@@ -2,7 +2,7 @@
 <?= $this->section('content') ?>
 <div class="container">
     <h1 class="h3 mb-2 text-gray-800">Edit Card Album</h1>
-    <form action="<?= site_url('albums/update/' . $cardAlbum['id']) ?>" method="post">
+    <form id="editAlbumForm">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" name="title" id="title" class="form-control" value="<?= esc($cardAlbum['title']) ?>">
@@ -33,4 +33,28 @@
     </form>
     <a href="<?= site_url('my-collection') ?>" class="btn btn-secondary mt-3">Back to Collection</a>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#editAlbumForm').on('submit', function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: '<?= site_url('albums/update/' . $cardAlbum['id']) ?>',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        infoMessage(response.message, response.status);
+                        window.location.href = '<?= site_url('my-collection') ?>';
+                    } else {
+                        infoMessage(response.message, response.status);
+                    }
+                },
+                error: function() {
+                    infoMessage('An error occurred while updating the album.', 'error');
+                }
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

@@ -175,30 +175,28 @@ class CardAlbumsController extends BaseController
     {
         $data = $this->request->getPost();
 
-        // Update the card album details
-        $this->cardAlbumModel->update($id, [
+        // Ensure cards and needed_cards are JSON encoded
+        $updateData = [
             'title' => $data['title'],
             'description' => $data['description'],
             'cards' => json_encode($data['cards']),
-            'needed_cards' => json_encode($data['needed_cards']) // Assuming $data['needed_cards'] contains valid JSON string
-        ]);
+            'needed_cards' => json_encode($data['needed_cards'])
+        ];
 
-        // Check if a record exists in tb_cards with the given album_id
-        // $cardRecord = $this->tbCardsModel->where('album_id', $id)->first();
-
-        // // If the record exists, update it, otherwise create a new one
-        // if ($cardRecord) {
-        //     $this->tbCardsModel->update($cardRecord['id'], [
-        //         'cards' => json_encode($data['cards'])
-        //     ]);
-        // } else {
-        //     $this->tbCardsModel->insert([
-        //         'album_id' => $id,
-        //         'cards' => json_encode($data['cards'])
-        //     ]);
-        // }
-
-        return redirect()->to('/my-collection');
+        if ($this->request->isAJAX()) {
+            if ($this->cardAlbumModel->update($id, $updateData)) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Album updated successfully.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to update album.']);
+            }
+        } else {
+            // Fallback for non-AJAX requests
+            if ($this->cardAlbumModel->update($id, $updateData)) {
+                return redirect()->to('/my-collection')->with('status', 'Album updated successfully.');
+            } else {
+                return redirect()->to('/my-collection')->with('status', 'Failed to update album.');
+            }
+        }
     }
     
     public function delete($id)
@@ -215,9 +213,20 @@ class CardAlbumsController extends BaseController
         // User Confirmation: Before allowing a user to delete an album, check if there are any pending exchange requests involving that album. Prompt the user with a confirmation dialog explaining the consequences of the deletion on pending exchanges and require explicit confirmation to proceed.
         
         // Update the status of the album to 'archived'
-        $this->cardAlbumModel->update($id, ['status' => 'archived']);
-        
-        return redirect()->to('/my-collection');
+        if ($this->request->isAJAX()) {
+            if ($this->cardAlbumModel->update($id, ['status' => 'archived'])) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Album deleted successfully.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to delete album.']);
+            }
+        } else {
+            // Fallback for non-AJAX requests
+            if ($this->cardAlbumModel->update($id, ['status' => 'archived'])) {
+                return redirect()->to('/albums')->with('status', 'Album deleted successfully.');
+            } else {
+                return redirect()->to('/albums')->with('status', 'Failed to delete album.');
+            }
+        }
     }
     public function findCardExchanges($albumId) {
         $currentUser = $this->auth->id();
