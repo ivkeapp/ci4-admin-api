@@ -85,7 +85,14 @@ class AdminController extends BaseController
             return "User not found.";
         }
 
-        $data['users'] = $this->userModel->getUsers();
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Assign to a Group - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'users' => $this->userModel->getUsers()
+        ];
+
+        $data = array_merge($commonData, $specificData);
         echo view('admin/assign', $data);
     }
 
