@@ -32,7 +32,10 @@ class CardAlbumsController extends BaseController
         $specificData = [
             'title' => 'My Collections - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'cardAlbums' => $this->cardAlbumModel->where('user_id', $userId)->findAll()
+            'cardAlbums' => $this->cardAlbumModel
+                ->where('user_id', $userId)
+                ->where('status', 'active')
+                ->findAll()
         ];
     
         $data = array_merge($commonData, $specificData);
@@ -211,7 +214,8 @@ class CardAlbumsController extends BaseController
 
         // User Confirmation: Before allowing a user to delete an album, check if there are any pending exchange requests involving that album. Prompt the user with a confirmation dialog explaining the consequences of the deletion on pending exchanges and require explicit confirmation to proceed.
         
-        $this->cardAlbumModel->delete($id);
+        // Update the status of the album to 'archived'
+        $this->cardAlbumModel->update($id, ['status' => 'archived']);
         
         return redirect()->to('/my-collection');
     }

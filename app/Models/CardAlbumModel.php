@@ -12,7 +12,7 @@ class CardAlbumModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields = ['user_id', 'album_id', 'title', 'description', 'cards', 'needed_cards'];
+    protected $allowedFields = ['user_id', 'album_id', 'title', 'description', 'cards', 'needed_cards', 'status'];
 
     protected bool $allowEmptyInserts = false;
 
