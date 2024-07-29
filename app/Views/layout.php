@@ -53,7 +53,7 @@
             </div>
         </div>
     </div>
-    
+    <div class="toast-holder"></div>
     <!-- Bootstrap core JavaScript-->
     <script src="<?= base_url('vendor/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 
@@ -69,5 +69,6 @@
     <!-- Page level custom scripts -->
     <script src="<?= base_url('js/demo/chart-area-demo.js') ?>"></script>
     <script src="<?= base_url('js/demo/chart-pie-demo.js') ?>"></script>
+    <script src="<?= base_url('js/main.js') ?>"></script>
 </body>
 </html>

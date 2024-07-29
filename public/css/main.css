@@ -1,0 +1,82 @@
+.toast-holder {
+    position: fixed;
+    width: 400px;
+    top: 15px;
+    right: -400px;
+    z-index: 9999;
+}
+.wh-notif-holder {
+    max-height: 120px;
+}
+.wh-notif-item {
+    position: relative;
+    border: 1px solid transparent;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+	border-radius: 8px;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+.wh-notif-holder {
+    transform: translateX(0%);
+    transition: all 1s;
+}
+.wh-notif-holder.show {
+    transform: translateX(-100%);
+}
+.wh-notif-holder.shrink {
+    overflow: hidden;
+    max-height: 0px;
+}
+.notif-item-icon {
+    font-size: 16px;
+}
+.notif-item-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.notif-item-content h4 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+.notif-item-content p {
+    font-size: 14px;
+    margin: 0;
+}
+.notif-item-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+.wh-notif-progress {
+    height: 3px;
+    width: 100%;
+}
+.progress-on {
+    height: 3px;
+    background-color: red;
+    width: 0;
+    transition: width 4s linear;
+}
+.progress-start {
+    width: 100%;
+}
+
+.wh-notif-item.success {
+    color: #3c763d;
+    border-color: #d6e9c6;
+    background-color: rgba(214, 233, 198, .9)
+}
+.wh-notif-item.info {
+    color: #31708f;
+    border-color: #bce8f1;
+    background-color: rgba(188, 232, 241, .9)
+}
+.wh-notif-item.danger {
+    color: #a94442;
+    border-color: #ebccd1;
+    background-color: rgba(235, 204, 209, .9)
+}

@@ -11,6 +11,7 @@
     <!-- Custom styles for this template-->
     <link href="<?= base_url('css/sb-admin-2.min.css') ?>" rel="stylesheet">
     <link href="<?= base_url('vendor/datatables/dataTables.bootstrap4.css') ?>" rel="stylesheet" type="text/css">
+    <link href="<?= base_url('css/main.css') ?>" rel="stylesheet" type="text/css">
     <script src="<?= base_url('vendor/jquery/jquery.min.js') ?>"></script>
     <script src="<?= base_url('vendor/tinymce/tinymce.min.js') ?>" referrerpolicy="origin"></script>
 <?= $this->endSection() ?>
