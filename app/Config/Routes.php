@@ -30,6 +30,9 @@ $routes->get('chat/(:num)', 'ChatController::index/$1');
 $routes->post('chat/send-message', 'ChatController::sendMessage');
 $routes->get('view-messages', 'ChatController::viewMessages');
 
+// Route for notifications
+$routes->get('notifications/check-new', 'NotificationsController::checkNew');
+
 $routes->get('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 $routes->post('login/magic-link', '\App\Controllers\Auth\MagicLinkController::loginView', ['as' => 'login-magic-link']);
 
