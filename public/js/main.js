@@ -1,5 +1,14 @@
+var displayedNotificationIds = [];
+let isInitialLoad = true;
+
+$(document).ready(function() {
+    checkForNewNotifications();
+
+    // Poll every 30 seconds (30000 ms)
+    setInterval(checkForNewNotifications, 10000);
+});
+
 function infoMessage(message, type){
-    console.log('triggered');
     string = '';
     var n = Date.now();
     icon = '';
@@ -39,3 +48,31 @@ $(document).on('click', '.notif-item-close', function(){
   setTimeout(function(){ $(this).closest('.wh-notif-holder').remove(); }, 2000);
 
 }); 
+
+function checkForNewNotifications() {
+    $.ajax({
+        url: '/notifications/check-new',
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(response) {
+            console.log(response, 'response');
+            const newNotifications = response.filter(notification => !displayedNotificationIds.includes(notification.id));
+            if (!isInitialLoad && newNotifications.length > 0) {
+                newNotifications.forEach(notification => {
+                    infoMessage(notification.message, 'info');
+                    displayedNotificationIds.push(notification.id);
+                });
+            } else {
+                // On initial load, just store the IDs without displaying
+                newNotifications.forEach(notification => {
+                    displayedNotificationIds.push(notification.id);
+                });
+                isInitialLoad = false; // Set the flag to false after initial load
+            }
+        },
+        error: function(xhr, status, error) {
+            // console.log(error, 'error');
+            // console.log(status, 'status');
+        }
+    });
+}
