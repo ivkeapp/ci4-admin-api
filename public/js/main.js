@@ -80,7 +80,7 @@ function checkForNewNotifications() {
 
 // Function to add notification to the topbar
 function addNotificationToTopbar(notification) {
-    const { updated_at, first_name, last_name } = notification;
+    const { updated_at, sender_first_name, sender_last_name, message } = notification;
     const notificationHtml = `
         <a class="dropdown-item d-flex align-items-center" href="#">
             <div class="mr-3">
@@ -90,16 +90,16 @@ function addNotificationToTopbar(notification) {
             </div>
             <div>
                 <div class="small text-gray-500">${updated_at}</div>
-                <span class="font-weight-bold">New exchange request from ${first_name} ${last_name}!</span>
+                <span class="font-weight-bold">${message} Sender: ${sender_first_name} ${sender_last_name}!</span>
             </div>
         </a>
     `;
 
-    // Append the new notification to the dropdown list
-    $('.dropdown-list').prepend(notificationHtml);
+    // Append the new notification after the dropdown header
+    $('.dropdown-header').after(notificationHtml);
 
     // Update the notification counter
-    const counter = $('.badge-counter');
+    const counter = $('#alertsDropdown .badge-counter');
     const currentCount = parseInt(counter.text()) || 0;
     counter.text(currentCount + 1);
 }

@@ -71,7 +71,7 @@
                     <div>
                         <?php if (isset($notification) && !empty($notification)): ?>
                             <div class="small text-gray-500"><?= $notification['updated_at']; ?></div>
-                            <span class="font-weight-bold"><?= esc($notification['message'])?> Sender:  <?= esc($notification['sender_first_name']) . ' '. esc($notification['sender_last_name']); ?>!</span>
+                            <span class="font-weight-bold"><?= esc($notification['message'])?> Sender:  <?= esc($notification['sender_first_name']) . ' '. esc($notification['sender_last_name']); ?></span>
                         <?php endif; ?>
                     </div>
                 </a>

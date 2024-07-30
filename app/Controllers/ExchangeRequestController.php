@@ -94,7 +94,8 @@ class ExchangeRequestController extends BaseController
         if ($this->exchangeRequestModel->insert($data)) {
             $notificationModel = new NotificationModel();
             $notificationModel->insert([
-                'user_id' => $json->receiver_id, // The user who should receive the notification
+                'user_id' => $json->receiver_id,
+                'sender_id' => $json->sender_id,
                 'message' => 'You have a new exchange request.',
                 'status' => 'unread',
             ]);
