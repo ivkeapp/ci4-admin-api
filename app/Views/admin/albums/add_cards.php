@@ -17,7 +17,7 @@
             <?php endif; ?>
         </div>
         <div class="form-group">
-            <label for="cards">Cards (JSON)</label>
+            <label for="cards">Cards (JSON) - TODO: find better idea</label>
             <textarea name="cards" id="cards" class="form-control"><?= old('cards') ?></textarea>
             <?php if ($validation && $validation->getError('cards')): ?>
                 <div class="text-danger"><?= $validation->getError('cards') ?></div>
@@ -25,6 +25,6 @@
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
-    <a href="<?= site_url('my-collection') ?>" class="btn btn-secondary mt-3">Back to Collection</a>
+    <a href="<?= site_url('admin/albums') ?>" class="btn btn-secondary mt-3">Back to Collection</a>
 </div>
 <?= $this->endSection() ?>
