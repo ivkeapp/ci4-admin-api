@@ -270,19 +270,16 @@ class CardAlbumsController extends BaseController
     }
     public function findAllCardExchanges() {
         $currentUser = $this->auth->id();
-        // Fetch all albums for the current user with album names
         $currentUserAlbums = $this->cardAlbumModel
-            ->select('card_albums.*, tb_album_collections.title as album_name')
-            ->join('tb_album_collections', 'tb_album_collections.id = card_albums.album_id')
-            ->where('card_albums.user_id', $currentUser)
+            ->where('user_id', $currentUser)
             ->findAll();
-    
+
         $potentialExchanges = [];
-    
+
         foreach ($currentUserAlbums as $currentUserAlbum) {
             $currentUserNeededCards = json_decode($currentUserAlbum['needed_cards'], true) ?: [];
             $currentUserDuplicateCards = json_decode($currentUserAlbum['cards'], true) ?: [];
-    
+        
             // Fetch all other users' albums except the current user's for the same album_id, including user names and album names
             $allOtherUsersAlbums = $this->cardAlbumModel
                 ->select('card_albums.*, users.first_name, users.last_name, tb_album_collections.title as album_name')
@@ -290,20 +287,39 @@ class CardAlbumsController extends BaseController
                 ->join('tb_album_collections', 'tb_album_collections.id = card_albums.album_id')
                 ->where('card_albums.album_id', $currentUserAlbum['album_id'])
                 ->where('card_albums.user_id !=', $currentUser)
+                ->where('card_albums.status !=', 'archived') // Exclude archived albums
                 ->findAll();
-    
+        
+            // Fetch existing exchange requests for the current user
+            $existingRequests = $this->exchangeRequestModel
+                ->where('album_id', $currentUserAlbum['album_id'])
+                ->groupStart()
+                    ->where('sender_id', $currentUser)
+                    ->orWhere('receiver_id', $currentUser)
+                ->groupEnd()
+                ->findAll();
+        
+            $existingRequestUserIds = array_unique(array_merge(
+                array_column($existingRequests, 'sender_id'),
+                array_column($existingRequests, 'receiver_id')
+            ));
+        
             foreach ($allOtherUsersAlbums as $userAlbum) {
+                if (in_array($userAlbum['user_id'], $existingRequestUserIds)) {
+                    continue; // Skip if there's already an exchange request with this user
+                }
+        
                 $userNeededCards = json_decode($userAlbum['needed_cards'], true) ?: [];
                 $userDuplicateCards = json_decode($userAlbum['cards'], true) ?: [];
-    
+        
                 $matchesForCurrentUser = array_intersect($currentUserNeededCards, $userDuplicateCards);
                 $matchesForOtherUser = array_intersect($userNeededCards, $currentUserDuplicateCards);
-    
+        
                 if (!empty($matchesForCurrentUser) || !empty($matchesForOtherUser)) {
                     $potentialExchanges[] = [
                         'user_id' => $userAlbum['user_id'], // Include user_id in the potential exchanges
                         'user_name' => $userAlbum['first_name'] . ' ' . $userAlbum['last_name'], // Combine first and last name
-                        'album_name' => $currentUserAlbum['album_name'], // Include album name in the potential exchanges
+                        'album_name' => $currentUserAlbum['title'], // Include album name in the potential exchanges
                         'album_id' => $currentUserAlbum['album_id'], // Include album_id in the potential exchanges
                         'matchesForCurrentUser' => $matchesForCurrentUser,
                         'matchesForOtherUser' => $matchesForOtherUser,
@@ -312,7 +328,7 @@ class CardAlbumsController extends BaseController
                 }
             }
         }
-    
+
         $commonData = $this->getCommonData();
         $specificData = [
             'title' => 'Potential Card Exchanges - WebTech Admin',
@@ -320,9 +336,9 @@ class CardAlbumsController extends BaseController
             'potentialExchanges' => $potentialExchanges,
             'currentUser' => $currentUser,
         ];
-    
+
         $data = array_merge($commonData, $specificData);
-    
+
         return view('albums/exchanges', $data);
     }
 }

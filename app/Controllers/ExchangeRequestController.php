@@ -112,7 +112,7 @@ class ExchangeRequestController extends BaseController
         }
         $commonData = $this->getCommonData();
         $specificData = [
-            'title' => 'Potential Card Exchanges - WebTech Admin',
+            'title' => 'Received requests - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'exchangeRequests' => $exchangeRequests,
             'currentUser' => $userId,
@@ -131,7 +131,7 @@ class ExchangeRequestController extends BaseController
         }
         $commonData = $this->getCommonData();
         $specificData = [
-            'title' => 'Potential Card Exchanges - WebTech Admin',
+            'title' => 'Sent requests - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
             'exchangeRequests' => $exchangeRequests,
             'currentUser' => $userId,
