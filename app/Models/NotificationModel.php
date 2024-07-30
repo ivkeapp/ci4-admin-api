@@ -39,4 +39,22 @@ class NotificationModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getUnreadNotificationsWithUserDetails($userId)
+    {
+        return $this->select('tb_notifications.*, sender.first_name as sender_first_name, sender.last_name as sender_last_name, receiver.first_name as receiver_first_name, receiver.last_name as receiver_last_name')
+            ->join('users as sender', 'sender.id = tb_notifications.id')
+            ->join('users as receiver', 'receiver.id = tb_notifications.user_id')
+            ->where('tb_notifications.user_id', $userId)
+            ->where('tb_notifications.status', 'unread')
+            ->orderBy('tb_notifications.updated_at', 'DESC')
+            ->findAll();
+    }
+
+    public function getUnreadNotificationsCount($userId)
+    {
+        return $this->where('user_id', $userId)
+                    ->where('status', 'unread')
+                    ->countAllResults();
+    }
 }

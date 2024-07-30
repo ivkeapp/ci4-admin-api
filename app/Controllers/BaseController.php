@@ -12,6 +12,7 @@ use CodeIgniter\Events\Events;
 use App\Models\MessageModel;
 use App\Models\UserModel;
 use App\Models\ExchangeRequestModel;
+use App\Models\NotificationModel;
 
 /**
  * Class BaseController
@@ -35,6 +36,7 @@ abstract class BaseController extends Controller
     protected $userModel;
     protected $messageModel;
     protected $exchangeRequestModel;
+    protected $notificationModel;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -62,6 +64,7 @@ abstract class BaseController extends Controller
         $this->userModel = new UserModel();
         $this->messageModel = new MessageModel();
         $this->exchangeRequestModel = new ExchangeRequestModel();
+        $this->notificationModel = new NotificationModel();
         
         // Preload any models, libraries, etc, here.
         // E.g.: $this->session = \Config\Services::session();
@@ -85,15 +88,17 @@ abstract class BaseController extends Controller
         $messages = $this->messageModel->getLimitedUnreadMessages($userId);
         $messageNo = count($messages);
 
-         // Fetch unread exchange requests
-        $exchangeRequests = $this->exchangeRequestModel->getLimitedPendingExchangeRequests($userId);
-        $exchangeRequestNo = $this->exchangeRequestModel->getPendingExchangeRequestCount($userId);
+         // Fetch unread notifications
+        // $exchangeRequests = $this->exchangeRequestModel->getLimitedPendingExchangeRequests($userId);
+        // $exchangeRequestNo = $this->exchangeRequestModel->getPendingExchangeRequestCount($userId);
+        $notifications = $this->notificationModel->getUnreadNotificationsWithUserDetails($userId);
+        $notificationsNo = $this->notificationModel->getUnreadNotificationsCount($userId);
 
-        if($exchangeRequestNo > 0){
-            if ($exchangeRequestNo > 99) {
-                $exchangeRequestNo = '99+';
+        if($notificationsNo > 0){
+            if ($notificationsNo > 99) {
+                $notificationsNo = '99+';
             } else {
-                $exchangeRequestNo = $exchangeRequestNo;
+                $notificationsNo = $notificationsNo;
             }
         } else {
             $exchangeRequestNo = 0;
@@ -104,8 +109,10 @@ abstract class BaseController extends Controller
             'userData' => $userData,
             'messages' => $messages,
             'messageNo' => $messageNo,
-            'exchangeRequests' => $exchangeRequests,
-            'exchangeRequestNo' => $exchangeRequestNo,
+            'notifications' => $notifications,
+            'notificationsNo' => $notificationsNo,
+            // 'exchangeRequests' => $exchangeRequests,
+            // 'exchangeRequestNo' => $exchangeRequestNo,
         ];
     }
 }

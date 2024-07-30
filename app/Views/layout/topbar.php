@@ -53,7 +53,7 @@
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <!-- Counter - Alerts -->
-                <span class="badge badge-danger badge-counter"><?= $exchangeRequestNo ?></span>
+                <span class="badge badge-danger badge-counter"><?= $notificationsNo ?></span>
             </a>
             <!-- Dropdown - Alerts -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
@@ -61,7 +61,7 @@
                     Exchange Center
                 </h6>
                 <!-- Display exchange request notifications -->
-                <?php foreach ($exchangeRequests as $request): ?>
+                <?php foreach ($notifications as $notification): ?>
                 <a class="dropdown-item d-flex align-items-center" href="#">
                     <div class="mr-3">
                         <div class="icon-circle bg-info">
@@ -69,16 +69,17 @@
                         </div>
                     </div>
                     <div>
-                        <?php if (isset($request) && !empty($request)): ?>
-                            <div class="small text-gray-500"><?= $request['updated_at']; ?></div>
-                            <span class="font-weight-bold">New exchange request from  <?= esc($request['first_name']) . ' '. esc($request['last_name']); ?>!</span>
+                        <?php if (isset($notification) && !empty($notification)): ?>
+                            <div class="small text-gray-500"><?= $notification['updated_at']; ?></div>
+                            <span class="font-weight-bold"><?= esc($notification['message'])?> Sender:  <?= esc($notification['sender_first_name']) . ' '. esc($notification['sender_last_name']); ?>!</span>
                         <?php endif; ?>
                     </div>
                 </a>
                 <?php endforeach; ?>
                 <!-- Existing alerts... -->
-                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Requests</a>
+                <a class="dropdown-item text-center small text-gray-500" href="<?= base_url('albums/received-requests') ?>">Show All Requests</a>
             </div>
+        </li>
             <!-- <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">

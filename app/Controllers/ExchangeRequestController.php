@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ExchangeRequestModel;
 use App\Models\ActivityLogModel;
+use App\Models\NotificationModel;
 
 class ExchangeRequestController extends BaseController
 {
@@ -91,6 +92,12 @@ class ExchangeRequestController extends BaseController
 
         // Insert the request
         if ($this->exchangeRequestModel->insert($data)) {
+            $notificationModel = new NotificationModel();
+            $notificationModel->insert([
+                'user_id' => $json->receiver_id, // The user who should receive the notification
+                'message' => 'You have a new exchange request.',
+                'status' => 'unread',
+            ]);
             return $this->response->setJSON([
                 'status' => 1,
                 'message' => 'Exchange request sent successfully.',

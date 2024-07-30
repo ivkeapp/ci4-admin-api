@@ -17,9 +17,7 @@ class NotificationsController extends BaseController
     {
         $userId = $this->auth->id();
         $notificationModel = new NotificationModel();
-        $notifications = $notificationModel->where('user_id', $userId)
-                                           ->where('status', 'unread')
-                                           ->findAll();
+        $notifications = $notificationModel->getUnreadNotificationsWithUserDetails($userId);
 
         return $this->response->setJSON($notifications);
     }

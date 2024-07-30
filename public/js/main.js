@@ -61,6 +61,7 @@ function checkForNewNotifications() {
                 newNotifications.forEach(notification => {
                     infoMessage(notification.message, 'info');
                     displayedNotificationIds.push(notification.id);
+                    addNotificationToTopbar(notification);
                 });
             } else {
                 // On initial load, just store the IDs without displaying
@@ -75,4 +76,30 @@ function checkForNewNotifications() {
             // console.log(status, 'status');
         }
     });
+}
+
+// Function to add notification to the topbar
+function addNotificationToTopbar(notification) {
+    const { updated_at, first_name, last_name } = notification;
+    const notificationHtml = `
+        <a class="dropdown-item d-flex align-items-center" href="#">
+            <div class="mr-3">
+                <div class="icon-circle bg-info">
+                    <i class="fas fa-exchange-alt text-white"></i>
+                </div>
+            </div>
+            <div>
+                <div class="small text-gray-500">${updated_at}</div>
+                <span class="font-weight-bold">New exchange request from ${first_name} ${last_name}!</span>
+            </div>
+        </a>
+    `;
+
+    // Append the new notification to the dropdown list
+    $('.dropdown-list').prepend(notificationHtml);
+
+    // Update the notification counter
+    const counter = $('.badge-counter');
+    const currentCount = parseInt(counter.text()) || 0;
+    counter.text(currentCount + 1);
 }
