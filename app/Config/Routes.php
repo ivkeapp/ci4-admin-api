@@ -64,6 +64,8 @@ $routes->post('/exchange-requests/accept/(:num)', 'ExchangeRequestController::ac
 $routes->post('/exchange-requests/decline/(:num)', 'ExchangeRequestController::declineRequest/$1');
 $routes->post('/exchange-requests/delete/(:num)', 'ExchangeRequestController::deleteRequest/$1');
 $routes->post('/exchange-requests/mark-as-completed', 'ExchangeRequestController::markAsCompleted');
+
+
 $routes->get('/activity-logs', 'ActivityLogController::index');
 
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {

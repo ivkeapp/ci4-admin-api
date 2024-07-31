@@ -120,59 +120,63 @@ if (ctx) {
 }
 
 // Albums Overview Chart
-var ctx = document.getElementById("albumsOverviewChart").getContext('2d');
-var albumsOverviewChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ["Album 1", "Album 2", "Album 3", "Album 4"],
-        datasets: [{
-            label: '# of Cards',
-            data: [12, 19, 3, 5],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
+var ctx2 = document.getElementById("albumsOverviewChart");
+if (ctx2) {
+  var albumsOverviewChart = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+          labels: ["Album 1", "Album 2", "Album 3", "Album 4"],
+          datasets: [{
+              label: '# of Cards',
+              data: [12, 19, 3, 5],
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+}
 
 // Exchanges Overview Chart
-var ctx = document.getElementById("exchangesOverviewChart").getContext('2d');
-var exchangesOverviewChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Completed", "Pending"],
-        datasets: [{
-            label: '# of Exchanges',
-            data: [10, 5],
-            backgroundColor: [
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(255, 206, 86, 0.2)'
-            ],
-            borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true
-    }
-});
+var ctx3 = document.getElementById("exchangesOverviewChart");
+if (ctx3) {
+  var exchangesOverviewChart = new Chart(ctx3, {
+      type: 'pie',
+      data: {
+          labels: ["Completed", "Pending"],
+          datasets: [{
+              label: '# of Exchanges',
+              data: [10, 5],
+              backgroundColor: [
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(255, 206, 86, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(255, 206, 86, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true
+      }
+  });
+}
