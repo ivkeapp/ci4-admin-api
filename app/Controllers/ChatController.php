@@ -15,37 +15,46 @@ class ChatController extends BaseController
         $this->messageModel = new MessageModel();
     }
 
-    public function index($messageId)
+    public function index()
     {
-        // Find the message by ID
-        $message = $this->messageModel->find($messageId);
-
-        $userId = $this->auth->id();
         $commonData = $this->getCommonData();
         $specificData = [
             'title' => 'Chat - WebTech Admin',
             'description' => 'This is a dynamic description for SEO',
-            'message' => $message
         ];
 
         $data = array_merge($commonData, $specificData);
-        // Check if the message exists and belongs to the authenticated user
-        if ($message && $message['receiver_user_id'] == $userId) {
-            // Update the message status to 'read'
-            $this->messageModel->update($messageId, ['status' => 'read', 'status_timestamp' => date('Y-m-d H:i:s')]);
-            $activityLogModel = new \App\Models\ActivityLogModel();
-            $activityLogModel->logActivity(
-                $userId,
-                \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_READ,
-                "Message has been viewed by user: {$userId}",
-                ['message_read' => true, 'message_id' => $messageId]
-            );
-            // Load the view with the message data
-            return view('pages/chat', $data);
-        } else {
-            // Show an error message if the message does not exist or does not belong to the user
-            return redirect()->to('/no-access');
-        }
+
+        return view('pages/chat', $data);
+        // // Find the message by ID
+        // $message = $this->messageModel->find($messageId);
+
+        // $userId = $this->auth->id();
+        // $commonData = $this->getCommonData();
+        // $specificData = [
+        //     'title' => 'Chat - WebTech Admin',
+        //     'description' => 'This is a dynamic description for SEO',
+        //     'message' => $message
+        // ];
+
+        // $data = array_merge($commonData, $specificData);
+        // // Check if the message exists and belongs to the authenticated user
+        // if ($message && $message['receiver_user_id'] == $userId) {
+        //     // Update the message status to 'read'
+        //     $this->messageModel->update($messageId, ['status' => 'read', 'status_timestamp' => date('Y-m-d H:i:s')]);
+        //     $activityLogModel = new \App\Models\ActivityLogModel();
+        //     $activityLogModel->logActivity(
+        //         $userId,
+        //         \App\Models\ActivityLogModel::ACTIVITY_MESSAGE_READ,
+        //         "Message has been viewed by user: {$userId}",
+        //         ['message_read' => true, 'message_id' => $messageId]
+        //     );
+        //     // Load the view with the message data
+        //     return view('pages/chat', $data);
+        // } else {
+        //     // Show an error message if the message does not exist or does not belong to the user
+        //     return redirect()->to('/no-access');
+        // }
     }
     
     public function sendMessage()
@@ -75,20 +84,61 @@ class ChatController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to send message']);
         }
     }
-
-    public function getMessages($userId)
+    public function getMessages()
     {
-        $messageModel = new MessageModel();
-
-        $messages = $messageModel
-            ->where('receiver_user_id', $userId)
-            ->orWhere('sender_user_id', $userId)
-            ->orderBy('FIELD(status, "unread", "read", "replied")', 'ASC')
-            ->orderBy('timestamp', 'DESC')
-            ->findAll();
+        $userId = $this->auth->id();
+        $messages = $this->messageModel->where('receiver_user_id', $userId)
+                                        ->orWhere('sender_user_id', $userId)
+                                        ->findAll();
 
         return $this->response->setJSON($messages);
     }
+
+    public function getMessage($messageId)
+    {
+        $message = $this->messageModel->find($messageId);
+
+        if ($message) {
+            // Update message status to 'read'
+            $this->messageModel->update($messageId, ['status' => 'read', 'status_timestamp' => date('Y-m-d H:i:s')]);
+            return $this->response->setJSON($message);
+        } else {
+            return $this->response->setJSON(['error' => 'Message not found'], 404);
+        }
+    }
+
+    public function sendReply()
+    {
+        $postData = $this->request->getJSON();
+        $messageId = $postData->messageId;
+        $content = $postData->content;
+
+        $userId = $this->auth->id();
+
+        // Insert the reply as a new message
+        $this->messageModel->save([
+            'sender_user_id' => $userId,
+            'receiver_user_id' => $this->messageModel->find($messageId)['sender_user_id'],
+            'status' => 'unread',
+            'content' => $content,
+            'status_timestamp' => null
+        ]);
+
+        return $this->response->setJSON(['success' => true]);
+    }
+    // public function getMessages($userId)
+    // {
+    //     $messageModel = new MessageModel();
+
+    //     $messages = $messageModel
+    //         ->where('receiver_user_id', $userId)
+    //         ->orWhere('sender_user_id', $userId)
+    //         ->orderBy('FIELD(status, "unread", "read", "replied")', 'ASC')
+    //         ->orderBy('timestamp', 'DESC')
+    //         ->findAll();
+
+    //     return $this->response->setJSON($messages);
+    // }
     
     public function viewMessages()
     {

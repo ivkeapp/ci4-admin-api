@@ -5,69 +5,95 @@
 <link rel="stylesheet" href="/css/chat.css">
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
-    <div class="container">
-        <h2>Read Message</h2>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">From: <?= esc($message['sender_user_id']); ?></h5>
-                <h6 class="card-subtitle mb-2 text-muted">Sent: <?= \CodeIgniter\I18n\Time::parse($message['timestamp'])->toLocalizedString('MMMM d, yyyy HH:mm'); ?></h6>
-                <p class="card-text"><?= esc($message['content']); ?></p>
-            </div>
-        </div>
-        <a href="#" class="btn btn-primary mt-3" data-toggle="modal" data-target="#replyModal">Reply</a>
-    </div>
-    <!-- Reply Modal -->
-    <div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="replyModalLabel">Reply to Message</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <div class="container chat-container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="message-list border rounded bg-white p-3">
+                    <h5>Messages</h5>
+                    <div id="messages"></div>
                 </div>
-                <div class="modal-body">
-                    <form action="<?= base_url('/chat/send-message') ?>" method="post">
-                        <input type="hidden" name="receiver_user_id" value="<?= $message['sender_user_id']; ?>">
-                        <div class="form-group">
-                            <label for="message-content" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-content" name="content"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            <div class="col-md-8">
+                <div class="chat-view border rounded bg-white p-3">
+                    <div id="chatContent">
+                        <h5>Select a message to view</h5>
+                    </div>
+                    <div class="mt-4" id="replySection" style="display: none;">
+                        <form id="replyForm">
+                            <div class="mb-3">
+                                <label for="replyContent" class="form-label">Your Message</label>
+                                <textarea class="form-control" id="replyContent" rows="4"></textarea>
+                            </div>
                             <button type="submit" class="btn btn-primary">Send Reply</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
         $(document).ready(function() {
-            // Attach a submit event handler to the form
-            $("#replyModal form").submit(function(e) {
-                // Prevent the form's default submission
-                e.preventDefault();
-
-                // Collect form data
-                var formData = $(this).serialize(); // This collects all the form data
-
-                // Make the AJAX call
+            // Load messages list
+            function loadMessages() {
                 $.ajax({
-                    type: "POST",
-                    url: $(this).attr('action'), // or directly "<?= base_url('/chat/send-message') ?>"
-                    data: formData,
+                    url: '/chat/messages',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        var messages = '';
+                        data.forEach(function(message) {
+                            messages += '<div class="chat-message" data-id="' + message.id + '">';
+                            messages += '<strong>From: ' + message.sender_user_id + '</strong>';
+                            messages += '<div class="timestamp">' + message.timestamp + '</div>';
+                            messages += '<p>' + message.content.substring(0, 50) + '...</p>';
+                            messages += '</div>';
+                        });
+                        $('#messages').html(messages);
+                    }
+                });
+            }
+
+            loadMessages();
+
+            // Load selected message
+            $(document).on('click', '.chat-message', function() {
+                var messageId = $(this).data('id');
+                $.ajax({
+                    url: '/chat/message/' + messageId,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#chatContent').html('');
+                        $('#chatContent').append('<div class="d-flex justify-content-between align-items-center"><span class="fw-bold">From: ' + data.sender_user_id + '</span><span class="timestamp">' + data.timestamp + '</span></div>');
+                        $('#chatContent').append('<div class="message-content">' + data.content + '</div>');
+                        $('#replySection').show();
+                        $('#replyForm').data('message-id', messageId);
+                    }
+                });
+            });
+
+            // Send reply
+            $('#replyForm').submit(function(event) {
+                event.preventDefault();
+                var messageId = $(this).data('message-id');
+                var replyContent = $('#replyContent').val();
+                $.ajax({
+                    url: '/chat/send-reply',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        messageId: messageId,
+                        content: replyContent
+                    }),
                     success: function(response) {
-                        console.log(response);
-                        // Handle success
-                        alert("Reply sent successfully!");
-                        $('#replyModal').modal('hide'); // Hide the modal
-                        // Optionally, clear the form fields
-                        $("#replyModal form")[0].reset();
-                    },
-                    error: function() {
-                        // Handle error
-                        alert("An error occurred. Please try again.");
+                        if (response.success) {
+                            alert('Reply sent successfully!');
+                            $('#replyContent').val('');
+                            loadMessages();
+                        } else {
+                            alert('Error sending reply.');
+                        }
                     }
                 });
             });

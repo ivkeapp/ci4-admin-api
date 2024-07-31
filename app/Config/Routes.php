@@ -26,9 +26,13 @@ $routes->get('register', '\App\Controllers\Auth\RegisterController::registerView
 $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAction');
 
 // Route for messages
-$routes->get('chat/(:num)', 'ChatController::index/$1');
-$routes->post('chat/send-message', 'ChatController::sendMessage');
-$routes->get('view-messages', 'ChatController::viewMessages');
+// $routes->get('chat/(:num)', 'ChatController::index/$1');
+// $routes->post('chat/send-message', 'ChatController::sendMessage');
+// $routes->get('view-messages', 'ChatController::viewMessages');
+$routes->get('chat', 'ChatController::index');
+$routes->get('chat/messages', 'ChatController::getMessages');
+$routes->get('chat/message/(:num)', 'ChatController::getMessage/$1');
+$routes->post('chat/send-reply', 'ChatController::sendReply');
 
 // Route for notifications
 $routes->get('notifications/check-new', 'NotificationsController::checkNew');
