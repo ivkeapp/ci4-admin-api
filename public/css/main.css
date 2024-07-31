@@ -1,3 +1,4 @@
+/* NOTIFICATION TOAS */
 .toast-holder {
     position: fixed;
     width: 400px;
@@ -64,7 +65,6 @@
 .progress-start {
     width: 100%;
 }
-
 .wh-notif-item.success {
     color: #3c763d;
     border-color: #d6e9c6;
@@ -80,6 +80,8 @@
     border-color: #ebccd1;
     background-color: rgba(235, 204, 209, .9)
 }
+
+/* SIDEBAR */
 #accordionSidebar {
     position: fixed;
     top: 0;
@@ -101,34 +103,24 @@
         margin-left: 0;
     }
 }
-
-/* Ensure the wrapper uses flexbox */
 #wrapper {
     display: flex;
     width: 100%;
 }
-
-/* Sidebar styles */
 #accordionSidebar {
-    width: 250px; /* Default width */
+    width: 250px;
     transition: width 0.3s;
 }
-
 #accordionSidebar.toggled {
-    width: 80px; /* Width when toggled */
+    width: 80px;
 }
-
-/* Content wrapper should take the remaining space */
 #content-wrapper {
     flex-grow: 1;
     transition: margin-left 0.3s;
 }
-
-/* Adjust content wrapper margin based on accordionSidebar state */
 #accordionSidebar.toggled + #content-wrapper {
     margin-left: 80px;
 }
-
 #accordionSidebar:not(.toggled) + #content-wrapper {
     margin-left: 250px;
 }
