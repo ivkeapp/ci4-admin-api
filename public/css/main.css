@@ -1,3 +1,4 @@
+/* NOTIFICATION TOAS */
 .toast-holder {
     position: fixed;
     width: 400px;
@@ -64,7 +65,6 @@
 .progress-start {
     width: 100%;
 }
-
 .wh-notif-item.success {
     color: #3c763d;
     border-color: #d6e9c6;
@@ -79,4 +79,48 @@
     color: #a94442;
     border-color: #ebccd1;
     background-color: rgba(235, 204, 209, .9)
+}
+
+/* SIDEBAR */
+#accordionSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px; /* Adjust width as needed */
+    overflow-y: auto; /* Add scroll if content overflows */
+    background-color: #343a40; /* Adjust background color as needed */
+    z-index: 1000; /* Ensure it stays above other content */
+}
+@media (max-width: 768px) {
+    #accordionSidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+#wrapper {
+    display: flex;
+    width: 100%;
+}
+#accordionSidebar {
+    width: 250px;
+    transition: width 0.3s;
+}
+#accordionSidebar.toggled {
+    width: 80px;
+}
+#content-wrapper {
+    flex-grow: 1;
+    transition: margin-left 0.3s;
+}
+#accordionSidebar.toggled + #content-wrapper {
+    margin-left: 80px;
+}
+#accordionSidebar:not(.toggled) + #content-wrapper {
+    margin-left: 250px;
 }
