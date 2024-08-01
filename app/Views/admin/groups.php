@@ -34,8 +34,8 @@
         </div>
     </div>
 </div>
-<script src="vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="<?= site_url('vendor/datatables/jquery.dataTables.min.js') ?>"></script>
+<script src="<?= site_url('vendor/datatables/dataTables.bootstrap4.min.js') ?>"></script>
 <script>
 $(document).ready(function() {
     $('#groupsTable').DataTable();
