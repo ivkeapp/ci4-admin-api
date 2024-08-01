@@ -11,6 +11,10 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
+                <!-- Loader Container -->
+                <div id="loader-container" class="loader-container">
+                    <div class="loader"></div>
+                </div>
                 <?= $this->include('layout/topbar') ?>
                 <?= $this->renderSection('content') ?>
             </div>
@@ -70,5 +74,6 @@
     <script src="<?= base_url('js/demo/chart-area-demo.js') ?>"></script>
     <script src="<?= base_url('js/demo/chart-pie-demo.js') ?>"></script>
     <script src="<?= base_url('js/main.js') ?>"></script>
+    <script src="<?= base_url('js/loader.js') ?>"></script>
 </body>
 </html>
