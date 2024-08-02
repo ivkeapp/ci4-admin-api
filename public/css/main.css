@@ -1,4 +1,4 @@
-/* NOTIFICATION TOAS */
+/* NOTIFICATION TOAST */
 .toast-holder {
     position: fixed;
     width: 400px;
@@ -45,6 +45,11 @@
 .notif-item-content p {
     font-size: 14px;
     margin: 0;
+}
+.notif-item-content a {
+    font-size: 13px;
+    margin: 0;
+    color: #007bff;
 }
 .notif-item-close {
     position: absolute;
