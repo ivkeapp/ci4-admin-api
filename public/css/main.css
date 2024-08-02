@@ -87,7 +87,6 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 250px; /* Adjust width as needed */
     overflow-y: auto; /* Add scroll if content overflows */
     background-color: #343a40; /* Adjust background color as needed */
     z-index: 1000; /* Ensure it stays above other content */
@@ -109,12 +108,14 @@
 }
 #accordionSidebar {
     width: 250px;
+    /* height: 100vh; */
     transition: width 0.3s;
 }
 #accordionSidebar.toggled {
     width: 80px;
 }
 #content-wrapper {
+    height: 100vh;
     flex-grow: 1;
     transition: margin-left 0.3s;
 }
@@ -122,7 +123,7 @@
     margin-left: 80px;
 }
 #accordionSidebar:not(.toggled) + #content-wrapper {
-    margin-left: 250px;
+    margin-left: 14rem;
 }
 
 #content {
