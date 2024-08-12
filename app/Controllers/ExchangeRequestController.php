@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ExchangeRequestModel;
 use App\Models\ActivityLogModel;
 use App\Models\NotificationModel;
+use App\Models\RatingModel;
 
 class ExchangeRequestController extends BaseController
 {
@@ -19,11 +20,13 @@ class ExchangeRequestController extends BaseController
 
     protected $exchangeRequestModel;
     protected $activityLogModel;
+    protected $ratingModel;
 
     public function __construct()
     {
         $this->exchangeRequestModel = new ExchangeRequestModel();
         $this->activityLogModel = new ActivityLogModel();
+        $this->ratingModel = new RatingModel();
     }
 
     public function index()
@@ -117,6 +120,9 @@ class ExchangeRequestController extends BaseController
             // Decode JSON and convert to comma-separated strings
             $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
             $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+            
+            // Check if the user has already rated this request
+            $exchangeRequests[$key]['is_rated'] = $this->ratingModel->isRated($userId, $request['id']);
         }
         $commonData = $this->getCommonData();
         $specificData = [

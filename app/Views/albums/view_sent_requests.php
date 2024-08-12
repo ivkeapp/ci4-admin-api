@@ -86,10 +86,10 @@
             contentType: 'application/json',
             success: function(data) {
                 if (data.status === 'success') {
-                    alert('Marked as completed!');
+                    infoMessage(data.message, 'success');
                     // Optionally refresh the page or update the UI
                 } else {
-                    alert('Error marking as completed.');
+                    infoMessage(data.message, 'danger');
                 }
             },
             error: function() {

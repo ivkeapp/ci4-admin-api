@@ -79,6 +79,6 @@ class Filters extends BaseConfig
     public array $filters = [
         // 'apiauth' => ['before' => ['api/*']],
         // 'groupfilter:admin' => ['before' => ['admin/*']],
-        'webauth' => ['before' => ['/', 'home/*', 'profile/*', 'dashboard/*', 'pages/*', 'albums/*', 'my-collection', 'user/profile', 'chat/*', 'view-messages', 'example-table', 'exchange-requests/*', 'activity-logs']],
+        'webauth' => ['before' => ['/', 'home/*', 'profile/*', 'dashboard/*', 'pages/*', 'albums/*', 'my-collection', 'user/profile', 'chat/*', 'view-messages', 'example-table', 'exchange-requests/*', 'activity-logs', 'ratings/*']],
     ];
 }

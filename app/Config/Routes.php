@@ -65,7 +65,6 @@ $routes->post('/exchange-requests/decline/(:num)', 'ExchangeRequestController::d
 $routes->post('/exchange-requests/delete/(:num)', 'ExchangeRequestController::deleteRequest/$1');
 $routes->post('/exchange-requests/mark-as-completed', 'ExchangeRequestController::markAsCompleted');
 
-
 $routes->get('/activity-logs', 'ActivityLogController::index');
 
 $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
@@ -107,4 +106,12 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
+});
+
+$routes->group('ratings', function($routes) {
+    $routes->get('average/(:num)', 'RatingController::getAverageUserRating/$1');
+    $routes->post('rate', 'RatingController::rateUser');
+    $routes->get('last-five', 'RatingController::getLastFiveRatings');
+    $routes->delete('delete/(:num)', 'RatingController::deleteRating/$1');
+    $routes->put('update/(:num)', 'RatingController::updateRating/$1');
 });
