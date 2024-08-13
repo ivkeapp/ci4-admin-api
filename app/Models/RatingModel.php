@@ -56,11 +56,12 @@ class RatingModel extends Model
      */
     public function getAverageUserRating(int $userId): float
     {
-        return $this->where('rated_user_id', $userId)
-                    ->selectAvg('rating')
-                    ->get()
-                    ->getRow()
-                    ->rating;
+        $result = $this->where('rated_user_id', $userId)
+                       ->selectAvg('rating')
+                       ->get()
+                       ->getRow();
+    
+        return $result ? (float) $result->rating : 0.0;
     }
 
     /**
@@ -120,7 +121,12 @@ class RatingModel extends Model
         $query = $this->db->table('tb_user_ratings')
                           ->where('rater_id', $userId)
                           ->where('exchange_request_id', $requestId)
-                          ->countAllResults();
-        return $query > 0;
+                          ->get();
+    
+        if ($query->getNumRows() > 0) {
+            return $query->getRowArray(); // Return the rating data as an associative array
+        }
+    
+        return false; // Return false if no rating is found
     }
 }

@@ -24,4 +24,8 @@ class UserModel extends ShieldUserModel
     {
         return $this->findAll();
     }
+    public function getUserById($id)
+    {
+        return $this->find($id);
+    }
 }

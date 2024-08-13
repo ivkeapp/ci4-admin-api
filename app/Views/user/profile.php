@@ -13,6 +13,7 @@
         <p><strong>Last Name:</strong> <?= esc($userData->last_name) ?></p>
         <p><strong>Mobile Phone:</strong> <?= esc($userData->mobile_phone) ?></p>
         <p><strong>Address:</strong> <?= esc($userData->address) ?></p>
+        <p><strong>Rating:</strong> <?= esc($rating) ?></p>
         <p><strong>Auth Group and Rights:</strong></p>
         <ul>
             <?php foreach ($userGroups as $group): ?>

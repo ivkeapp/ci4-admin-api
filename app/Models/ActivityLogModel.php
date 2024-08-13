@@ -32,6 +32,8 @@ class ActivityLogModel extends Model
     const ACTIVITY_REQUEST_ACCEPTED = 'request_accepted';
     const ACTIVITY_REQUEST_DECLINED = 'request_declined';
     const ACTIVITY_REQUEST_DELETED = 'request_deleted';
+    const ACTIVITY_RATING = 'user_rated';
+    const ACTIVITY_RATING_FAILED = 'user_rating_failed';
 
     // Dates
     protected $useTimestamps = true;

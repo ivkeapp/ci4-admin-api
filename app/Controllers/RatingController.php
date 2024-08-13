@@ -4,12 +4,19 @@ namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\RatingModel;
+use App\Models\ActivityLogModel;
 
 class RatingController extends ResourceController
 {
 
     protected $modelName = 'App\Models\RatingModel';
     protected $format    = 'json';
+    protected $activityLogModel;
+
+    public function __construct()
+    {
+        $this->activityLogModel = new ActivityLogModel();
+    }
 
     /**
      * Get average rating for a user
@@ -47,11 +54,29 @@ class RatingController extends ResourceController
         }
         $auth = service('auth');
         $data['rater_id'] = $auth->id();
+        $ratedUserId = $data['rated_user_id'];
     
         // Attempt to rate the user
         if ($this->model->rateUser($data)) {
+            // Log the activity
+            $auth = service('auth');
+            $this->activityLogModel->logActivity(
+                $auth->id(),
+                $this->activityLogModel::ACTIVITY_RATING,
+                "User #{$auth->id()} rated user #{$ratedUserId} with {$data['rating']} stars",
+                ['target_user_id' => $ratedUserId, 'success' => true, 'status' => 'rated']
+            );
             return $this->respondCreated(['status' => 'success', 'message' => 'Rating added successfully']);
         }
+
+        // Log the activity
+        $auth = service('auth');
+        $this->activityLogModel->logActivity(
+            $auth->id(),
+            $this->activityLogModel::ACTIVITY_RATING_FAILED,
+            "Failed to rate user #{$ratedUserId}",
+            ['target_user_id' => $ratedUserId, 'success' => false, 'status' => 'failed']
+        );
     
         // Return failure response if rating could not be added
         return $this->fail('Failed to add rating');

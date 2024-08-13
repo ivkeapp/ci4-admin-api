@@ -122,7 +122,9 @@ class ExchangeRequestController extends BaseController
             $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
             
             // Check if the user has already rated this request
-            $exchangeRequests[$key]['is_rated'] = $this->ratingModel->isRated($userId, $request['id']);
+            $rating = $this->ratingModel->isRated($userId, $request['id']);
+            $exchangeRequests[$key]['is_rated'] = $rating !== false;
+            $exchangeRequests[$key]['rating'] = $rating; // Store the rating data if available
         }
         $commonData = $this->getCommonData();
         $specificData = [
@@ -142,6 +144,11 @@ class ExchangeRequestController extends BaseController
             // Decode JSON and convert to comma-separated strings
             $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
             $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+
+            // Check if the user has already rated this request
+            $rating = $this->ratingModel->isRated($userId, $request['id']);
+            $exchangeRequests[$key]['is_rated'] = $rating !== false;
+            $exchangeRequests[$key]['rating'] = $rating; // Store the rating data if available
         }
         $commonData = $this->getCommonData();
         $specificData = [
@@ -222,5 +229,29 @@ class ExchangeRequestController extends BaseController
         } else {
             return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to mark as completed.']);
         }
+    }
+    public function getReceivedRequestsJson() {
+        $userId = $this->auth->id();
+        $exchangeRequests = $this->exchangeRequestModel->getAllExchangeRequests($userId);
+        foreach ($exchangeRequests as $key => $request) {
+            $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
+            $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+            $rating = $this->ratingModel->isRated($userId, $request['id']);
+            $exchangeRequests[$key]['is_rated'] = $rating !== false;
+            $exchangeRequests[$key]['rating'] = $rating;
+        }
+        return $this->response->setJSON($exchangeRequests);
+    }
+    public function getSentRequestsJson() {
+        $userId = $this->auth->id();
+        $exchangeRequests = $this->exchangeRequestModel->getAllSentExchangeRequests($userId);
+        foreach ($exchangeRequests as $key => $request) {
+            $exchangeRequests[$key]['cards_offered'] = !empty($request['cards_offered']) ? implode(', ', json_decode($request['cards_offered'], true)) : 'No cards offered';
+            $exchangeRequests[$key]['cards_requested'] = !empty($request['cards_requested']) ? implode(', ', json_decode($request['cards_requested'], true)) : 'No cards requested';
+            $rating = $this->ratingModel->isRated($userId, $request['id']);
+            $exchangeRequests[$key]['is_rated'] = $rating !== false;
+            $exchangeRequests[$key]['rating'] = $rating;
+        }
+        return $this->response->setJSON($exchangeRequests);
     }
 }

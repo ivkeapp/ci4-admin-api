@@ -5,6 +5,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
+<input type="hidden" id="currentUser" value="<?= $currentUser ?>">
 <div class="container">
     <h1 class="h3 mb-2 text-gray-800">Exchange Requests</h1>
     <div class="card shadow mb-4">
@@ -45,7 +46,11 @@
                                     <button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(<?= $request['id'] ?>, <?= $currentUser ?>, this)">Mark as Completed</button>
                                 <?php else: ?>
                                     <?php if ($request['is_rated']): ?>
-                                        <span>Already rated</span>
+                                        <div class="rating-system" data-id="<?= $request['id']; ?>" data-receiver="<?= $request['receiver_id'] ?>" data-sender="<?= $request['sender_id'] ?>">
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <span class="rating-star-disabled <?= $i <= $request['rating']['rating'] ? 'filled' : '' ?>" data-value="<?= $i ?>"><i class="fa fa-star"></i></span>
+                                            <?php endfor; ?>
+                                        </div>
                                     <?php else: ?>
                                         <div class="rating-system" data-id="<?= $request['id']; ?>" data-receiver="<?=$request['receiver_id']?>" data-sender="<?=$request['sender_id']?>">
                                             <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
@@ -58,7 +63,11 @@
                                 <?php endif; ?>
                             <?php elseif ($request['status'] == 'completed'): ?>
                                 <?php if ($request['is_rated']): ?>
-                                    <span>Already rated</span>
+                                    <div class="rating-system" data-id="<?= $request['id']; ?>" data-receiver="<?= $request['receiver_id'] ?>" data-sender="<?= $request['sender_id'] ?>">
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <span class="rating-star-disabled <?= $i <= $request['rating']['rating'] ? 'filled' : '' ?>" data-value="<?= $i ?>"><i class="fa fa-star"></i></span>
+                                        <?php endfor; ?>
+                                    </div>
                                 <?php else: ?>
                                     <div class="rating-system" data-id="<?= $request['id']; ?>" data-receiver="<?=$request['receiver_id']?>" data-sender="<?=$request['sender_id']?>">
                                         <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
@@ -97,7 +106,7 @@
                 <form id="ratingForm">
                     <div class="form-group">
                         <label for="ratingDescription">Rating Description *</label>
-                        <textarea type="text" rows="4" class="form-control" id="ratingDescription" name="ratingDescription" required placeholder="Write your experience with exchanging with this user"></textarea>
+                        <textarea type="text" rows="4" class="form-control" id="ratingDescription" name="ratingDescription" required placeholder="Describe how your exchange went with this user."></textarea>
                     </div>
                     <input type="hidden" id="requestId" name="requestId">
                     <input type="hidden" id="sender" name="sender">
@@ -172,8 +181,10 @@
                 console.log(response, 'response');
                 if (response.status === 'success') {
                     infoMessage(response.message, 'success');
-                    $('#ratingDescription').val('');
                     $('#ratingModal').modal('hide');
+                    $('#ratingDescription').val('');
+                    // Refresh the table data
+                    refreshTableData();
                 } else {
                     infoMessage(response.message, 'danger');
                 }
@@ -232,6 +243,103 @@
             error: function() {
                 alert('There was an error processing your request.');
             }
+        });
+    }
+    function refreshTableData() {
+        $.ajax({
+            url: '/exchange-requests/received-requests',
+            type: 'GET',
+            success: function(data) {
+                const $tableBody = $('#dataTable tbody');
+                $tableBody.empty();
+                var currentUser = $('#currentUser').val();
+
+                // Assuming you have already initialized DataTables on your table
+                var table = $('#dataTable').DataTable();
+                table.clear();
+
+                data.forEach(request => {
+                    const isRated = request.is_rated;
+                    const isSender = currentUser == request.sender_id;
+                    const isReceiver = currentUser == request.receiver_id;
+                    const isPending = request.status === 'pending';
+                    const isAccepted = request.status === 'accepted';
+                    const isCompleted = request.status === 'completed';
+
+                    let ratingHtml = '';
+
+                    if (isPending) {
+                        // Pending status logic
+                        ratingHtml = `
+                            <div class="btn btn-success btn-sm handleRequest" data-id="${request.id}" data-type="accept">Accept</div>
+                            <div class="btn btn-warning btn-sm handleRequest" data-id="${request.id}" data-type="decline">Decline</div>
+                            <div class="btn btn-danger btn-sm handleRequest" data-id="${request.id}" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div>
+                        `;
+                    } else if (isAccepted) {
+                        // Accepted status logic
+                        if (!request.sender_completed && isSender) {
+                            ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
+                        } else if (!request.receiver_completed && isReceiver) {
+                            ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
+                        } else {
+                            ratingHtml = generateRatingStars(isRated, request.rating ? request.rating.rating : 0, request.id, request.receiver_id, request.sender_id);
+                        }
+                    } else if (isCompleted) {
+                        // Completed status logic
+                        ratingHtml = generateRatingStars(isRated, request.rating ? request.rating.rating : 0, request.id, request.receiver_id, request.sender_id);
+                    }
+
+                    const row = [
+                        escapeHtml(request.first_name) + ' ' + escapeHtml(request.last_name),
+                        escapeHtml(request.album_id),
+                        escapeHtml(request.status),
+                        escapeHtml(request.cards_offered),
+                        escapeHtml(request.cards_requested),
+                        ratingHtml
+                    ];
+
+                    // Add the new row using DataTables API
+                    table.row.add(row);
+                });
+
+                // Draw the table to update and recalculate paging, sorting, etc.
+                table.draw();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching updated data:', error);
+            }
+        });
+    }
+    function generateRatingStars(isRated, rating, requestId, receiverId, senderId) {
+    let stars = '<div class="rating-system" data-id="${requestId}" data-receiver="${receiverId}" data-sender="${senderId}">';
+    if (isRated) {
+        for (let i = 1; i <= 5; i++) {
+            stars += `<span class="rating-star-disabled ${i <= rating ? 'filled' : ''}" data-value="${i}"><i class="fa fa-star"></i></span>`;
+        }
+    } else {
+        stars = `
+            <div class="rating-system" data-id="${requestId}" data-receiver="${receiverId}" data-sender="${senderId}">
+                <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="2"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="3"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="4"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="5"><i class="fa fa-star"></i></span>
+            </div>
+        `;
+    }
+    stars += '</div>';
+    return stars;
+}
+    function escapeHtml(text) {
+        return text.replace(/[\"&'\/<>]/g, function (a) {
+            return {
+                '"': '&quot;',
+                '&': '&amp;',
+                "'": '&#39;',
+                '/': '&#47;',
+                '<': '&lt;',
+                '>': '&gt;'
+            }[a];
         });
     }
 </script>

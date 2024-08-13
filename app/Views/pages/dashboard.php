@@ -79,6 +79,34 @@
         </div>
     </div>
 
+    <!-- Informational Text -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Welcome to the Ultimate Sticker Exchange Platform!</h6>
+                </div>
+                <div class="card-body">
+                    <p>Our web application is designed to make the process of collecting and trading stickers for your albums seamless and enjoyable. Whether you're a passionate collector or just getting started, our platform provides all the tools you need to manage your albums and complete your collections. Explore the features we offer:</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>View All Possible Exchanges:</strong> Discover available sticker exchanges with other users. Find the stickers you need and offer your duplicates for trade.</li>
+                        <li class="list-group-item"><strong>Add Album:</strong> Easily create and manage your sticker albums. Keep track of your collections and add new albums as you expand your hobby.</li>
+                        <li class="list-group-item"><strong>Add Cards to Album:</strong> Keep your albums up-to-date by adding your newly acquired stickers. Ensure your collection is always current.</li>
+                        <li class="list-group-item"><strong>Remove Album:</strong> If you no longer wish to track a specific album, you can remove it from your collection with a few simple clicks.</li>
+                        <li class="list-group-item"><strong>Remove Cards from Album:</strong> Organize your albums by removing stickers that are no longer part of your collection.</li>
+                        <li class="list-group-item"><strong>Send Exchange Request:</strong> Found a sticker you need? Send an exchange request to the owner and propose a trade.</li>
+                        <li class="list-group-item"><strong>Receive Exchange Request:</strong> Get notified when another user wants to trade stickers with you. Review their offer and decide how to proceed.</li>
+                        <li class="list-group-item"><strong>Accept, Decline, or Delete Requests:</strong> Manage your exchange requests with ease. Accept or decline offers, or delete requests that no longer interest you.</li>
+                        <li class="list-group-item"><strong>Mark Exchange Request as Completed:</strong> Once an exchange is successfully completed, mark it as such to keep your exchange history organized.</li>
+                        <li class="list-group-item"><strong>Rate Other Users:</strong> After completing an exchange, rate the other user based on your experience. Help build a trustworthy community of collectors.</li>
+                        <li class="list-group-item"><strong>View My Albums:</strong> Access and manage all your sticker albums from one convenient location. Track your progress and plan future exchanges.</li>
+                    </ul>
+                    <p class="mt-3">This application is your one-stop solution for managing sticker exchanges, making it easier than ever to complete your collections. Happy collecting!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Content Row -->
     <div class="row">
         <!-- Recent Exchange Requests -->
@@ -157,7 +185,7 @@
     </div>
 </div>
 
-            <!-- /.container-fluid -->
+<!-- /.container-fluid -->
 
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">

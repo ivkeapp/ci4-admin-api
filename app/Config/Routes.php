@@ -64,6 +64,8 @@ $routes->post('/exchange-requests/accept/(:num)', 'ExchangeRequestController::ac
 $routes->post('/exchange-requests/decline/(:num)', 'ExchangeRequestController::declineRequest/$1');
 $routes->post('/exchange-requests/delete/(:num)', 'ExchangeRequestController::deleteRequest/$1');
 $routes->post('/exchange-requests/mark-as-completed', 'ExchangeRequestController::markAsCompleted');
+$routes->get('/exchange-requests/sent-requests', 'ExchangeRequestController::getSentRequestsJson');
+$routes->get('/exchange-requests/received-requests', 'ExchangeRequestController::getReceivedRequestsJson');
 
 $routes->get('/activity-logs', 'ActivityLogController::index');
 
