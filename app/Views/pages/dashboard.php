@@ -1,7 +1,27 @@
 <?= $this->extend('header') ?>
 
-<?= $this->section('content') ?>
+<?= $this->section('custom_styles') ?>
+<link rel="stylesheet" href="/css/exchange-requests.css">
+<?= $this->endSection() ?>
 
+<?= $this->section('content') ?>
+<?php
+    function generateRatingStars($isRated, $rating, $requestId, $receiverId, $senderId)
+    {
+        $stars = '<div class="rating-system" data-id="' . $requestId . '" data-receiver="' . $receiverId . '" data-sender="' . $senderId . '">';
+        if ($isRated) {
+            for ($i = 1; $i <= 5; $i++) {
+                $stars .= '<span class="rating-star-disabled ' . ($i <= $rating ? 'filled' : '') . '" data-value="' . $i . '"><i class="fa fa-star"></i></span>';
+            }
+        } else {
+            for ($i = 1; $i <= 5; $i++) {
+                $stars .= '<span class="rating-star" data-value="' . $i . '"><i class="fa fa-star"></i></span>';
+            }
+        }
+        $stars .= '</div>';
+        return $stars;
+    } 
+?>
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -20,7 +40,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Albums</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">15</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= esc($totalAlbumsCount) ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-book fa-2x text-gray-300"></i>
@@ -36,7 +56,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Cards</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= esc($totalDuplicateCardsCount) ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-th fa-2x text-gray-300"></i>
@@ -52,7 +72,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Requests</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= esc($pendingRequestsCount) ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
@@ -68,7 +88,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Completed Exchanges</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">10</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= esc($completedExchangesCount) ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -116,26 +136,46 @@
                     <h6 class="m-0 font-weight-bold text-primary">Recent Exchange Requests</h6>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Sender</th>
-                                <th>Card</th>
+                                <th>User</th>
+                                <th>Album ID</th>
                                 <th>Status</th>
+                                <th>Cards Offered</th>
+                                <th>Cards Requested</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($recentRequests as $request): ?>
                             <tr>
-                                <td>User1</td>
-                                <td>Card 5</td>
-                                <td>Pending</td>
-                                <td>
-                                    <button class="btn btn-success btn-sm">Accept</button>
-                                    <button class="btn btn-danger btn-sm">Decline</button>
+                                <td><?= esc($request['first_name']) . ' '. esc($request['last_name']); ?></td>
+                                <td><?= esc($request['album_id']) ?></td>
+                                <td><?= esc($request['status']) ?></td>
+                                <td><?= esc($request['cards_offered']) ?></td>
+                                <td><?= esc($request['cards_requested']) ?></td>
+                                <td class="cell-action">
+                                    <?php if ($request['status'] == 'pending'): ?>
+                                        <!-- Action buttons for pending requests -->
+                                        <div class="btn btn-success btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="accept">Accept</div>
+                                        <div class="btn btn-warning btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="decline">Decline</div>
+                                        <div class="btn btn-danger btn-sm handleRequest" data-id="<?= $request['id']; ?>" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div>
+                                    <?php elseif ($request['status'] == 'accepted'): ?>
+                                        <!-- Additional check for completion status -->
+                                        <?php if (!$request['sender_completed'] && $currentUser == $request['sender_id']): ?>
+                                            <button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(<?= $request['id']; ?>, <?= $currentUser; ?>, this)">Mark as Completed</button>
+                                        <?php elseif (!$request['receiver_completed'] && $currentUser == $request['receiver_id']): ?>
+                                            <button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(<?= $request['id']; ?>, <?= $currentUser; ?>, this)">Mark as Completed</button>
+                                        <?php else: ?>
+                                            <?= generateRatingStars($request['is_rated'], $request['rating']['rating'], $request['id'], $request['receiver_id'], $request['sender_id']) ?>
+                                        <?php endif; ?>
+                                    <?php elseif ($request['status'] == 'completed'): ?>
+                                        <?= generateRatingStars($request['is_rated'], $request['rating']['rating'], $request['id'], $request['receiver_id'], $request['sender_id']) ?>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
-                            <!-- More rows as needed -->
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -211,4 +251,157 @@
         </div>
     </div>
 </div>
+<!-- Rating Modal-->
+<div class="modal fade" id="ratingModal" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingModalLabel">Rate user</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="ratingForm">
+                    <div class="form-group">
+                        <label for="ratingDescription">Rating Description *</label>
+                        <textarea type="text" rows="4" class="form-control" id="ratingDescription" name="ratingDescription" required placeholder="Describe how your exchange went with this user."></textarea>
+                    </div>
+                    <input type="hidden" id="requestId" name="requestId">
+                    <input type="hidden" id="sender" name="sender">
+                    <input type="hidden" id="receiver" name="receiver">
+                    <input type="hidden" id="selectedStars" name="selectedStars">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit" form="ratingForm">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('.handleRequest').click(function() {
+            var btn = $(this);
+            var id = btn.data('id');
+            var type = btn.data('type');
+            $.ajax({
+                url: '/exchange-requests/' + type + '/' + id,
+                type: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        infoMessage(response.message, response.status);
+                        location.reload();
+                    } else {
+                        infoMessage(response.message, 'danger');
+                    }
+                },
+                error: function() {
+                    alert('There was an error processing your request.');
+                }
+            });
+        });
+        // Handle hover event using event delegation
+        $(document).on('mouseenter', '.rating-star', function() {
+            const value = $(this).data('value');
+            const $currentRow = $(this).closest('tr'); // Adjust the selector to match your row class
+
+            $currentRow.find('.rating-star').each(function() {
+                if ($(this).data('value') <= value) {
+                    $(this).addClass('filled');
+                } else {
+                    $(this).removeClass('filled');
+                }
+            });
+        });
+
+        $(document).on('mouseleave', '.rating-star', function() {
+            $('.rating-star').removeClass('filled');
+        });
+        $(document).on('click', '.rating-star', function() {
+            let ratingHolder = $(this).closest('.rating-system');
+
+            const id = $(ratingHolder).data('id');
+            const receiver = $(ratingHolder).data('receiver');
+            const sender = $(ratingHolder).data('sender');
+            const selectedStars = $(this).data('value');
+            $('#requestId').val(id);
+            $('#receiver').val(receiver);
+            $('#sender').val(sender);
+            $('#selectedStars').val(selectedStars);
+            $('#ratingModal').modal('show');
+        });
+    });
+    function generateRatingStars(isRated, rating, requestId, receiverId, senderId) {
+        let stars = `<div class="rating-system" data-id="${requestId}" data-receiver="${receiverId}" data-sender="${senderId}">`;
+        if (isRated) {
+            for (let i = 1; i <= 5; i++) {
+                stars += `<span class="rating-star-disabled ${i <= rating ? 'filled' : ''}" data-value="${i}"><i class="fa fa-star"></i></span>`;
+            }
+        } else {
+            stars += `
+                <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="2"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="3"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="4"><i class="fa fa-star"></i></span>
+                <span class="rating-star" data-value="5"><i class="fa fa-star"></i></span>
+            `;
+        }
+        stars += '</div>';
+        return stars;
+    }
+    function markAsCompleted(requestId, userId, btnRef) {
+            $.ajax({
+                url: '/exchange-requests/mark-as-completed',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ requestId: requestId, userId: userId }),
+                contentType: 'application/json',
+                success: function(data) {
+                    if (data.status === 'success') {
+                        infoMessage(data.message, 'success');
+                        var parentCellAction = $(btnRef).closest('.cell-action');
+                        $(btnRef).remove();
+                        let rateElem = generateRatingStars(false, 0, requestId, userId, userId);
+                        $(parentCellAction).append(rateElem);
+                    } else {
+                        infoMessage(data.message, 'danger');
+                    }
+                },
+                error: function() {
+                    alert('There was an error processing your request.');
+                }
+            });
+        }
+        $('#ratingForm').on('submit', function(event) {
+            event.preventDefault();
+            const ratingData = {
+                exchange_request_id: $('#requestId').val(),
+                rated_user_id: $('#sender').val(),
+                rating_description: $('#ratingDescription').val(),
+                rating: $('#selectedStars').val()
+            };
+
+            $.ajax({
+                url: '/ratings/rate',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(ratingData),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response, 'response');
+                    if (response.status === 'success') {
+                        location.reload();
+                    } else {
+                        infoMessage(response.message, 'danger');
+                    }
+                },
+                error: function() {
+                    alert('There was an error processing your request.');
+                }
+            });
+        });
+</script>
 <?= $this->endSection() ?>

@@ -39,4 +39,23 @@ class CardAlbumModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getTotalAlbumsCountByUser($userId)
+    {
+        return $this->where('user_id', $userId)->countAllResults();
+    }
+    public function getTotalDuplicateCardsCountByUser($userId)
+    {
+        $albums = $this->where('user_id', $userId)->findAll();
+        $totalCardsCount = 0;
+    
+        foreach ($albums as $album) {
+            $cards = json_decode($album['cards'], true);
+            if (is_array($cards)) {
+                $totalCardsCount += count($cards);
+            }
+        }
+    
+        return $totalCardsCount;
+    }
 }

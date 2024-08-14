@@ -144,4 +144,30 @@ class ExchangeRequestModel extends Model
     
         return $request['sender_completed'] && $request['receiver_completed'];
     }
+    public function countPendingRequestsByUser($userId)
+    {
+        return $this->where('status', 'pending')
+                    ->groupStart()
+                        ->where('sender_id', $userId)
+                        ->orWhere('receiver_id', $userId)
+                    ->groupEnd()
+                    ->countAllResults();
+    }
+    public function countCompletedExchangesByUser($userId)
+    {
+        return $this->where('status', 'completed')
+                    ->groupStart()
+                        ->where('sender_id', $userId)
+                        ->orWhere('receiver_id', $userId)
+                    ->groupEnd()
+                    ->countAllResults();
+    }
+    public function getRecentExchangeRequests($userId, $limit = 5)
+    {
+        return $this->select('exchange_requests.*, users.first_name, users.last_name')
+            ->join('users', 'users.id = exchange_requests.sender_id')
+            ->where('exchange_requests.receiver_id', $userId)
+            ->orderBy('exchange_requests.updated_at', 'DESC')
+            ->findAll($limit);
+    }
 }
