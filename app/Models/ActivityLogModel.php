@@ -29,6 +29,7 @@ class ActivityLogModel extends Model
     const ACTIVITY_PAGE_CREATED = 'page_created';
     const ACTIVITY_PAGE_EDITED = 'page_edited';
     const ACTIVITY_PAGE_DELETED = 'page_deleted';
+    const ACTIVITY_REQUEST_SENT = 'request_sent';
     const ACTIVITY_REQUEST_ACCEPTED = 'request_accepted';
     const ACTIVITY_REQUEST_DECLINED = 'request_declined';
     const ACTIVITY_REQUEST_DELETED = 'request_deleted';
@@ -118,5 +119,34 @@ class ActivityLogModel extends Model
         ];
 
         return $metadata;
+    }
+    public function getRecentActivities($userId)
+    {
+        $allowedActions = [
+            self::ACTIVITY_REQUEST_SENT,
+            self::ACTIVITY_REQUEST_ACCEPTED,
+            self::ACTIVITY_REQUEST_DECLINED,
+            self::ACTIVITY_REQUEST_DELETED,
+            self::ACTIVITY_RATING,
+            self::ACTIVITY_MESSAGE_SENT,
+        ];
+
+        $builder = $this->db->table($this->table);
+        $builder->where('user_id', $userId)
+                ->whereIn('action_type', $allowedActions)
+                ->orderBy('created_at', 'desc')
+                ->limit(5);
+    
+        // Output the compiled SQL query for debugging
+        // echo $builder->getCompiledSelect();
+    
+        // Fetch the results
+        $query = $builder->get();
+        $result = $query->getResultArray();
+    
+        // Output the raw results for debugging
+        // var_dump($result);
+    
+        return $result;
     }
 }

@@ -168,10 +168,10 @@
                                         <?php elseif (!$request['receiver_completed'] && $currentUser == $request['receiver_id']): ?>
                                             <button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(<?= $request['id']; ?>, <?= $currentUser; ?>, this)">Mark as Completed</button>
                                         <?php else: ?>
-                                            <?= generateRatingStars($request['is_rated'], $request['rating']['rating'], $request['id'], $request['receiver_id'], $request['sender_id']) ?>
+                                            <?= generateRatingStars($request['is_rated'], is_array($request['rating']) ? $request['rating']['rating'] : 0, $request['id'], $request['receiver_id'], $request['sender_id']) ?>
                                         <?php endif; ?>
                                     <?php elseif ($request['status'] == 'completed'): ?>
-                                        <?= generateRatingStars($request['is_rated'], $request['rating']['rating'], $request['id'], $request['receiver_id'], $request['sender_id']) ?>
+                                        <?= generateRatingStars($request['is_rated'], is_array($request['rating']) ? $request['rating']['rating'] : 0, $request['id'], $request['receiver_id'], $request['sender_id']) ?>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -189,9 +189,15 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group">
-                        <li class="list-group-item">User2 added a new card to Album 3</li>
-                        <li class="list-group-item">User3 sent an exchange request for Card 8</li>
-                        <!-- More items as needed -->
+                        <?php if (!empty($recentActivities)): ?>
+                            <?php foreach ($recentActivities as $activity): ?>
+                                <li class="list-group-item">
+                                    <?= esc($activity['action_type']); ?> - <?= esc($activity['created_at']); ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li class="list-group-item">No recent activities found.</li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

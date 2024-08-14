@@ -8,6 +8,7 @@ use App\Models\MessageModel;
 use App\Models\CardAlbumModel;
 use App\Models\ExchangeRequestModel;
 use App\Models\RatingModel;
+use App\Models\ActivityLogModel;
 
 class DashboardController extends BaseController
 {
@@ -17,6 +18,7 @@ class DashboardController extends BaseController
     protected $cardAlbumModel;
     protected $exchangeRequestModel;
     protected $ratingModel;
+    protected $activityLogModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class DashboardController extends BaseController
         $this->cardAlbumModel = new CardAlbumModel();
         $this->exchangeRequestModel = new ExchangeRequestModel();
         $this->ratingModel = new RatingModel();
+        $this->activityLogModel = new ActivityLogModel();
     }
 
     public function index()
@@ -36,6 +39,7 @@ class DashboardController extends BaseController
         $pendingRequestsCount = $this->exchangeRequestModel->countPendingRequestsByUser($userId);
         $completedExchangesCount = $this->exchangeRequestModel->countCompletedExchangesByUser($userId);
         $recentRequests =  $this->exchangeRequestModel->getRecentExchangeRequests($userId);
+        $recentActivities = $this->activityLogModel->getRecentActivities($userId);
 
         foreach ($recentRequests as $key => $request) {
             // Decode JSON and convert to comma-separated strings
@@ -58,6 +62,7 @@ class DashboardController extends BaseController
             'pendingRequestsCount' => $pendingRequestsCount,
             'completedExchangesCount' => $completedExchangesCount,
             'recentRequests' => $recentRequests,
+            'recentActivities' => $recentActivities,
         ];
 
         $data = array_merge($commonData, $specificData);

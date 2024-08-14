@@ -102,6 +102,13 @@ class ExchangeRequestController extends BaseController
                 'message' => 'You have a new exchange request.',
                 'status' => 'unread',
             ]);
+            // Log the activity
+            $this->activityLogModel->logActivity(
+                $this->auth->id(),
+                $this->activityLogModel::ACTIVITY_REQUEST_SENT,
+                "User {$this->auth->id()} sent exchange request #{$json->receiver_id}",
+                ['target_user_id' => $json->receiver_id, 'success' => true, 'status' => 'sent']
+            );
             return $this->response->setJSON([
                 'status' => 1,
                 'message' => 'Exchange request sent successfully.',
