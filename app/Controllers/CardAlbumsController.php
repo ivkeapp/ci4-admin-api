@@ -70,10 +70,10 @@ class CardAlbumsController extends BaseController
     {
         $userId = $this->auth->id();
         $userData = $this->userModel->find($userId);
-
+    
         // Fetch all albums to populate the select dropdown
         $albums = $this->albumModel->findAll();
-
+    
         // Prepare data to pass to the view
         $commonData = $this->getCommonData();
         $specificData = [
@@ -81,31 +81,35 @@ class CardAlbumsController extends BaseController
             'description' => 'This is a dynamic description for SEO',
             'userData' => $userData,
             'albums' => $albums,
+            'albumCards' => [], // Initially empty, will be populated via AJAX
+            'neededAlbumCards' => [], // Initially empty, will be populated via AJAX
         ];
-
+    
         $data = array_merge($commonData, $specificData);
-
+    
         // Load view for adding new user album collection
         return view('albums/add', $data);
     }
 
     public function store()
     {
-        // Validate incoming request if needed
+        // TODO: Validate incoming request if needed
 
         // Extract data from the form
         $data = [
-            'user_id' => $this->auth->id(), // Assuming you have authentication set up
+            'user_id' => $this->auth->id(),
             'album_id' => $this->request->getPost('album_id'),
             'title' => $this->request->getPost('title'),
             'description' => $this->request->getPost('description'),
+            'cards' => json_encode($this->request->getPost('cards')),
+            'needed_cards' => json_encode($this->request->getPost('needed_cards'))
         ];
-        
+    
         // Insert data into the database
         if ($this->cardAlbumModel->insert($data)) {
-            echo ('User album collection added successfully.');
+            return redirect()->to('/my-collection')->with('success', 'User album collection added successfully.');
         } else {
-            echo ('Error creating album!');
+            return redirect()->to('/my-collection')->with('error', 'Error creating album!');
         }
 
         // Redirect to a success page or back to the albums list
@@ -341,4 +345,28 @@ class CardAlbumsController extends BaseController
 
         return view('albums/exchanges', $data);
     }
+    // Get album cards
+    public function getAlbumCards($albumId)
+{
+    // Fetch all cards for the album
+    $allCards = $this->tbCardsModel->select('id, album_id, cards')
+                        ->where('album_id', $albumId)
+                        ->findAll();
+
+    // Decode the JSON array from the 'cards' field in the fetched album
+    $allCardIds = [];
+    if (!empty($allCards) && isset($allCards[0]['cards'])) {
+        $allCardIds = json_decode($allCards[0]['cards'], true);
+    }
+
+    $cardsForView = [];
+    foreach ($allCardIds as $cardId) {
+        $cardsForView[] = [
+            'id' => $cardId,
+            'selected' => false // Initially not selected
+        ];
+    }
+
+    return $this->response->setJSON($cardsForView);
+}
 }

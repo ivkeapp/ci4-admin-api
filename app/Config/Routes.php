@@ -60,6 +60,7 @@ $routes->get('/albums/exchange', 'CardAlbumsController::findAllCardExchanges');
 $routes->post('/albums/send-request', 'ExchangeRequestController::sendRequest');
 $routes->get('/albums/received-requests', 'ExchangeRequestController::viewAllRequests');
 $routes->get('/albums/sent-requests', 'ExchangeRequestController::viewAllSentRequests');
+$routes->get('/albums/get-cards/(:num)', 'CardAlbumsController::getAlbumCards/$1');
 $routes->post('/exchange-requests/accept/(:num)', 'ExchangeRequestController::acceptRequest/$1');
 $routes->post('/exchange-requests/decline/(:num)', 'ExchangeRequestController::declineRequest/$1');
 $routes->post('/exchange-requests/delete/(:num)', 'ExchangeRequestController::deleteRequest/$1');
