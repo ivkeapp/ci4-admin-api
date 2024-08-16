@@ -123,6 +123,23 @@
             <?php endif; ?>
         <?php endif; ?>
 
+        <?php if (!empty($userGroups)): ?>
+            <?php if (in_array('admin', $userGroups) || in_array('superadmin', $userGroups)): ?>
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Activity Logs
+                </div>
+
+                <!-- Nav Item - Messages -->
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= site_url('activity-logs') ?>">
+                        <i class="fas fa-fw fa-clipboard-list"></i>
+                        <span>All Activity Logs</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+        <?php endif; ?>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 
