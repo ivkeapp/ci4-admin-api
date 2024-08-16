@@ -44,7 +44,14 @@ class PagesController extends BaseController
     // Show a single page
     public function view($id = null)
     {
-        $data['page'] = $this->pagesModel->find($id);
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Page - WebTech Admin',
+            'description' => 'This is a dynamic description for SEO',
+            'page' => $this->pagesModel->find($id),
+        ];
+
+        $data = array_merge($commonData, $specificData);
         if (empty($data['page'])) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Page Not Found');
         }
