@@ -68,6 +68,8 @@ $routes->get('/pages/edit/(:segment)', 'PagesController::edit/$1');
 $routes->post('/pages/update/(:segment)', 'PagesController::update/$1');
 $routes->get('/pages/delete/(:segment)', 'PagesController::delete/$1');
 
+$routes->get('/activity-logs', 'ActivityLogController::index');
+
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('invalid-access', 'AuthController::accesDenied');
     $routes->post('register', 'AuthController::register');
