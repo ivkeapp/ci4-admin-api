@@ -79,8 +79,55 @@
             <?php endif; ?>
         <?php endif; ?>
 
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <?php if (!empty($userGroups)): ?>
+            <?php if (in_array('admin', $userGroups) || in_array('superadmin', $userGroups)): ?>
+                <!-- Content visible only to admin users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Pages
+                </div>
+                <!-- Nav Item - Pages Collapse Menu -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapse"
+                        aria-expanded="true" aria-controls="pagesCollapse">
+                        <i class="fas fa-fw fa-file"></i>
+                        <span>Pages</span>
+                    </a>
+                    <div id="pagesCollapse" class="collapse" aria-labelledby="headingThree" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Page administration:</h6>
+                            <a class="collapse-item" href="<?= site_url('pages') ?>">All Pages</a>
+                            <a class="collapse-item" href="<?= site_url('pages/create') ?>">Add Page</a>
+                        </div>
+                    </div>
+                </li>
+            <?php endif; ?>
+
+            <?php if (in_array('editor', $userGroups)): ?>
+                <!-- Content visible only to editor users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    Editor
+                </div>
+            <?php endif; ?>
+
+            <?php if (in_array('user', $userGroups)): ?>
+                <!-- Content visible only to subscriber users -->
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    User
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
         <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                 aria-expanded="true" aria-controls="collapseUtilities">
                 <i class="fas fa-fw fa-wrench"></i>
@@ -96,10 +143,10 @@
                     <a class="collapse-item" href="utilities-other.html">Other</a>
                 </div>
             </div>
-        </li>
+        </li> -->
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+        <!-- <hr class="sidebar-divider"> -->
 
         <!-- Heading -->
         <div class="sidebar-heading">
@@ -144,15 +191,23 @@
         </li>
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+        <!-- <hr class="sidebar-divider"> -->
 
         <!-- Heading -->
-        <div class="sidebar-heading">
+        <!-- <div class="sidebar-heading">
             Addons
-        </div>
+        </div> -->
+
+        <!-- Divider -->
+        <!-- <hr class="sidebar-divider"> -->
+
+        <!-- Heading -->
+        <!-- <div class="sidebar-heading">
+            Addons
+        </div> -->
 
         <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                 aria-expanded="true" aria-controls="collapsePages">
                 <i class="fas fa-fw fa-folder"></i>
@@ -170,21 +225,21 @@
                     <a class="collapse-item" href="blank.html">Blank Page</a>
                 </div>
             </div>
-        </li>
+        </li> -->
 
         <!-- Nav Item - Charts -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="charts.html">
                 <i class="fas fa-fw fa-chart-area"></i>
                 <span>Charts</span></a>
-        </li>
+        </li> -->
 
         <!-- Nav Item - Tables -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="tables.html">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Tables</span></a>
-        </li>
+        </li> -->
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
