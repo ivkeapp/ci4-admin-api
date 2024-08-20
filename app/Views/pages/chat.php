@@ -88,11 +88,11 @@
                     }),
                     success: function(response) {
                         if (response.success) {
-                            alert('Reply sent successfully!');
+                            infoMessage(response.message, 'success');
                             $('#replyContent').val('');
                             loadMessages();
                         } else {
-                            alert('Error sending reply.');
+                            infoMessage(response.message, 'danger');
                         }
                     }
                 });
