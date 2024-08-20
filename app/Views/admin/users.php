@@ -29,7 +29,7 @@
                         </thead>
                         <tbody>
                         <?php foreach ($users as $user) : ?>
-                            <tr>
+                            <tr id="user-row-<?= $user->id ?>">
                                 <td><?= $user->id ?></td>
                                 <td><?= $user->username ?></td>
                                 <td><?= $user->email ?></td>
@@ -38,8 +38,8 @@
                                 <td><?= $user->mobile_phone ?></td>
                                 <td><?= $user->address ?></td>
                                 <td>
-                                <button class="btn btn-primary btn-sm" onclick="editUserModal(<?= $user->id ?>, '<?= $user->username ?>', '<?= $user->email ?>', '<?= $user->first_name ?>', '<?= $user->last_name ?>', '<?= $user->mobile_phone ?>', '<?= $user->address ?>')">Edit</button>
-                                    <a href="<?= site_url('admin/remove-user/' . $user->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                                    <button class="btn btn-primary btn-sm" onclick="editUserModal(<?= $user->id ?>, '<?= $user->username ?>', '<?= $user->email ?>', '<?= $user->first_name ?>', '<?= $user->last_name ?>', '<?= $user->mobile_phone ?>', '<?= $user->address ?>')">Edit</button>
+                                    <a href="#" data-user-id="<?= $user->id ?>" class="btn btn-danger btn-sm delete-user-btn">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -71,14 +71,14 @@
             success: function (response) {
                 if (response.status === 'success') {
                     $('#editUserModal').modal('hide');
-                    alert('User updated successfully.');
+                    infoMessage(response.message, 'success');
                     location.reload();
                 } else {
-                    alert('Error: ' + response.message);
+                    infoMessage('Error: ' + response.message, 'danger');
                 }
             },
             error: function () {
-                alert('Something went wrong.');
+                infoMessage('Something went wrong.', 'danger');
             }
         });
     });
@@ -99,29 +99,30 @@
             }));
         });
     });
+    $(document).ready(function() {
+        $('.delete-user-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            if (!confirm('Are you sure you want to delete this user?')) {
+                return;
+            }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Handle delete user button click
-        document.querySelectorAll('.delete-user').forEach(button => {
-            button.addEventListener('click', function () {
-                const userId = this.getAttribute('data-userid');
-                if (confirm('Are you sure you want to delete this user?')) {
-                    fetch(`<?= site_url('admin/remove-user/') ?>${userId}`, {
-                        method: 'DELETE'
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            alert('User deleted successfully.');
-                            window.location.reload();
-                        } else {
-                            alert('Failed to delete user: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while deleting the user.');
-                    });
+            var userId = $(this).data('user-id');
+            var row = $('#user-row-' + userId);
+
+            $.ajax({
+                url: '<?= site_url('admin/remove-user/') ?>' + userId,
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        infoMessage(response.message, response.status);
+                        row.remove();
+                    } else {
+                        infoMessage('Error: ' + response.message, 'danger');
+                    }
+                },
+                error: function() {
+                    infoMessage('Error occurred while deleting user.', 'danger');
                 }
             });
         });
