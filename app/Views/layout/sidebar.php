@@ -73,9 +73,9 @@
             <?php if (in_array('user', $userGroups)): ?>
                 <!-- Content visible only to subscriber users -->
                 <!-- Heading -->
-                <div class="sidebar-heading">
+                <!-- <div class="sidebar-heading">
                     User
-                </div>
+                </div> -->
             <?php endif; ?>
         <?php endif; ?>
 
@@ -114,13 +114,6 @@
                 </div>
             <?php endif; ?>
 
-            <?php if (in_array('user', $userGroups)): ?>
-                <!-- Content visible only to subscriber users -->
-                <!-- Heading -->
-                <div class="sidebar-heading">
-                    User
-                </div>
-            <?php endif; ?>
         <?php endif; ?>
 
         <?php if (!empty($userGroups)): ?>
