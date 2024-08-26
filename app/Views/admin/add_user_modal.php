@@ -78,14 +78,16 @@
             success: function(response) {
                 if (response.status === 'success') {
                     $('#addUserModal').modal('hide');
-                    alert('User added successfully.');
+                    infoMessage(response.message, 'success');
+                    // TODO: Update list without refreshing the page
                     location.reload(); // Refresh the page or update the user list
                 } else {
-                    alert('Error: ' + response.message);
+
+                    infoMessage('Error: ' + response.message, 'danger');
                 }
             },
             error: function() {
-                alert('Something went wrong.');
+                infoMessage('Something went wrong.', 'danger');
             }
         });
     });
