@@ -146,6 +146,7 @@
                 if (data.status === 'success') {
                     infoMessage(data.message, 'success');
                     // Optionally refresh the page or update the UI
+                    refreshTableData();
                 } else {
                     infoMessage(data.message, 'danger');
                 }
@@ -253,9 +254,9 @@
                         `;
                     } else if (isAccepted) {
                         // Accepted status logic
-                        if (!request.sender_completed && isSender) {
+                        if (request.sender_completed === "0" && isSender) {
                             ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
-                        } else if (!request.receiver_completed && isReceiver) {
+                        } else if (request.receiver_completed === "0" && isReceiver) {
                             ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
                         } else {
                             ratingHtml = generateRatingStars(isRated, request.rating ? request.rating.rating : 0, request.id, request.receiver_id, request.sender_id);
