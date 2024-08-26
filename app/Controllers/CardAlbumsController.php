@@ -294,6 +294,9 @@ class CardAlbumsController extends BaseController
                 ->where('card_albums.status !=', 'archived') // Exclude archived albums
                 ->findAll();
         
+            // echo '<pre>';
+            // print_r($allOtherUsersAlbums);
+            // echo '</pre>';
             // Fetch existing exchange requests for the current user
             $existingRequests = $this->exchangeRequestModel
                 ->where('album_id', $currentUserAlbum['album_id'])
@@ -302,12 +305,20 @@ class CardAlbumsController extends BaseController
                     ->orWhere('receiver_id', $currentUser)
                 ->groupEnd()
                 ->findAll();
-        
+            // echo '<pre>';
+            // print_r($existingRequests);
+            // echo '</pre>';
             $existingRequestUserIds = array_unique(array_merge(
-                array_column($existingRequests, 'sender_id'),
-                array_column($existingRequests, 'receiver_id')
+                array_column(array_filter($existingRequests, function($request) {
+                    return $request['status'] !== 'deleted';
+                }), 'sender_id'),
+                array_column(array_filter($existingRequests, function($request) {
+                    return $request['status'] !== 'deleted';
+                }), 'receiver_id')
             ));
-        
+            // echo '<pre>';
+            // print_r($existingRequestUserIds);
+            // echo '</pre>';
             foreach ($allOtherUsersAlbums as $userAlbum) {
                 if (in_array($userAlbum['user_id'], $existingRequestUserIds)) {
                     continue; // Skip if there's already an exchange request with this user
