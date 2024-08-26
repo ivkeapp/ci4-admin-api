@@ -54,6 +54,10 @@ Events::on('pre_system', static function () {
     }
 });
 Events::on('log_activity', function ($userId, $actionType, $description, $metadata = null) {
+    // Check if the request is an AJAX call
+    if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        return; // Skip logging for AJAX calls
+    }
     $activityLogModel = new \App\Models\ActivityLogModel();
     $activityLogModel->logActivity($userId, $actionType, $description, $metadata);
 });
