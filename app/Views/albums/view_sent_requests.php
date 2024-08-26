@@ -244,9 +244,11 @@
 
                     if (isPending) {
                         // Pending status logic
+                        if(!isSender) {
+                            ratingHtml = `<div class="btn btn-success btn-sm handleRequest" data-id="${request.id}" data-type="accept">Accept</div>
+                            <div class="btn btn-warning btn-sm handleRequest" data-id="${request.id}" data-type="decline">Decline</div>`;
+                        }
                         ratingHtml = `
-                            <div class="btn btn-success btn-sm handleRequest" data-id="${request.id}" data-type="accept">Accept</div>
-                            <div class="btn btn-warning btn-sm handleRequest" data-id="${request.id}" data-type="decline">Decline</div>
                             <div class="btn btn-danger btn-sm handleRequest" data-id="${request.id}" data-type="delete" onclick="return confirm('Are you sure?')">Delete</div>
                         `;
                     } else if (isAccepted) {

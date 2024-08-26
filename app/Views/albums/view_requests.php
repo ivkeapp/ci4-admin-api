@@ -205,6 +205,7 @@
             success: function(response) {
                 if(response.status === 'success') {
                     infoMessage(response.message, response.status);
+                    refreshTableData();
                 } else {
                     // TODO: Error handling logic here
                     infoMessage(response.message, 'danger');
@@ -225,17 +226,18 @@
             success: function(data) {
                 if (data.status === 'success') {
                     infoMessage(data.message, 'success');
-                    var parentCellAction = $(btnRef).closest('.cell-action');
-                    $(btnRef).remove();
-                    // TODO: add required data for rating
-                    let rateElem = `<div class="rating-system">
-                        <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
-                        <span class="rating-star" data-value="2"><i class="fa fa-star"></i></span>
-                        <span class="rating-star" data-value="3"><i class="fa fa-star"></i></span>
-                        <span class="rating-star" data-value="4"><i class="fa fa-star"></i></span>
-                        <span class="rating-star" data-value="5"><i class="fa fa-star"></i></span>
-                    </div>`;
-                    $(parentCellAction).append(rateElem);
+                    // var parentCellAction = $(btnRef).closest('.cell-action');
+                    // $(btnRef).remove();
+                    // // TODO: add required data for rating
+                    // let rateElem = `<div class="rating-system">
+                    //     <span class="rating-star" data-value="1"><i class="fa fa-star"></i></span>
+                    //     <span class="rating-star" data-value="2"><i class="fa fa-star"></i></span>
+                    //     <span class="rating-star" data-value="3"><i class="fa fa-star"></i></span>
+                    //     <span class="rating-star" data-value="4"><i class="fa fa-star"></i></span>
+                    //     <span class="rating-star" data-value="5"><i class="fa fa-star"></i></span>
+                    // </div>`;
+                    // $(parentCellAction).append(rateElem);
+                    refreshTableData();
                 } else {
                     infoMessage(data.message, 'danger');
                 }
@@ -277,9 +279,9 @@
                         `;
                     } else if (isAccepted) {
                         // Accepted status logic
-                        if (!request.sender_completed && isSender) {
+                        if (request.sender_completed === "0" && isSender) {
                             ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
-                        } else if (!request.receiver_completed && isReceiver) {
+                        } else if (request.receiver_completed === "0" && isReceiver) {
                             ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
                         } else {
                             ratingHtml = generateRatingStars(isRated, request.rating ? request.rating.rating : 0, request.id, request.receiver_id, request.sender_id);
