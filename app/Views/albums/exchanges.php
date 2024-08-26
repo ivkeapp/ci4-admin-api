@@ -71,16 +71,16 @@
                     }),
                     success: function(response) {
                         // console.log(response, 'response');
-                        if(response.status === 1) {
-                            alert(response.message);
-                        } else {
-                            alert(response.message);
+                        infoMessage(response.message, response.status);
+                        if(response.status === 'success') {
+                            // TODO: Reload the table instead of the whole page
+                            window.location.reload();
                         }
                     },
                     error: function(xhr, status, error) {
                         // console.log(error, 'error');
-                        // console.log(status, 'status');
-                        alert('Failed to send exchange request.');
+                        // console.log(status, 'status');3
+                        infoMessage('Failed to send exchange request.', 'danger');
                     }
                 });
             });

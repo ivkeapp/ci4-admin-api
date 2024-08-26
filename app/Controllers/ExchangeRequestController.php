@@ -65,7 +65,7 @@ class ExchangeRequestController extends BaseController
         // Validate input data
         if (!$validation->run((array)$json)) {
             return $this->response->setJSON([
-                'status' => 'error',
+                'status' => 'danger',
                 'message' => $validation->getErrors(),
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
@@ -78,7 +78,7 @@ class ExchangeRequestController extends BaseController
 
         if ($existingRequest) {
             return $this->response->setJSON([
-                'status' => 0,
+                'status' => 'danger',
                 'message' => 'An existing request already exists.',
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
@@ -110,12 +110,12 @@ class ExchangeRequestController extends BaseController
                 ['target_user_id' => $json->receiver_id, 'success' => true, 'status' => 'sent']
             );
             return $this->response->setJSON([
-                'status' => 1,
+                'status' => 'success',
                 'message' => 'Exchange request sent successfully.',
             ])->setStatusCode(ResponseInterface::HTTP_OK);
         } else {
             return $this->response->setJSON([
-                'status' => 0,
+                'status' => 'danger',
                 'message' => 'Failed to send exchange request.',
             ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
