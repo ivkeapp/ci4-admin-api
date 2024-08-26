@@ -18,12 +18,11 @@
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span></a>
         </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
+        
         <?php if (!empty($userGroups)): ?>
             <?php if (in_array('admin', $userGroups) || in_array('superadmin', $userGroups)): ?>
+                <!-- Divider -->
+                <hr class="sidebar-divider">
                 <!-- Content visible only to admin users -->
                 <!-- Heading -->
                 <div class="sidebar-heading">
@@ -62,28 +61,20 @@
                 </li>
             <?php endif; ?>
 
-            <?php if (in_array('editor', $userGroups)): ?>
-                <!-- Content visible only to editor users -->
-                <!-- Heading -->
-                <div class="sidebar-heading">
-                    Editor
-                </div>
-            <?php endif; ?>
-
             <?php if (in_array('user', $userGroups)): ?>
                 <!-- Content visible only to subscriber users -->
                 <!-- Heading -->
-                <!-- <div class="sidebar-heading">
+                <div class="sidebar-heading">
                     User
-                </div> -->
+                </div>
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
+        
         <?php if (!empty($userGroups)): ?>
             <?php if (in_array('admin', $userGroups) || in_array('superadmin', $userGroups)): ?>
+                <!-- Divider -->
+                <hr class="sidebar-divider">
                 <!-- Content visible only to admin users -->
                 <!-- Heading -->
                 <div class="sidebar-heading">
