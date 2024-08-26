@@ -44,11 +44,12 @@ class ExchangeRequestController extends BaseController
         $existingRequest = $this->exchangeRequestModel
             ->where('album_id', $json->album_id)
             ->where("((sender_id = {$json->sender_id} AND receiver_id = {$json->receiver_id}) OR (sender_id = {$json->receiver_id} AND receiver_id = {$json->sender_id}))", null, false)
+            ->where('status !=', 'deleted')
             ->first();
 
         if ($existingRequest) {
             // An exchange request already exists in either direction, handle accordingly
-            return $this->response->setJSON(['status' => 0, 'message' => 'An exchange request for this album already exists between these users.']);
+            return $this->response->setJSON(['status' => 'danger', 'message' => 'An exchange request for this album already exists between these users.']);
         }
 
         $validation = \Config\Services::validation();
@@ -74,6 +75,7 @@ class ExchangeRequestController extends BaseController
         $existingRequest = $this->exchangeRequestModel->where('sender_id', $json->sender_id)
             ->where('receiver_id', $json->receiver_id)
             ->where('album_id', $json->album_id)
+            ->where('status !=', 'deleted')
             ->first();
 
         if ($existingRequest) {

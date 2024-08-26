@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="/css/exchange-requests.css">
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
+<input type="hidden" id="currentUser" value="<?= $currentUser ?>">
 <div class="container">
     <h1 class="h3 mb-2 text-gray-800">Exchange Requests</h1>
     <div class="card shadow mb-4">
@@ -123,10 +124,12 @@
             type: 'POST',
             dataType: 'json',
             success: function(response) {
+                infoMessage(response.message, response.status);
                 if(response.status === 'success') {
-                    alert(response.message);
+                    refreshTableData();
+                    // alert(response.message);
                 } else {
-                    alert(response.message);
+                    // alert(response.message);
                     // TODO: Error handling logic here
                 }
             },
@@ -255,9 +258,9 @@
                     } else if (isAccepted) {
                         // Accepted status logic
                         if (request.sender_completed === "0" && isSender) {
-                            ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
-                        } else if (request.receiver_completed === "0" && isReceiver) {
-                            ratingHtml = `<button class="btn btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
+                            ratingHtml = `<button class="btn testttt btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
+                        } else if (request.receiver_completed === "0" && isSender) {
+                            ratingHtml = `<button class="btn testttt2 btn-info btn-sm markAsCompleteBtn" onclick="markAsCompleted(${request.id}, ${currentUser}, this)">Mark as Completed</button>`;
                         } else {
                             ratingHtml = generateRatingStars(isRated, request.rating ? request.rating.rating : 0, request.id, request.receiver_id, request.sender_id);
                         }
