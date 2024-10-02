@@ -80,3 +80,19 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
 });
+
+$routes->get('/products/create', 'ProductController::create');
+$routes->post('/products/store', 'ProductController::store');
+$routes->get('/products/get-subcategory/(:num)', 'ProductController::getSubcategories/$1');
+$routes->get('/products/get-subsubcategory/(:num)', 'ProductController::getSubsubcategories/$1');
+$routes->get('/products/getSubsubcategoriesByCategory/(:num)', 'ProductController::getSubsubcategoriesByCategory/$1');
+$routes->get('/products', 'ProductController::index');
+$routes->get('/products/addImages', 'ProductController::addImages');
+$routes->post('/products/storeImage/(:num)', 'ProductController::storeImage/$1');
+$routes->get('/products/get-productimages/(:num)', 'ProductController::getProductImages/$1');
+$routes->post('/products/storeImages', 'ProductController::storeImages');
+$routes->get('/products/deleteImage/(:num)', 'ProductController::deleteImage/$1');
+$routes->get('/products/manage-categories', 'ProductController::manageCategories');
+$routes->post('/products/save-category', 'ProductController::saveCategory');
+$routes->delete('/products/delete-category/(:num)', 'ProductController::deleteCategory/$1');
+$routes->get('/products/get-categories', 'ProductController::getCategories');

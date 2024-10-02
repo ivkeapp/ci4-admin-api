@@ -56,7 +56,7 @@ function checkForNewNotifications() {
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            console.log(response, 'response');
+            // console.log(response, 'response');
             const newNotifications = response.filter(notification => !displayedNotificationIds.includes(notification.id));
             if (!isInitialLoad && newNotifications.length > 0) {
                 newNotifications.forEach(notification => {
