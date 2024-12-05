@@ -162,4 +162,14 @@ class PagesController extends BaseController
         );
         return redirect()->to('/pages');
     }
+
+    // Homepage
+    public function editHomepage()
+    {
+        // Load homepage data
+        $homepage = $this->homepageModel->getHomepageData();
+
+        // Load view with homepage data
+        return view('admin/pages/homepage/edit', ['homepage' => $homepage]);
+    }
 }

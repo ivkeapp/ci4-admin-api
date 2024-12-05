@@ -35,7 +35,7 @@
             <td><input type="text" class="form-control input-sm" name="description" placeholder="Enter description"></td>
             <td>
                 <a class="add addCategory" title="Save" data-toggle="tooltip"><i class="fas fa-check"></i></a>
-                <a class="cancel cancelCategory" title="Cancel" data-toggle="tooltip"><i class="fas fa-times"></i></a>
+                <a class="cancel cancelNewCategory" title="Cancel" data-toggle="tooltip"><i class="fas fa-times"></i></a>
             </td>
         </tr>
         <?php foreach ($categories as $category): ?>
@@ -156,7 +156,7 @@
         });
 
         // Cancel adding new category
-        $(document).on("click", ".cancelCategory", function(){
+        $(document).on("click", ".cancelNewCategory", function(){
             $('.add-category-row').hide();
             $('.addNewCategory').removeAttr("disabled");
         });
@@ -268,9 +268,8 @@
             row.find(".saveCategory, .cancelCategory").hide();
             row.find("td:nth-child(1)").text(row.find('input[name="acName"]').val());
             row.find("td:nth-child(2)").text(row.find('select[name="parent_id"] option:selected').text());
-            row.find("td:nth-child(3)").text(row.find('input[name="level"]').val());
-            row.find("td:nth-child(4)").text(row.find('input[name="slug"]').val());
-            row.find("td:nth-child(5)").text(row.find('input[name="description"]').val());
+            row.find("td:nth-child(3)").text(row.find('input[name="slug"]').val());
+            row.find("td:nth-child(4)").text(row.find('input[name="description"]').val());
         });
     });
 </script>

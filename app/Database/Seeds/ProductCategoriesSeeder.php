@@ -53,7 +53,24 @@ class ProductCategoriesSeeder extends Seeder
             ['name' => 'AMD GPUs', 'parent_id' => 18, 'level' => 3, 'slug' => 'amd-gpus', 'description' => 'Graphics cards from AMD.'],
         ];
 
+        $dataClothes = [
+            ['name' => 'Male', 'parent_id' => null, 'level' => 1, 'slug' => 'male', 'description' => 'Male clothing category'],
+            ['name' => 'Female', 'parent_id' => null, 'level' => 1, 'slug' => 'female', 'description' => 'Female clothing category'],
+            // Shared subcategories
+            ['name' => 'Shorts', 'parent_id' => 1, 'level' => 2, 'slug' => 'male-shorts', 'description' => 'Male Shorts'],
+            ['name' => 'Shorts', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-shorts', 'description' => 'Female Shorts'],
+            ['name' => 'T-shirts', 'parent_id' => 1, 'level' => 2, 'slug' => 'male-t-shirts', 'description' => 'Male T-shirts'],
+            ['name' => 'T-shirts', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-t-shirts', 'description' => 'Female T-shirts'],
+            ['name' => 'Completes', 'parent_id' => 1, 'level' => 2, 'slug' => 'male-completes', 'description' => 'Male Completes'],
+            ['name' => 'Completes', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-completes', 'description' => 'Female Completes'],
+            ['name' => 'Underwear', 'parent_id' => 1, 'level' => 2, 'slug' => 'male-underwear', 'description' => 'Male Underwear'],
+            ['name' => 'Underwear', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-underwear', 'description' => 'Female Underwear'],
+            // Female unique subcategories
+            ['name' => 'Tops', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-tops', 'description' => 'Female Tops'],
+            ['name' => 'Leggings', 'parent_id' => 2, 'level' => 2, 'slug' => 'female-leggings', 'description' => 'Female Leggings'],
+        ];
+
         // Using Query Builder to insert data
-        $this->db->table('tb_product_categories')->insertBatch($data);
+        $this->db->table('tb_product_categories')->insertBatch($dataClothes);
     }
 }
