@@ -60,6 +60,8 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->post('update-user', 'AdminController::updateUser');
 });
 
+$routes->get('/homepage', 'PagesController::editHomepage');
+$routes->post('/homepage/update', 'PagesController::updateHomepage');
 $routes->get('/pages', 'PagesController::index');
 $routes->get('/pages/view/(:segment)', 'PagesController::view/$1');
 $routes->get('/pages/create', 'PagesController::create');
@@ -79,7 +81,17 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
+    $routes->get('homepage', 'PagesController::getHomepageData', ['filter' => 'apiauth']);
+    $routes->options('(:any)', static function () {}); // very important to add this line for cors
 });
+
+// $routes->options('(:any)', function () {
+//     $response = service('response');
+//     $response->setHeader('Access-Control-Allow-Origin', '*');
+//     $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+//     $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     return $response->setStatusCode(200)->setBody('');
+// });
 
 $routes->get('/products/create', 'ProductController::create');
 $routes->post('/products/store', 'ProductController::store');

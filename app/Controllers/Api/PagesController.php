@@ -4,6 +4,11 @@ namespace App\Controllers\Api;
 
 use App\Models\PagesModel;
 use CodeIgniter\RESTful\ResourceController;
+use App\Models\FixedPagesModel;
+use App\Models\SectionsModel;
+use App\Models\SlidersModel;
+use App\Models\SliderProductsModel;
+use App\Models\ProductModel;
 
 class PagesController extends ResourceController
 {
@@ -126,5 +131,35 @@ class PagesController extends ResourceController
             }
         }
         return $this->respond($response);
+    }
+    public function getHomepageData()
+    {
+
+        log_message('info', 'Incoming request headers: ' . print_r($this->request->getHeaders(), true));
+        
+        $fixedPagesModel = new FixedPagesModel();
+        $sectionsModel = new SectionsModel();
+        $slidersModel = new SlidersModel();
+        $sliderProductsModel = new SliderProductsModel();
+        $productModel = new ProductModel();
+
+        $homepage = $fixedPagesModel->where('page_name', 'homepage')->first();
+        $sections = $sectionsModel->where('page_id', $homepage['id'])->findAll();
+        $sliders = $slidersModel->where('page_id', $homepage['id'])->findAll();
+
+        // Fetch products for each slider
+        foreach ($sliders as &$slider) {
+            $sliderProductIds = $sliderProductsModel->getProductsBySliderId($slider['id']);
+            $productIds = array_column($sliderProductIds, 'product_id');
+            $slider['products'] = $productModel->whereIn('id', $productIds)->findAll();
+        }
+
+        $data = [
+            'homepage' => $homepage,
+            'sections' => $sections,
+            'sliders' => $sliders
+        ];
+
+        return $this->respond($data);
     }
 }
