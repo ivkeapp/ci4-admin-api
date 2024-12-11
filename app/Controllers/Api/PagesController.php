@@ -9,6 +9,8 @@ use App\Models\SectionsModel;
 use App\Models\SlidersModel;
 use App\Models\SliderProductsModel;
 use App\Models\ProductModel;
+use App\Models\ProductBadgeModel;
+use App\Models\ProductImageModel;
 
 class PagesController extends ResourceController
 {
@@ -134,14 +136,14 @@ class PagesController extends ResourceController
     }
     public function getHomepageData()
     {
-
-        log_message('info', 'Incoming request headers: ' . print_r($this->request->getHeaders(), true));
         
         $fixedPagesModel = new FixedPagesModel();
         $sectionsModel = new SectionsModel();
         $slidersModel = new SlidersModel();
         $sliderProductsModel = new SliderProductsModel();
         $productModel = new ProductModel();
+        $productBadgesModel = new ProductBadgeModel();
+        $productImagesModel = new ProductImageModel();
 
         $homepage = $fixedPagesModel->where('page_name', 'homepage')->first();
         $sections = $sectionsModel->where('page_id', $homepage['id'])->findAll();
@@ -151,7 +153,21 @@ class PagesController extends ResourceController
         foreach ($sliders as &$slider) {
             $sliderProductIds = $sliderProductsModel->getProductsBySliderId($slider['id']);
             $productIds = array_column($sliderProductIds, 'product_id');
-            $slider['products'] = $productModel->whereIn('id', $productIds)->findAll();
+            $products = $productModel->whereIn('id', $productIds)->findAll();
+            
+            foreach ($products as &$product) {
+                // Get the main image for the product
+                $mainImage = $productImagesModel->where('product_id', $product['id'])
+                                                ->where('is_main', 1)
+                                                ->first();
+                $product['main_image'] = $mainImage ? $mainImage['image_path'] : null;
+
+                // Get the badges for the product
+                $badges = $productBadgesModel->where('product_id', $product['id'])->findAll();
+                $product['badges'] = array_column($badges, 'badge_name');
+            }
+
+            $slider['products'] = $products;
         }
 
         $data = [

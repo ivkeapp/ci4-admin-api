@@ -32,12 +32,12 @@
                                 <td><?= $product['price_in'] ?></td>
                                 <td>
                                     <?php
-                                    if (!empty($product['subsubcategory_id'])) {
+                                    if (!empty($product['subsubcategory_id']) && isset($categoryMap[$product['subsubcategory_id']])) {
                                         echo $categoryMap[$product['subsubcategory_id']];
-                                    } elseif (!empty($product['subcategory_id'])) {
+                                    } elseif (!empty($product['subcategory_id']) && isset($categoryMap[$product['subcategory_id']])) {
                                         echo $categoryMap[$product['subcategory_id']];
                                     } else {
-                                        echo $categoryMap[$product['category_id']];
+                                        echo 'N/A'; // or any default value you prefer
                                     }
                                     ?>
                                 </td>

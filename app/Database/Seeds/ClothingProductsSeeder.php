@@ -22,8 +22,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.5,
                 'metadata' => json_encode(['material' => 'Polyester']),
-                'category_id' => 1, // Clothing
-                'subcategory_id' => 2, // Shorts
+                'category_id' => 56, // Men's Clothing
+                'subcategory_id' => 58, // Shorts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -39,8 +39,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Small',
                 'package_weight' => 0.3,
                 'metadata' => json_encode(['color' => 'Black']),
-                'category_id' => 1,
-                'subcategory_id' => 3, // T-shirts
+                'category_id' => 56,
+                'subcategory_id' => 60, // T-shirts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -57,8 +57,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Small',
                 'package_weight' => 0.25,
                 'metadata' => json_encode(['style' => 'Casual']),
-                'category_id' => 1,
-                'subcategory_id' => 4, // Tops
+                'category_id' => 57,
+                'subcategory_id' => 66, // Tops
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -74,8 +74,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.4,
                 'metadata' => json_encode(['color' => 'Pink']),
-                'category_id' => 1,
-                'subcategory_id' => 2,
+                'category_id' => 57,
+                'subcategory_id' => 59,
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -91,8 +91,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.4,
                 'metadata' => json_encode(['color' => 'Pink']),
-                'category_id' => 1,
-                'subcategory_id' => 2,
+                'category_id' => 57,
+                'subcategory_id' => 59,
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -108,8 +108,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.4,
                 'metadata' => json_encode(['color' => 'Pink']),
-                'category_id' => 1,
-                'subcategory_id' => 2,
+                'category_id' => 57,
+                'subcategory_id' => 59,
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -125,8 +125,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.4,
                 'metadata' => json_encode(['color' => 'Pink']),
-                'category_id' => 1,
-                'subcategory_id' => 2,
+                'category_id' => 57,
+                'subcategory_id' => 59,
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -142,8 +142,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Small',
                 'package_weight' => 0.3,
                 'metadata' => json_encode(['color' => 'Black']),
-                'category_id' => 1,
-                'subcategory_id' => 3, // T-shirts
+                'category_id' => 56,
+                'subcategory_id' => 60, // T-shirts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -159,8 +159,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Small',
                 'package_weight' => 0.3,
                 'metadata' => json_encode(['color' => 'Black']),
-                'category_id' => 1,
-                'subcategory_id' => 3, // T-shirts
+                'category_id' => 56,
+                'subcategory_id' => 60, // T-shirts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -176,8 +176,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Small',
                 'package_weight' => 0.3,
                 'metadata' => json_encode(['color' => 'Black']),
-                'category_id' => 1,
-                'subcategory_id' => 3, // T-shirts
+                'category_id' => 56,
+                'subcategory_id' => 60, // T-shirts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -193,8 +193,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.5,
                 'metadata' => json_encode(['material' => 'Polyester']),
-                'category_id' => 1, // Clothing
-                'subcategory_id' => 2, // Shorts
+                'category_id' => 56, // Clothing
+                'subcategory_id' => 58, // Shorts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
@@ -210,8 +210,8 @@ class ClothingProductsSeeder extends Seeder
                 'package_size' => 'Medium',
                 'package_weight' => 0.5,
                 'metadata' => json_encode(['material' => 'Polyester']),
-                'category_id' => 1, // Clothing
-                'subcategory_id' => 2, // Shorts
+                'category_id' => 56, // Clothing
+                'subcategory_id' => 58, // Shorts
                 'subsubcategory_id' => null,
                 'user_id' => 1,
             ],
