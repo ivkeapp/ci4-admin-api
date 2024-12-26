@@ -82,6 +82,10 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
     $routes->get('homepage', 'PagesController::getHomepageData', ['filter' => 'apiauth']);
+    $routes->resource('categories', [
+        'controller' => 'CategoriesAPIController',
+        'filter' => 'apiauth'
+    ]);
     $routes->options('(:any)', static function () {}); // very important to add this line for cors
 });
 
