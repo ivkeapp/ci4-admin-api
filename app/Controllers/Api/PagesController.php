@@ -11,6 +11,8 @@ use App\Models\SliderProductsModel;
 use App\Models\ProductModel;
 use App\Models\ProductBadgeModel;
 use App\Models\ProductImageModel;
+use App\Models\FooterColumnModel;
+use App\Models\FooterImagesModel;
 
 class PagesController extends ResourceController
 {
@@ -178,4 +180,48 @@ class PagesController extends ResourceController
 
         return $this->respond($data);
     }
+    public function getFooterData()
+    {
+        // Load necessary models
+        $footerColumnsModel = new FooterColumnModel();
+        $footerImagesModel = new FooterImagesModel();
+        // $footerTextModel = new FooterTextModel();
+
+        // Fetch footer columns
+        $footerColumns = $footerColumnsModel->findAll();
+
+        // Fetch footer images
+        $footerImages = $footerImagesModel->findAll();
+
+        // Fetch footer text
+        // $footerText = $footerTextModel->where('id', 1)->first();  // Assuming there's one record for footer text
+
+        // Prepare the footer data
+        $footerData = [
+            'columns' => [],
+            'images' => [],
+            // 'text' => $footerText ? $footerText['text'] : null
+        ];
+
+        // Format the footer columns
+        foreach ($footerColumns as $column) {
+            $footerData['columns'][] = [
+                'title' => $column['title'],
+                'links' => json_decode($column['links'], true) // Decode the JSON stored in the database
+            ];
+        }
+
+        // Format the footer images
+        foreach ($footerImages as $image) {
+            $footerData['images'][] = [
+                'image' => $image['image'],
+                'link' => $image['link'],
+                'type' => $image['type']
+            ];
+        }
+
+        // Return the response
+        return $this->respond($footerData);
+    }
+
 }

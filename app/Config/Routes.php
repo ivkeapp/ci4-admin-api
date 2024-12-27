@@ -60,6 +60,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->post('update-user', 'AdminController::updateUser');
 });
 
+$routes->get('/footer', 'PagesController::editFooter');
+$routes->post('/footer/update', 'PagesController::updateFooter');
+$routes->delete('footerimages/deleteImage/(:num)', 'PagesController::deleteFooterImage/$1');
 $routes->get('/homepage', 'PagesController::editHomepage');
 $routes->post('/homepage/update', 'PagesController::updateHomepage');
 $routes->get('/pages', 'PagesController::index');
@@ -84,6 +87,10 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->get('homepage', 'PagesController::getHomepageData', ['filter' => 'apiauth']);
     $routes->resource('categories', [
         'controller' => 'CategoriesAPIController',
+        'filter' => 'apiauth'
+    ]);
+    $routes->resource('footer', [
+        'controller' => 'PagesController::getFooterData',
         'filter' => 'apiauth'
     ]);
     $routes->options('(:any)', static function () {}); // very important to add this line for cors

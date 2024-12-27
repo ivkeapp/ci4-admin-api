@@ -11,6 +11,8 @@ use App\Models\SectionsModel;
 use App\Models\SlidersModel;
 use App\Models\SliderProductsModel;
 use App\Models\ProductModel;
+use App\Models\FooterColumnModel;
+use App\Models\FooterImagesModel;
 
 class PagesController extends BaseController
 {
@@ -218,8 +220,8 @@ class PagesController extends BaseController
         $data = $this->request->getPost();
 
         // var_dump($data);
-        $files = $this->request->getFiles();+
-        print_r($files);
+        $files = $this->request->getFiles();
+        // print_r($files);
     
         // Update fixed page data
         $fixedPageData = [
@@ -269,4 +271,132 @@ class PagesController extends BaseController
     
         return redirect()->to('/homepage')->with('success', 'Homepage updated successfully');
     }
+    public function editFooter()
+    {
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Footer Administration - WebTech Admin',
+            'description' => 'Manage footer sections and content.'
+        ];
+
+        $data = array_merge($commonData, $specificData);
+
+        $footerColumnsModel = new FooterColumnModel();
+        $footerImagesModel = new FooterImagesModel();
+
+        // Fetch footer data
+        $columns = $footerColumnsModel->findAll();
+        $images = $footerImagesModel->findAll();
+
+        $data = array_merge($data, [
+            'columns' => $columns,
+            'images' => $images,
+        ]);
+
+        return view('admin/pages/footer/edit', $data);
+    }
+    public function updateFooter()
+    {
+        // Load necessary models
+        $footerColumnsModel = new FooterColumnModel();
+        $footerImagesModel = new FooterImagesModel();
+        
+        // Get form input data
+        $footerColumns = $this->request->getPost('columns');
+        $footerImages = $this->request->getPost('images');
+        $files = $this->request->getFiles();
+    
+        // Update footer columns
+        if (!empty($footerColumns)) {
+            foreach ($footerColumns as $columnKey => $column) {
+                $columnData = [
+                    'title' => $column['title'] ?? '',
+                    'links' => $column['links'] ?? []
+                ];
+                // Check if the column exists in the database, and update or insert
+                if ($footerColumnsModel->find($columnKey)) {
+                    $footerColumnsModel->update($columnKey, $columnData);
+                } else {
+                    $footerColumnsModel->insert($columnData);
+                }
+            }
+        }
+    
+        // Save footer images
+        if (!empty($footerImages)) {
+            foreach ($footerImages as $imageKey => $imageData) {
+                $imageLink = $imageData['link'] ?? null; // Safely retrieve 'link'
+                $imageFile = null;
+    
+                // Handle image file upload
+                if (isset($files['images'][$imageKey]['image'])) {
+                    $file = $files['images'][$imageKey]['image'];
+                    if ($file->isValid() && !$file->hasMoved()) {
+                        // Move the uploaded file
+                        $newImageName = $file->getRandomName();
+                        $file->move(FCPATH . 'uploads/footer_images', $newImageName);
+                        $imageFile = 'uploads/footer_images/' . $newImageName;
+                    }
+                }
+    
+                // Determine if it's a new or existing record
+                if (strpos($imageKey, 'new_') === 0) {
+                    // Insert new record
+                    if ($imageFile || $imageLink) {
+                        $imageDataToSave = [
+                            'image' => $imageFile,
+                            'link' => $imageLink,
+                            'type' => $imageData['type'] ?? 'unknown'
+                        ];
+                        $footerImagesModel->insert($imageDataToSave);
+                    }
+                } else {
+                    // Update existing record
+                    $existingImage = $footerImagesModel->find($imageKey);
+                    if ($existingImage) {
+                        // Retain old image if no new one is uploaded
+                        $imageFile = $imageFile ?? $existingImage['image'];
+                        $imageDataToSave = [
+                            'image' => $imageFile,
+                            'link' => $imageLink,
+                            'type' => $existingImage['type'] // Keep the same type
+                        ];
+                        $footerImagesModel->update($imageKey, $imageDataToSave);
+                    }
+                }
+            }
+        }
+    
+        // Redirect or return a response after saving
+        return redirect()->to('/footer')->with('success', 'Footer updated successfully');
+    }
+
+    public function deleteFooterImage($id)
+    {
+        // Load the model
+        $footerImagesModel = new FooterImagesModel();
+
+        // Get the image data from the database
+        $image = $footerImagesModel->find($id);
+
+        if ($image) {
+            // Define the image path to remove
+            $imagePath = FCPATH . $image['image'];
+
+            // Delete the image file from the server
+            if (file_exists($imagePath)) {
+                unlink($imagePath); // Delete the file
+            }
+
+            // Delete the image record from the database
+            $footerImagesModel->delete($id);
+
+            // Return a success response
+            return $this->response->setJSON(['success' => true, 'id' => $id]);
+        }
+
+        // Return error response if image is not found
+        return $this->response->setJSON(['success' => false, 'message' => 'Image not found']);
+    }
+
 }
