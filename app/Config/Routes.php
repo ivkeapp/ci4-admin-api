@@ -64,6 +64,7 @@ $routes->get('/footer', 'PagesController::editFooter');
 $routes->post('/footer/update', 'PagesController::updateFooter');
 $routes->delete('footerimages/deleteImage/(:num)', 'PagesController::deleteFooterImage/$1');
 $routes->get('/homepage', 'PagesController::editHomepage');
+$routes->get('/page-builder', 'PagesController::pageBuilder');
 $routes->post('/homepage/update', 'PagesController::updateHomepage');
 $routes->get('/pages', 'PagesController::index');
 $routes->get('/pages/view/(:segment)', 'PagesController::view/$1');

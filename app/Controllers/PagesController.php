@@ -399,4 +399,17 @@ class PagesController extends BaseController
         return $this->response->setJSON(['success' => false, 'message' => 'Image not found']);
     }
 
+    // PAGE BUILDER
+    public function pageBuilder()
+    {
+        $commonData = $this->getCommonData();
+        $specificData = [
+            'title' => 'Page Builder - WebTech Admin',
+            'description' => 'Manage pages, sections and content.'
+        ];
+
+        $data = array_merge($commonData, $specificData);
+
+        return view('admin/pages/page-builder', $data);
+    }
 }
