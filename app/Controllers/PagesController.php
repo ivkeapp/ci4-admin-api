@@ -13,6 +13,7 @@ use App\Models\SliderProductsModel;
 use App\Models\ProductModel;
 use App\Models\FooterColumnModel;
 use App\Models\FooterImagesModel;
+use App\Models\PageBuilderSectionsModel;
 
 class PagesController extends BaseController
 {
@@ -412,4 +413,55 @@ class PagesController extends BaseController
 
         return view('admin/pages/page-builder', $data);
     }
+    public function saveSections()
+    {
+        // Check if the request is an AJAX request
+        if ($this->request->isAJAX()) {
+            // Retrieve the JSON data from the POST request
+            $jsonData = $this->request->getJSON(true);
+    
+            // Validate the JSON structure
+            if (!isset($jsonData['sections']) || !is_array($jsonData['sections'])) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Invalid sections data.',
+                ]);
+            }
+    
+            // Instantiate the model
+            $model = new PageBuilderSectionsModel();
+    
+            // Initialize an array to collect saved section IDs
+            $savedSectionIDs = [];
+    
+            // Loop through each section and save it
+            foreach ($jsonData['sections'] as $index => $section) {
+                $data = [
+                    'order' => $index, // Save the order of the section
+                    'data' => json_encode($section), // Convert the section data to JSON
+                ];
+    
+                // Attempt to save the section
+                if ($model->insert($data)) {
+                    $savedSectionIDs[] = $model->getInsertID();
+                } else {
+                    return $this->response->setStatusCode(500)->setJSON([
+                        'status' => 'error',
+                        'message' => 'Failed to save sections.',
+                        'errors' => $model->errors(),
+                    ]);
+                }
+            }
+    
+            // Return a success response with saved section IDs
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Sections saved successfully.',
+                'section_ids' => $savedSectionIDs,
+            ]);
+        }
+    
+        return $this->response->setStatusCode(400, 'Invalid Request');
+    }
+    
 }

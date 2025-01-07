@@ -15,6 +15,38 @@
     #content-wrapper {
         margin-left: 0!important;
     }
+    /* Floating button styles */
+    .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        padding: 10px 15px;
+        z-index: 3;
+    }
+
+    /* Hover effect */
+    .floating-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        background-color: #0056b3;
+    }
+
+    /* Click effect */
+    .floating-btn:active {
+        transform: scale(0.9);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
     #toolbox {
         background-color: #ffffff;
         border-right: 1px solid #ddd;
@@ -172,6 +204,10 @@
         font-weight: 300;
     }
 </style>
+<!-- Floating Button -->
+<button class="floating-btn" id="saveButton">
+    <i class="fas fa-save"></i>&nbsp; Save
+</button>
 <div class="container-fluid">
     <div class="row">
         <!-- Toolbox -->
@@ -239,7 +275,7 @@
                 <label for="columns" class="form-label">Select number of columns:</label>
                 <select id="columns" class="form-select">
                     <option value="1">1 Column</option>
-                    <option value="2">2 Columns</option>
+                    <option value="2" selected>2 Columns</option>
                     <option value="3">3 Columns</option>
                     <option value="4">4 Columns</option>
                 </select>
@@ -252,6 +288,11 @@
 </div>
 
 <script>
+    // VARIABLES
+    // Store data structure for the page builder
+    const pageData = {
+        sections: []
+    };
     // CONSTANTS
     const blockPreview = {
         image: `
@@ -318,10 +359,19 @@
         $('#addSectionBtn').click(function () {
             currentColumns = $('#columns').val();
             const section = $('<div class="section"><div class="row"></div></div>');
+            const sectionIndex = pageData.sections.length;
+            const sectionData = { columns: [] };
 
             for (let i = 0; i < currentColumns; i++) {
-                section.find('.row').append(`<div class="col column"><div class="section-content"><i class="fas fa-plus"></i></div></div>`);
+                section.find('.row').append(`
+                    <div class="col column" data-section="${sectionIndex}" data-column="${i}">
+                        <div class="section-content"><i class="fas fa-plus"></i></div>
+                    </div>
+                `);
+                sectionData.columns.push({ blocks: [] });
             }
+            
+            pageData.sections.push(sectionData);
 
             $('#page-canvas').append(section);
             appendEmptySection();
@@ -339,10 +389,15 @@
                 },
                 drop: function (event, ui) {
                     const blockType = ui.helper.data('type');
-                    let blockInputs;
-                    console.log(blockType, 'blockType');
-                    
-                    const block = addBlock(blockType);
+                    const sectionIdx = $(this).data('section');
+                    const columnIdx = $(this).data('column');
+                    // console.log(blockType, 'blockType', sectionIdx, 'sectionIdx', columnIdx, 'columnIdx');
+
+                    const blockData = { type: blockType, content: {} };
+                    pageData.sections[sectionIdx].columns[columnIdx].blocks = [];
+                    pageData.sections[sectionIdx].columns[columnIdx].blocks.push(blockData);
+
+                    const block = addBlock(blockType, blockData, sectionIdx, columnIdx);
 
                     // Append block to the dropped section
                     $('#block-properties').html(block.blockInputs);
@@ -365,8 +420,27 @@
     });
 
     // FUNCTIONS
-    function addBlock(blockType) {
+    function addBlock(blockType, blockData, sectionIdx, columnIdx) {
+        console.log('addBlock triggerd')
         let preview = '';
+        let blockInputs = '';
+        console.log(blockData, 'blockData on addBlock')
+
+        // Validate or initialize blockData
+        if (!blockData) {
+            console.error('BLOCK DATA NOT EXIST!')
+            blockData = { type: blockType, content: {} };
+            if (!pageData.sections?.[sectionIdx]?.columns?.[columnIdx]?.blocks) {
+                console.error(
+                    `Blocks array not initialized for Section ${sectionIdx}, Column ${columnIdx}`
+                );
+                return;
+            }
+            pageData.sections[sectionIdx].columns[columnIdx].blocks.push(blockData);
+        }
+        
+        console.log('BLOCK ADDED TO DATA: ', pageData.sections[sectionIdx].columns[columnIdx].blocks);
+        // console.log(blockData.content, 'blockData.content');
         switch (blockType) {
             case "image":
                 preview = blockPreview.image;
@@ -374,10 +448,17 @@
                 blockInputs = `
                     <div class="block image-block">
                         <label>Image:</label>
-                        <img id="${uniqueId}-preview" src="img/placeholder.png" alt="Click to upload" 
+                        <img id="${uniqueId}-preview" src="${(blockData.content?.image ? blockData.content.image : 'img/placeholder.png')}" alt="Click to upload" 
                             class="image-placeholder">
-                        <input type="file" id="${uniqueId}" name="image_file" class="form-control image-input-hidden" accept="image/*" onchange="previewImage(event, '${uniqueId}-preview')">
+                        <input 
+                            type="file" 
+                            id="${uniqueId}" 
+                            name="image_file" 
+                            class="form-control image-input-hidden" 
+                            accept="image/*"
+                            onchange="handleBlockInputChange('image_file', this, ${sectionIdx}, ${columnIdx}, 0, '${uniqueId}-preview')">
                     </div>`;
+                blockData.content.image = '';
                 break;
             case "image-title":
                 preview = blockPreview.imageTitle;
@@ -389,39 +470,61 @@
                                 <img id="image-preview" src="img/placeholder.png" alt="Image Placeholder" class="image-preview">
                             </div>
                         </label>
-                        <label>Title: <input type="text" name="image_title" class="form-control"></label>
-                        <label>Subtitle: <input type="text" name="image_subtitle" class="form-control"></label>
+                        <label>
+                            Title:
+                            <input
+                                type="text"
+                                name="image_title"
+                                class="form-control"
+                                value="${blockData.content.image_title ? blockData.content.image_title : ''}"
+                                onchange="handleBlockInputChange('image_title', this.value, ${sectionIdx}, ${columnIdx})"
+                            >
+                        </label>
+                        <label>Subtitle: <input type="text" name="image_subtitle" class="form-control"
+                            value="${blockData.content.image_subtitle ? blockData.content.image_subtitle : ''}"
+                            onchange="handleBlockInputChange('image_subtitle', this.value, ${sectionIdx}, ${columnIdx})"></label>
                     </div>`;
+                blockData.content.imageTitle = '';
                 break;
             case "text":
                 preview = blockPreview.text;
                 blockInputs = `
                     <div class="block text-block">
-                        <label>Text Content: <textarea name="text_content" class="form-control"></textarea></label>
+                        <label>Text Content: <textarea name="text_content" class="form-control"
+                        onchange="handleBlockInputChange('text_content', this.value, ${sectionIdx}, ${columnIdx})">${(blockData.content.text_content ? blockData.content.text_content : '')}</textarea></label>
                     </div>`;
+                blockData.content.text = '';
                 break;
             case "title-text":
                 preview = blockPreview.titleText;
                 blockInputs = `
                     <div class="block title-text-block">
-                        <label>Title: <input type="text" name="title" class="form-control"></label>
-                        <label>Subtitle: <input type="text" name="subtitle" class="form-control"></label>
-                        <label>Text: <textarea name="text_content" class="form-control"></textarea></label>
+                        <label>Title: <input type="text" name="title" class="form-control"
+                        value="${blockData.content.title ? blockData.content.title : ''}"
+                        onchange="handleBlockInputChange('title', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Subtitle: <input type="text" name="subtitle" class="form-control"
+                        value="${blockData.content.subtitle ? blockData.content.subtitle : ''}"
+                        onchange="handleBlockInputChange('subtitle', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Text: <textarea name="text_content" class="form-control"
+                        onchange="handleBlockInputChange('text_content', this.value, ${sectionIdx}, ${columnIdx})">${(blockData.content.text_content ? blockData.content.text_content : '')}
+                        </textarea></label>
                     </div>`;
+                blockData.content.titleText = '';
                 break;
             case "slider":
                 preview = blockPreview.slider;
                 blockInputs = `
                     <div class="block slider-block">
                         <label>Slider Images (comma-separated URLs): 
-                            <textarea name="slider_images" class="form-control"></textarea>
+                            <textarea name="slider_images" class="form-control" onchange="handleBlockInputChange('slider_images', this.value, ${sectionIdx}, ${columnIdx})"></textarea>
                         </label>
-                        <label>Title: <input type="text" name="slider_title" class="form-control"></label>
-                        <label>"See More" Link: <input type="text" name="slider_link" class="form-control"></label>
+                        <label>Title: <input type="text" name="slider_title" class="form-control" onchange="handleBlockInputChange('slider_title', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>"See More" Link: <input type="text" name="slider_link" class="form-control" onchange="handleBlockInputChange('slider_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
                         <label>Show Slider: 
-                            <input type="checkbox" name="show_slider" class="form-control">
+                            <input type="checkbox" name="show_slider" class="form-control" onchange="handleBlockInputChange('show_slider', this.value, ${sectionIdx}, ${columnIdx})">
                         </label>
                     </div>`;
+                blockData.content.slider = '';
                 break;
             case "hero":
                 preview = blockPreview.hero;
@@ -438,6 +541,7 @@
                         <label>Button Text: <input type="text" name="hero_button_text" class="form-control"></label>
                         <label>Button Link: <input type="text" name="hero_button_link" class="form-control"></label>
                     </div>`;
+                blockData.content.hero = '';
                 break;
             case "card":
                 preview = blockPreview.card;
@@ -455,6 +559,7 @@
                         <label>Button Text: <input type="text" name="card_button_text" class="form-control"></label>
                         <label>Button Link: <input type="text" name="card_button_link" class="form-control"></label>
                     </div>`;
+                blockData.content.card = '';
                 break;
             case "button":
                 preview = blockPreview.button;
@@ -463,6 +568,7 @@
                         <label>Button Text: <input type="text" name="button_text" class="form-control"></label>
                         <label>Button Link: <input type="text" name="button_link" class="form-control"></label>
                     </div>`;
+                blockData.content.button = '';
                 break;
             case "tinymce":
                 preview = blockPreview.tinymce;
@@ -470,6 +576,7 @@
                     <div class="block tinymce-block">
                         <label>Content: <textarea class="tinymce-editor"></textarea></label>
                     </div>`;
+                blockData.content.tinymce = '';
                 tinymce.init({ selector: '.tinymce-editor' });
                 break;
             default:
@@ -495,7 +602,7 @@
         }
     }
     function triggerFileInput(inputId) {
-        console.log(inputId, 'inputId');
+        // console.log(inputId, 'triggerFileInput inputId');
         document.getElementById(inputId).click();
     }
     function appendEmptySection() {
@@ -510,12 +617,12 @@
     // EVENT LISTENERS
     $(document).on('click', '.image-placeholder', function (e) { 
         e.stopPropagation(); // Prevent interference with parent clicks
-        console.log('test');
+        // console.log('test');
         
         const inputElement = $(this).siblings('input[type="file"]'); // Use siblings to find the input
         if (inputElement.length > 0) {
             const inputId = inputElement.attr('id');
-            console.log(inputId, 'inputId');
+            // console.log(inputId, 'onclick image-placeholder inputId');
             if (inputId) {
                 triggerFileInput(inputId);
             }
@@ -524,24 +631,114 @@
         }
     });
     $(document).on('click', '.column', function (e) {
-        if($(this).attr('data-target')) {
-            // todo
+        const blockType = $(this).data('type');
+        const sectionIdx = $(this).data('section');
+        const columnIdx = $(this).data('column');
+
+        console.log('pageData on column click', pageData)
+        
+        console.log('data on column click',{
+            blockType,
+            sectionIdx,
+            columnIdx,
+            columnData: pageData.sections?.[sectionIdx]?.columns?.[columnIdx]
+        });
+
+        if ($(this).attr('data-target')) {
+            // console.log('Data target:', $(this).attr('data-target'));
         }
-        if($(this).attr('data-type')) {
-            const block = addBlock($(this).attr('data-type'));
-            // Append block to the dropped section
+
+        if (blockType) {
+            // Ensure the structure is initialized
+            if (!pageData.sections?.[sectionIdx]?.columns?.[columnIdx]) {
+                console.error(`Invalid section or column index: Section ${sectionIdx}, Column ${columnIdx}`);
+                return;
+            }
+            // console.log(pageData, 'pageData');
+            // console.log(pageData.sections[sectionIdx].columns[columnIdx], 'clicked column');
+            
+            if (!pageData.sections[sectionIdx].columns[columnIdx].blocks) {
+                pageData.sections[sectionIdx].columns[columnIdx].blocks = [];
+            }
+
+            const block = addBlock(blockType, pageData.sections[sectionIdx].columns[columnIdx].blocks[0], sectionIdx, columnIdx);
+            // console.log({ block }, 'Block created successfully');
+
             $('#block-properties').html(block.blockInputs);
         } else {
-            infoMessage('Drag block onto column to add!', 'info')
+            infoMessage('Drag block onto column to add!', 'info');
         }
-        // Remove selection from all columns
-        $('.column').removeClass('selected-column').removeAttr('data-selected').css('border', '');
 
-        // Add selection to the clicked column
+        $('.column').removeClass('selected-column').removeAttr('data-selected').css('border', '');
         $(this).addClass('selected-column').attr('data-selected', 'true').css('border', '2px solid blue');
-        
-        // Log the selected column for debugging
-        console.log('Selected column:', $(this));
+        // console.log('Selected column:', $(this));
+        // console.log('pageData after column click', pageData)
+    });
+
+
+    
+    // Update block content in the data structure
+    function updateBlockContent(sectionIdx, columnIdx, input, key) {
+        const value = $(input).val();
+        const block = pageData.sections[sectionIdx].columns[columnIdx].blocks.slice(-1)[0];
+        block.content[key] = value;
+    }
+
+    // Serialize data for submission
+    function collectPageData() {
+        console.log('Collected Page Data:', JSON.stringify(pageData));
+        // Submit via AJAX or another method
+    }
+    function handleBlockInputChange(fieldName, inputElement, sectionIdx, columnIdx, blockIdx = 0, previewId = '') {
+        console.log('handleBlockInputChange triggered');
+        console.log('handleBlockInputChange fieldName', fieldName, 'inputElement', inputElement, 'sectionIdx', sectionIdx, 'previewId', previewId);
+
+        // Retrieve the block from pageData using indexes
+        const block = pageData.sections[sectionIdx].columns[columnIdx].blocks[blockIdx];
+
+        // Update the corresponding field in the block content
+        if (block && block.content) {
+            if (fieldName === 'image_file') {
+                const file = inputElement.files[0]; // Access the first file in the input
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        // Set the image URL as base64 string
+                        // console.log(event.target.result, 'event.target.result')
+                        block.content.image = event.target.result;
+
+                        // Update the preview
+                        const previewElement = document.getElementById(previewId);
+                        if (previewElement) {
+                            previewElement.src = event.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file); // Pass the file object to readAsDataURL
+                } else {
+                    console.error('No file selected');
+                }
+            } else {
+                // Update other fields like title or subtitle
+                block.content[fieldName] = inputElement;
+            }
+        }
+    }
+
+    $(document).on('click', '#saveButton', function (e) {
+        console.log(pageData, 'pageData');
+        $.ajax({
+            url: '/page-builder/saveSection',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(pageData),
+            success: function (response) {
+                console.log('Server Response:', response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', status, error);
+                console.error('Response Text:', xhr.responseText);
+            }
+        });
     });
 </script>
 <?= $this->endSection(); ?>
