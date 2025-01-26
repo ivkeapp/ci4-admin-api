@@ -158,6 +158,20 @@
                 <span>Messages</span>
             </a>
         </li>
+          <!-- Nav Item - Blog -->
+          <li class="nav-item">
+            <a class="nav-link" href="<?= url_to('blog') ?>">
+                <i class="fas fa-fw fa-blog"></i>
+                <span>Blog</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="<?= url_to('blogCreate') ?>">
+                <i class="fas fa-fw fa-blog"></i>
+                <span>Blog create</span>
+            </a>
+        </li>
+  
 
         <!-- Divider -->
         <!-- <hr class="sidebar-divider"> -->

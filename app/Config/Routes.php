@@ -46,7 +46,7 @@ $routes->get('user/profile', 'UserController::profile');
 // Table example route
 $routes->get('/example-table', 'ExampleTablesController::index');
 
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function($routes) {
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'groupfilter:superadmin,admin,developer'], function ($routes) {
     $routes->get('get-role', 'AdminController::getRole');
     $routes->get('groups', 'AdminController::groups');
     $routes->get('assign', 'AdminController::assign');
@@ -70,7 +70,7 @@ $routes->get('/pages/delete/(:segment)', 'PagesController::delete/$1');
 
 $routes->get('/activity-logs', 'ActivityLogController::index');
 
-$routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function ($routes) {
     $routes->get('invalid-access', 'AuthController::accesDenied');
     $routes->post('register', 'AuthController::register');
     $routes->post('login', 'AuthController::login');
@@ -79,4 +79,23 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes){
     $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
+
+
+    // Blog  api routes
+    $routes->get('blogs', 'BlogController::index', ['filter' => 'apiauth']);
+    $routes->get('blogs/(:num)', 'BlogController::getSingleBlog/$1', ['filter' => 'apiauth']);
+    $routes->post('blogs', 'BlogController::storeBlog', ['filter' => 'apiauth']);
+    $routes->post('blogs/(:num)', 'BlogController::updateBlog/$1', ['filter' => 'apiauth']);
+    $routes->delete('blogs/(:num)', 'BlogController::deleteSingleBlog/$1', ['filter' => 'apiauth']);
 });
+
+
+
+// Blog routes
+$routes->get('blogs/', 'BlogController::index', ['filter' => 'session', 'as' => 'blog']);
+$routes->get('blogs/(:num)', 'BlogController::show/$1', ['filter' => 'session', 'as' => 'blogShow']);
+$routes->get('blogs/create', 'BlogController::create', ['filter' => 'session', 'as' => 'blogCreate']);
+$routes->post('blogs/create', 'BlogController::store', ['filter' => 'session', 'as' => 'blogStore']);
+$routes->get('blogs/edit/(:num)', 'BlogController::edit/$1', ['filter' => 'session', 'as' => 'blogEdit']);
+$routes->post('blogs/edit/(:num)', 'BlogController::update/$1', ['filter' => 'session', 'as' => 'blogUpdate']);
+$routes->post('blogs/delete/(:num)', 'BlogController::delete/$1', ['filter' => 'session', 'as' => 'blogDelete']);
