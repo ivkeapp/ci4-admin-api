@@ -44,6 +44,8 @@
     </div>
 
 <?php endforeach  ?>
-
+<div class="d-flex justify-content-center">
+    <?= $pager->Links('blogGroup', 'bootstrap_full') ?>
+</div>
 
 <?= $this->endSection() ?>

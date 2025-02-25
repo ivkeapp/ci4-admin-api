@@ -14,12 +14,14 @@ class BlogController extends BaseController
     public function __construct()
     {
         $this->blogModel = new BlogModel();
+        $this->auth = service('authentication');
     }
 
     public function index()
     {
         $commonData = $this->getCommonData();
-        $blogData['blogs'] = $this->blogModel->orderBy('id','desc')->findAll();
+        $blogData['blogs'] = $this->blogModel->orderBy('id', 'desc')->paginate(8, 'blogGroup');
+        $blogData['pager'] = $this->blogModel->pager;
         $specificData = [
             'title' => 'Dashboard - WebTech Admin',
             'description' => 'This is a blog section',
@@ -54,29 +56,33 @@ class BlogController extends BaseController
     public function store()
     {
         $validation = service('validation');
-        $data = [
+        // get the data
+        $data = $this->request->getPost([
+            'seo_title',
+            'seo_description',
+            'title',
+            'subtitle',
+            'content'
+        ]);
+        $data['author_id'] = $this->auth->id();
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['image'] = $this->request->getFile('image');
 
-            'author_id' => $this->auth->id(),
-            'seo_title' => $this->request->getPost('seo_title'),
-            'seo_description' => $this->request->getPost('seo_description'),
-            'title' => $this->request->getPost('title'),
-            'subtitle' => $this->request->getPost('subtitle'),
-            'content' => $this->request->getPost('content'),
-            'image' => $this->request->getFile('image'),
-            'created_at' =>  date('Y-m-d H:i:s'),
-            'updated_at' =>  date('Y-m-d H:i:s'),
-        ];
-
+        // validate the data
         if (!$validation->run($data, 'blogRules')) {
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
+        // save the blog without the image
         $blogId = $this->blogModel->insert($data, true);
         $imageName = $blogId . '_image.jpg';
 
+        // upload the image
         if (!$data['image']->hasMoved()) {
             $data['image']->move('../public/assets/img/blogsImages', $imageName, true);
             $data['image'] = $imageName;
         }
+        // add the image to the blog
         $this->blogModel->update($blogId, $data);
         return redirect()->to(url_to('blogCreate'))->with('message', 'Blog created successfully.');
     }
@@ -94,30 +100,31 @@ class BlogController extends BaseController
     public function update($blogId)
     {
         helper('filesystem');
+        $validation = service('validation');
         $blog = $this->blogModel->find($blogId);
 
         // validating the author
         if ($blog['author_id'] !== strval($this->auth->id())) {
             return redirect()->to(url_to('blog'));
+            exit;
         }
-        $validation = service('validation');
-        $data = [
+        // retrieve the data
+        $data = $this->request->getPost([
+            'seo_title',
+            'seo_description',
+            'title',
+            'subtitle',
+            'content'
+        ]);
+        $data['author_id'] = $this->auth->id();
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['image'] = $this->request->getFile('image');
 
-            'author_id' => $this->auth->id(),
-            'seo_title' => $this->request->getPost('seo_title'),
-            'seo_description' => $this->request->getPost('seo_description'),
-            'title' => $this->request->getPost('title'),
-            'subtitle' => $this->request->getPost('subtitle'),
-            'content' => $this->request->getPost('content'),
-            'image' => $this->request->getFile('image'),
-            'created_at' =>  date('Y-m-d H:i:s'),
-            'updated_at' =>  date('Y-m-d H:i:s'),
-        ];
-
+        // validate the data
         if (!$validation->run($data, 'blogRulesUpdate')) {
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
-
+        // update the image if the new image was uploaded
         if (!$data['image']->getSize() == 0) {
             if (!$data['image']->hasMoved()) {
                 $data['image']->move('../public/assets/img/blogsImages', $blog['image'], true);
@@ -126,6 +133,7 @@ class BlogController extends BaseController
             $data['image'] = $blog['image'];
         }
         $data['image'] = $blog['image'];
+        // update the blog
         $this->blogModel->update($blog['id'], $data);
         return redirect()->to(url_to('blog'))->with('message', 'Blog updated successfully.');
     }
@@ -133,13 +141,20 @@ class BlogController extends BaseController
     {
         helper('filesystem');
         $blog = $this->blogModel->find($blogId);
-        
-        // validating the author
-        if (!$blog['author_id'] == strval($this->auth->id())) {
-            return redirect()->to(url_to('blog'));
-        } 
 
-        unlink('assets/img/blogsImages/' . $blog['image']);
+        // validating the author
+        if ($blog['author_id'] !== strval($this->auth->id())) {
+            return redirect()->to(url_to('blog'));
+            exit;
+        }
+
+        $imagePath = FCPATH . 'assets/img/blogsImages/' . $blog['image'];
+        // verify that the file exists and that it is not a seeder picture
+        if (file_exists($imagePath) && is_file($imagePath) && $blog['image'] !== 'seedImage.jpg') {
+            unlink($imagePath);
+        }
+
+        // unlink('assets/img/blogsImages/' . $blog['image']);
         $this->blogModel->delete($blogId);
 
         return redirect()->to(url_to('blog'))->with('message', 'Blog deleted successfully.');

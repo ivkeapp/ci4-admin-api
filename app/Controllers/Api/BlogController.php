@@ -19,8 +19,7 @@ class BlogController extends ResourceController
 
     public function index()
     {
-        $blogModel = new BlogModel();
-        $blogs = $blogModel->findAll();
+        $blogs = $this->blogModel->findAll();
         if ($blogs == null) {
             return $this->respondCreated([
                 'status' => 404,
@@ -37,8 +36,7 @@ class BlogController extends ResourceController
 
     public function getSingleBlog($id)
     {
-        $blogModel = new BlogModel();
-        $blog = $blogModel->find($id);
+        $blog = $this->blogModel->find($id);
         if ($blog == null) {
             return $this->respondCreated([
                 'status' => 404,
@@ -53,21 +51,22 @@ class BlogController extends ResourceController
         ]);
     }
 
-    public function storeBlog(){
+    public function storeBlog()
+    {
         $validation = service('validation');
-        $data = [
+        // retrieve the data
+        $data = $this->request->getPost([
+            'seo_title',
+            'seo_description',
+            'title',
+            'subtitle',
+            'content'
+        ]);
+        $data['author_id'] = auth()->id();
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['image'] = $this->request->getFile('image');
 
-            'author_id' => auth()->id(),
-            'seo_title' => $this->request->getPost('seo_title'),
-            'seo_description' => $this->request->getPost('seo_description'),
-            'title' => $this->request->getPost('title'),
-            'subtitle' => $this->request->getPost('subtitle'),
-            'content' => $this->request->getPost('content'),
-            'image' => $this->request->getFile('image'),
-            'created_at' =>  date('Y-m-d H:i:s'),
-            'updated_at' =>  date('Y-m-d H:i:s'),
-        ];
-
+        // validate the data
         if (!$validation->run($data, 'blogRules')) {
             return $this->respondCreated([
                 'status' => 400,
@@ -92,8 +91,8 @@ class BlogController extends ResourceController
     }
 
 
-    public function updateBlog($id){
-
+    public function updateBlog($id)
+    {
         helper('filesystem');
         $blog = $this->blogModel->find($id);
         if ($blog == null) {
@@ -103,29 +102,31 @@ class BlogController extends ResourceController
                 'blog' => $blog,
             ]);
         }
-      
+
         // validating the author
         if ($blog['author_id'] !== strval(auth()->id())) {
             return $this->respondCreated([
                 'status' => 403,
                 'error' => true,
-                'error_list' => ['author'=>'You are not the author of the blog.'],
+                'error_list' => ['author' => 'You are not the author of the blog, you cannot update the blog.'],
             ]);
+            exit;
         }
 
-        $validation = service('validation');   
-        $data = [
+        $validation = service('validation');
 
-            'author_id' => auth()->id(),
-            'seo_title' => $this->request->getPost('seo_title'),
-            'seo_description' => $this->request->getPost('seo_description'),
-            'title' => $this->request->getPost('title'),
-            'subtitle' => $this->request->getPost('subtitle'),
-            'content' => $this->request->getPost('content'),
-            'image' => $this->request->getFile('image'),
-            'created_at' =>  date('Y-m-d H:i:s'),
-            'updated_at' =>  date('Y-m-d H:i:s'),
-        ];
+
+        $data = $this->request->getPost([
+            'seo_title',
+            'seo_description',
+            'title',
+            'subtitle',
+            'content'
+        ]);
+        $data['author_id'] = auth()->id();
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['image'] = $this->request->getFile('image');
+
 
         if (!$validation->run($data, 'blogRulesUpdate')) {
             return $this->respondCreated([
@@ -149,13 +150,11 @@ class BlogController extends ResourceController
             'status' => 201,
             'message' => 'Blog updated successfully',
         ]);
-
     }
 
     public function deleteSingleBlog($id)
     {
-        $blogModel = new BlogModel();
-        $blog = $blogModel->find($id);
+        $blog = $this->blogModel->find($id);
         if ($blog == null) {
             return $this->respondCreated([
                 'status' => 404,
@@ -163,12 +162,25 @@ class BlogController extends ResourceController
                 'blog' => $blog,
             ]);
         }
-        // preventing the deletion of the seeder image
-        if ($blog['image'] !== 'seedImage.jpg') {
-            // delete the blog image file
-            unlink('assets/img/blogsImages/' . $blog['image']);
+
+        // validating the author
+        if ($blog['author_id'] !== strval(auth()->id())) {
+            return $this->respondCreated([
+                'status' => 403,
+                'error' => true,
+                'error_list' => ['author' => 'You are not the author of the blog, you cannot delete the blog.'],
+            ]);
+            exit;
         }
-        $blog = $blogModel->delete($id);
+
+        $imagePath = FCPATH . 'assets/img/blogsImages/' . $blog['image'];
+        // verify that the file exists and that it is not a seeder picture
+        if (file_exists($imagePath) && is_file($imagePath) && $blog['image'] !== 'seedImage.jpg') {
+            unlink($imagePath);
+        }
+
+        // delete the blog
+        $blog = $this->blogModel->delete($id);
         return $this->respondCreated([
             'status' => 200,
             'message' => 'Blog deleted successfully',
