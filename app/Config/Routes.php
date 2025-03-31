@@ -60,6 +60,16 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'gr
     $routes->post('update-user', 'AdminController::updateUser');
 });
 
+$routes->get('/homepage', 'PagesController::editHomepage');
+$routes->post('/homepage/update', 'PagesController::updateHomepage');
+
+$routes->get('/footer', 'PagesController::editFooter');
+$routes->post('/footer/update', 'PagesController::updateFooter');
+$routes->delete('footerimages/deleteImage/(:num)', 'PagesController::deleteFooterImage/$1');
+
+$routes->get('/page-builder', 'PagesController::pageBuilder');
+$routes->post('/page-builder/saveSection', 'PagesController::saveSections');
+
 $routes->get('/pages', 'PagesController::index');
 $routes->get('/pages/view/(:segment)', 'PagesController::view/$1');
 $routes->get('/pages/create', 'PagesController::create');
@@ -79,8 +89,16 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function ($routes)
     $routes->post('add-page', 'PagesController::addPage', ['filter' => 'apiauth']);
     $routes->get('pages/(:num)', 'PagesController::show/$1', ['filter' => 'apiauth']);
     $routes->delete('pages/(:num)', 'PagesController::deletePage/$1', ['filter' => 'apiauth']);
-
-
+    $routes->get('homepage', 'PagesController::getHomepageData', ['filter' => 'apiauth']);
+    $routes->resource('categories', [
+        'controller' => 'CategoriesAPIController',
+        'filter' => 'apiauth'
+    ]);
+    $routes->resource('footer', [
+        'controller' => 'PagesController::getFooterData',
+        'filter' => 'apiauth'
+    ]);
+    $routes->options('(:any)', static function () {}); // very important to add this line for cors
     // Blog  api routes
     $routes->get('blogs', 'BlogController::index', ['filter' => 'apiauth']);
     $routes->get('blogs/(:num)', 'BlogController::getSingleBlog/$1', ['filter' => 'apiauth']);
@@ -88,8 +106,6 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function ($routes)
     $routes->post('blogs/(:num)', 'BlogController::updateBlog/$1', ['filter' => 'apiauth']);
     $routes->delete('blogs/(:num)', 'BlogController::deleteSingleBlog/$1', ['filter' => 'apiauth']);
 });
-
-
 
 // Blog routes
 $routes->get('blogs/', 'BlogController::index', ['filter' => 'session', 'as' => 'blog']);
@@ -99,3 +115,27 @@ $routes->post('blogs/create', 'BlogController::store', ['filter' => 'session', '
 $routes->get('blogs/edit/(:num)', 'BlogController::edit/$1', ['filter' => 'session', 'as' => 'blogEdit']);
 $routes->post('blogs/edit/(:num)', 'BlogController::update/$1', ['filter' => 'session', 'as' => 'blogUpdate']);
 $routes->post('blogs/delete/(:num)', 'BlogController::delete/$1', ['filter' => 'session', 'as' => 'blogDelete']);
+
+// $routes->options('(:any)', function () {
+//     $response = service('response');
+//     $response->setHeader('Access-Control-Allow-Origin', '*');
+//     $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+//     $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     return $response->setStatusCode(200)->setBody('');
+// });
+
+$routes->get('/products/create', 'ProductController::create');
+$routes->post('/products/store', 'ProductController::store');
+$routes->get('/products/get-subcategory/(:num)', 'ProductController::getSubcategories/$1');
+$routes->get('/products/get-subsubcategory/(:num)', 'ProductController::getSubsubcategories/$1');
+$routes->get('/products/getSubsubcategoriesByCategory/(:num)', 'ProductController::getSubsubcategoriesByCategory/$1');
+$routes->get('/products', 'ProductController::index');
+$routes->get('/products/addImages', 'ProductController::addImages');
+$routes->post('/products/storeImage/(:num)', 'ProductController::storeImage/$1');
+$routes->get('/products/get-productimages/(:num)', 'ProductController::getProductImages/$1');
+$routes->post('/products/storeImages', 'ProductController::storeImages');
+$routes->get('/products/deleteImage/(:num)', 'ProductController::deleteImage/$1');
+$routes->get('/products/manage-categories', 'ProductController::manageCategories');
+$routes->post('/products/save-category', 'ProductController::saveCategory');
+$routes->delete('/products/delete-category/(:num)', 'ProductController::deleteCategory/$1');
+$routes->get('/products/get-categories', 'ProductController::getCategories');

@@ -1,0 +1,79 @@
+table.categoryTable .form-control {    
+    box-shadow: none;
+    height:32.4px;    
+    box-sizing: border-box;
+}
+
+.categoryTable.table > tbody > tr > td:has(input),
+.categoryTable.table > tbody > tr > td:has(select) {
+    padding: 0 !important;
+}
+
+table.categoryTable {
+    table-layout: fixed;
+}
+
+table.categoryTable tr th, table.categoryTable tr td {
+    border-color: #e9e9e9;
+}
+table.categoryTable td a {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 5px;
+    min-width: 12px;
+}    
+table.categoryTable td a.save {
+    color: #2f2f2f;
+    transition: color 0.3s ease;
+}
+table.categoryTable td a.save:hover {
+    color: #27C46B;
+}
+table.categoryTable td a.cancel {
+    color: #2f2f2f;
+    transition: color 0.3s ease;
+}
+table.categoryTable td a.cancel:hover {
+    color: #E34724;
+}
+table.categoryTable td a.edit {    
+    color: #555;
+    transition: color 0.3s ease;
+}
+table.categoryTable td a.edit:hover {
+    color: #FFC107;
+}
+table.categoryTable td a.delete {
+    color: #555;
+    transition: color 0.3s ease;
+}
+table.categoryTable td a.delete:hover {
+    color: #E34724;
+}
+table.categoryTable td i {
+    font-size: 12px;
+}
+table.categoryTable td a.add i {
+    font-size: 12px;
+    margin-right: -1px;
+    position: relative;
+}    
+table.categoryTable td a.dismis i {
+    font-size: 12px;
+    margin-right: -1px;
+    position: relative;
+}    
+table.categoryTable .form-control {  
+    box-shadow: none;
+    height:32.4px;    
+    box-sizing: border-box;
+}
+table.categoryTable .form-control.error {
+    border-color: #E34724;
+}
+table.categoryTable td .add {
+    display: none;
+}
+table.categoryTable td .dismiss {
+    display: none;
+}

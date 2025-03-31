@@ -44,6 +44,33 @@
                         </div>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#productsCollapse"
+                        aria-expanded="true" aria-controls="productsCollapse">
+                        <i class="fas fa-fw fa-file"></i>
+                        <span>Products</span>
+                    </a>
+                    <div id="productsCollapse" class="collapse" aria-labelledby="headingThree" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Edit products:</h6>
+                            <a class="collapse-item" href="<?= site_url('products') ?>">All Products</a>
+                            <a class="collapse-item" href="<?= site_url('products/create') ?>">Add Product</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#categoriesCollapse"
+                        aria-expanded="true" aria-controls="categoriesCollapse">
+                        <i class="fas fa-fw fa-file"></i>
+                        <span>Categories</span>
+                    </a>
+                    <div id="categoriesCollapse" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Edit categories:</h6>
+                            <a class="collapse-item" href="<?= site_url('products/manage-categories') ?>">Manage categories</a>
+                        </div>
+                    </div>
+                </li>
             <?php endif; ?>
 
             <?php if (in_array('editor', $userGroups)): ?>
@@ -80,7 +107,7 @@
                         <i class="fas fa-fw fa-file"></i>
                         <span>Pages</span>
                     </a>
-                    <div id="pagesCollapse" class="collapse" aria-labelledby="headingThree" data-parent="#accordionSidebar">
+                    <div id="pagesCollapse" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Page administration:</h6>
                             <a class="collapse-item" href="<?= site_url('pages') ?>">All Pages</a>

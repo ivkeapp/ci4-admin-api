@@ -4,6 +4,15 @@ namespace App\Controllers\Api;
 
 use App\Models\PagesModel;
 use CodeIgniter\RESTful\ResourceController;
+use App\Models\FixedPagesModel;
+use App\Models\SectionsModel;
+use App\Models\SlidersModel;
+use App\Models\SliderProductsModel;
+use App\Models\ProductModel;
+use App\Models\ProductBadgeModel;
+use App\Models\ProductImageModel;
+use App\Models\FooterColumnModel;
+use App\Models\FooterImagesModel;
 
 class PagesController extends ResourceController
 {
@@ -127,4 +136,92 @@ class PagesController extends ResourceController
         }
         return $this->respond($response);
     }
+    public function getHomepageData()
+    {
+        
+        $fixedPagesModel = new FixedPagesModel();
+        $sectionsModel = new SectionsModel();
+        $slidersModel = new SlidersModel();
+        $sliderProductsModel = new SliderProductsModel();
+        $productModel = new ProductModel();
+        $productBadgesModel = new ProductBadgeModel();
+        $productImagesModel = new ProductImageModel();
+
+        $homepage = $fixedPagesModel->where('page_name', 'homepage')->first();
+        $sections = $sectionsModel->where('page_id', $homepage['id'])->findAll();
+        $sliders = $slidersModel->where('page_id', $homepage['id'])->findAll();
+
+        // Fetch products for each slider
+        foreach ($sliders as &$slider) {
+            $sliderProductIds = $sliderProductsModel->getProductsBySliderId($slider['id']);
+            $productIds = array_column($sliderProductIds, 'product_id');
+            $products = $productModel->whereIn('id', $productIds)->findAll();
+            
+            foreach ($products as &$product) {
+                // Get the main image for the product
+                $mainImage = $productImagesModel->where('product_id', $product['id'])
+                                                ->where('is_main', 1)
+                                                ->first();
+                $product['main_image'] = $mainImage ? $mainImage['image_path'] : null;
+
+                // Get the badges for the product
+                $badges = $productBadgesModel->where('product_id', $product['id'])->findAll();
+                $product['badges'] = array_column($badges, 'badge_name');
+            }
+
+            $slider['products'] = $products;
+        }
+
+        $data = [
+            'homepage' => $homepage,
+            'sections' => $sections,
+            'sliders' => $sliders
+        ];
+
+        return $this->respond($data);
+    }
+    public function getFooterData()
+    {
+        // Load necessary models
+        $footerColumnsModel = new FooterColumnModel();
+        $footerImagesModel = new FooterImagesModel();
+        // $footerTextModel = new FooterTextModel();
+
+        // Fetch footer columns
+        $footerColumns = $footerColumnsModel->findAll();
+
+        // Fetch footer images
+        $footerImages = $footerImagesModel->findAll();
+
+        // Fetch footer text
+        // $footerText = $footerTextModel->where('id', 1)->first();  // Assuming there's one record for footer text
+
+        // Prepare the footer data
+        $footerData = [
+            'columns' => [],
+            'images' => [],
+            // 'text' => $footerText ? $footerText['text'] : null
+        ];
+
+        // Format the footer columns
+        foreach ($footerColumns as $column) {
+            $footerData['columns'][] = [
+                'title' => $column['title'],
+                'links' => json_decode($column['links'], true) // Decode the JSON stored in the database
+            ];
+        }
+
+        // Format the footer images
+        foreach ($footerImages as $image) {
+            $footerData['images'][] = [
+                'image' => $image['image'],
+                'link' => $image['link'],
+                'type' => $image['type']
+            ];
+        }
+
+        // Return the response
+        return $this->respond($footerData);
+    }
+
 }
