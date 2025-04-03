@@ -401,58 +401,94 @@ class PagesController extends BaseController
     }
 
     // PAGE BUILDER
-    public function pageBuilder()
+    public function pageBuilder($pageId = null)
     {
         $commonData = $this->getCommonData();
+    
+        // Fetch existing sections for the page if editing
+        $sections = [];
+        if ($pageId) {
+            $sectionsModel = new PageBuilderSectionsModel();
+            $sections = $sectionsModel->where('page_id', $pageId)->orderBy('id', 'ASC')->findAll();
+        }
+    
         $specificData = [
             'title' => 'Page Builder - WebTech Admin',
-            'description' => 'Manage pages, sections and content.'
+            'description' => 'Manage pages, sections, and content.',
+            'pageId' => $pageId,
+            'sections' => $sections,
         ];
-
+    
         $data = array_merge($commonData, $specificData);
-
+    
         return view('admin/pages/page-builder', $data);
     }
+    
     public function saveSections()
     {
         // Check if the request is an AJAX request
         if ($this->request->isAJAX()) {
             // Retrieve the JSON data from the POST request
             $jsonData = $this->request->getJSON(true);
-    
+            // return $this->response->setJSON([
+            //     'status' => 'success',
+            //     'message' => 'Data received.',
+            //     'data' => $jsonData,
+            //     'isset' => !isset($jsonData['pageData']),
+            //     'isset_sections' => !isset($jsonData['pageData']['sections']),
+            //     'is_array' => !is_array($jsonData['pageData']),
+            //     'is_array_sections' => !is_array($jsonData['pageData']['sections']),
+            //     'isset_pageId' => !isset($jsonData['pageId']),
+            //     'total' => (!isset($jsonData['pageData']['sections']) || !is_array($jsonData['pageData']['sections']) || !isset($jsonData['pageId'])),
+
+            // ]);
             // Validate the JSON structure
-            if (!isset($jsonData['sections']) || !is_array($jsonData['sections'])) {
+            if (!isset($jsonData['pageData']['sections']) || !is_array($jsonData['pageData']['sections']) || !isset($jsonData['pageId'])) {
                 return $this->response->setStatusCode(400)->setJSON([
-                    'status' => 'error',
+                    'status' => 'danger',
                     'message' => 'Invalid sections data.',
                 ]);
             }
-    
+
             // Instantiate the model
             $model = new PageBuilderSectionsModel();
-    
+
             // Initialize an array to collect saved section IDs
             $savedSectionIDs = [];
-    
+
             // Loop through each section and save it
-            foreach ($jsonData['sections'] as $index => $section) {
+            foreach ($jsonData['pageData']['sections'] as $index => $section) {
                 $data = [
-                    'order' => $index, // Save the order of the section
+                    'page_id' => $jsonData['pageId'], // Add the page ID
+                    // 'order' => $index, // Save the order of the section
                     'data' => json_encode($section), // Convert the section data to JSON
                 ];
-    
-                // Attempt to save the section
-                if ($model->insert($data)) {
-                    $savedSectionIDs[] = $model->getInsertID();
+
+                if (isset($section['id']) && !empty($section['id'])) {
+                    // Update existing section
+                    if ($model->update($section['id'], $data)) {
+                        $savedSectionIDs[] = (int)$section['id'];
+                    } else {
+                        return $this->response->setStatusCode(500)->setJSON([
+                            'status' => 'danger',
+                            'message' => 'Failed to update sections.',
+                            'errors' => $model->errors(),
+                        ]);
+                    }
                 } else {
-                    return $this->response->setStatusCode(500)->setJSON([
-                        'status' => 'error',
-                        'message' => 'Failed to save sections.',
-                        'errors' => $model->errors(),
-                    ]);
+                    // Insert new section
+                    if ($model->insert($data)) {
+                        $savedSectionIDs[] = $model->getInsertID();
+                    } else {
+                        return $this->response->setStatusCode(500)->setJSON([
+                            'status' => 'danger',
+                            'message' => 'Failed to save sections.',
+                            'errors' => $model->errors(),
+                        ]);
+                    }
                 }
             }
-    
+
             // Return a success response with saved section IDs
             return $this->response->setJSON([
                 'status' => 'success',
@@ -460,7 +496,7 @@ class PagesController extends BaseController
                 'section_ids' => $savedSectionIDs,
             ]);
         }
-    
+
         return $this->response->setStatusCode(400, 'Invalid Request');
     }
     

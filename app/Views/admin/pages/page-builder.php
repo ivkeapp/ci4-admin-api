@@ -34,38 +34,53 @@
         padding: 10px 15px;
         z-index: 3;
     }
-
     /* Hover effect */
     .floating-btn:hover {
         transform: scale(1.1);
         box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
         background-color: #0056b3;
     }
-
     /* Click effect */
     .floating-btn:active {
         transform: scale(0.9);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
-    #toolbox {
+    /* Make #page-canvas scrollable */
+    #page-canvas {
+        overflow-y: auto;
+        height: 100vh; /* Full viewport height */
+        margin-left: 300px; /* Adjust to the width of #toolbox */
+        margin-right: 300px; /* Adjust to the width of #block-properties */
+        background-color: #fff;
+        min-height: 100vh;
+        border: 1px dashed #ccc;
+        padding: 20px;
+        position: relative;
+        width: 100%;
+    }
+
+    /* Fix #block-properties and #toolbox */
+    #block-properties, #toolbox {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        overflow-y: auto;
+        height: 100vh; /* Full viewport height */
+    }
+
+    /* Ensure #block-properties and #toolbox have their own scroll if content exceeds screen height */
+    #block-properties {
+        right: 0;
+        width: 300px; /* Adjust width as needed */
         background-color: #ffffff;
-        border-right: 1px solid #ddd;
+        border-left: 1px solid #ddd;
         padding: 10px;
         z-index: 2;
     }
 
-    #toolbox h4 {
-        margin-top: 20px;
-    }
-
-    #page-canvas {
-        background-color: #fff;
-        min-height: 80vh;
-        border: 1px dashed #ccc;
-        padding: 20px;
-        position: relative;
-    }
-    #block-properties {
+    #toolbox {
+        left: 0;
+        width: 300px; /* Adjust width as needed */
         background-color: #ffffff;
         border-right: 1px solid #ddd;
         padding: 10px;
@@ -77,7 +92,6 @@
         padding: 20px;
         background-color: #fff;
     }
-
     .block {
         margin: 10px 0;
         padding: 15px;
@@ -85,26 +99,21 @@
         border-radius: 4px;
         background-color: #f8f9fa;
     }
-
     .block img {
         max-width: 100%;
         height: auto;
     }
-
     .block-title {
         font-weight: bold;
     }
-
     .block-subtitle {
         color: #6c757d;
     }
-
     #blocks {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 10px;
     }
-
     .block-item {
         height: 160px;
         display: flex;
@@ -127,22 +136,6 @@
         font-size: 24px;
         margin-bottom: 10px;
     }
-
-    /* .add-section-btn {
-        margin-top: 20px;
-        display: block;
-        width: 100%;
-        text-align: center;
-        cursor: pointer;
-        background-color: #007bff;
-        color: white;
-        padding: 10px;
-        border-radius: 4px;
-    }
-
-    .add-section-btn:hover {
-        background-color: #0056b3;
-    } */
     .column {
         text-align: center;
     }
@@ -164,20 +157,12 @@
         color: #b7b7b7;
         background-color: #f3f3f3;
     }
-    .block p, .block img, .block textarea {
-        /* pointer-events: none; */
-    }
-    .image-placeholder-container {
-
-    }
-
     .image-placeholder {
         width: 100%;
         height: 100%;
         object-fit: cover;
         border-radius: 4px;
     }
-
     .image-input-hidden {
         display: none; /* Fully hide the input */
         position: absolute; /* Ensure it's out of layout flow */
@@ -211,7 +196,7 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Toolbox -->
-        <div id="toolbox" class="col-md-2">
+        <div id="toolbox">
             <h4>Blocks</h4>
             <div id="blocks">
                 <div class="block-item" data-type="image">
@@ -253,13 +238,12 @@
             </div>
         </div>
         <!-- Page Canvas -->
-        <div id="page-canvas" class="col-md-8">
-            <div class="empty-section add-section-btn" id="empty-section"><div class="add-empty-section">+</div></div>
+        <div id="page-canvas">
+            
         </div>
-        <div id="block-properties" class="col-md-2">
+        <div id="block-properties">
             <!-- Inputs will be appended here -->
         </div>
-        <button class="add-section-btn">+ Add Section</button>
     </div>
 </div>
 
@@ -293,6 +277,10 @@
     const pageData = {
         sections: []
     };
+    var pageId = <?= json_encode($pageId) ?>;
+    if(!pageId) {
+        pageId = 0;
+    }
     // CONSTANTS
     const blockPreview = {
         image: `
@@ -350,6 +338,22 @@
     $(document).ready(function () {
         let currentColumns = 1;
 
+        const sections = <?= json_encode($sections) ?>;
+
+        if (pageId && sections.length > 0) {
+            sections.forEach((section, index) => {
+                // Parse and render each section
+                let sectionData = JSON.parse(section.data);
+                sectionData.id = section.id;
+
+                pageData.sections.push(sectionData);
+                renderSection(sectionData, index, section.id);
+            });
+        } else {
+            // Initialize an empty page
+            appendEmptySection();
+        }
+        console.log(pageData, 'pageData');
         // Show section modal
         $('.add-section-btn').click(function () {
             $('#sectionModal').modal('show');
@@ -398,6 +402,7 @@
                     pageData.sections[sectionIdx].columns[columnIdx].blocks.push(blockData);
 
                     const block = addBlock(blockType, blockData, sectionIdx, columnIdx);
+                    // console.log(pageData, 'pageData after drop');
 
                     // Append block to the dropped section
                     $('#block-properties').html(block.blockInputs);
@@ -415,16 +420,21 @@
 
         // Make blocks draggable
         $('#blocks .block-item').draggable({
-            helper: "clone"
+            helper: "clone",
+            revert: 'invalid',
+            appendTo: 'body',
+            zIndex: 10000,
+            start: function(event, ui) {
+                ui.helper.css('width', $(this).width());
+            }
         });
     });
 
     // FUNCTIONS
     function addBlock(blockType, blockData, sectionIdx, columnIdx) {
-        console.log('addBlock triggerd')
         let preview = '';
         let blockInputs = '';
-        console.log(blockData, 'blockData on addBlock')
+        blockType = blockData.type || blockType;
 
         // Validate or initialize blockData
         if (!blockData) {
@@ -439,8 +449,6 @@
             pageData.sections[sectionIdx].columns[columnIdx].blocks.push(blockData);
         }
         
-        console.log('BLOCK ADDED TO DATA: ', pageData.sections[sectionIdx].columns[columnIdx].blocks);
-        // console.log(blockData.content, 'blockData.content');
         switch (blockType) {
             case "image":
                 preview = blockPreview.image;
@@ -601,10 +609,12 @@
             reader.readAsDataURL(file);
         }
     }
+
     function triggerFileInput(inputId) {
         // console.log(inputId, 'triggerFileInput inputId');
         document.getElementById(inputId).click();
     }
+
     function appendEmptySection() {
         $('#empty-section').remove();
         const section = $('<div class="empty-section add-section-btn" id="empty-section"><div class="add-empty-section">+</div></div>');
@@ -612,6 +622,76 @@
             $('#sectionModal').modal('show');
         });
         $('#page-canvas').append(section);
+    }
+
+    function renderSection(sectionData, sectionIdx, sectionId) {
+        const section = $('<div class="section" id="'+sectionId+'"><div class="row"></div></div>');
+        // Iterate through the columns in the sectionData
+        sectionData.columns.forEach((column, columnIdx) => {
+            const columnElement = $(`
+                <div class="col column ui-droppable" 
+                    data-section="${sectionIdx}" 
+                    data-column="${columnIdx}" 
+                    data-target="${column.blocks.length > 0}" 
+                    data-type="${column.blocks[0]?.type || ''}"
+                    data-selected="false">
+                </div>
+            `);
+            if(column.blocks.length > 0) {
+                // Append blocks within each column
+                column.blocks.forEach((block) => {
+                    
+                    const { blockPreview } = addBlock(block.type, block, sectionIdx, columnIdx);
+    
+                    // Append block preview directly to the column
+                    columnElement.append(blockPreview);
+                });
+            } else {
+                // Add a placeholder for empty columns
+                columnElement.append('<div class="section-content"><i class="fas fa-plus"></i></div>');
+            }
+
+            // Append the column to the section's row
+            section.find('.row').append(columnElement);
+        });
+
+        // Append the rendered section to the page canvas
+        $('#page-canvas').append(section);
+        appendEmptySection();
+        // Make the section's columns droppable
+        $('.column').droppable({
+            accept: ".block-item",
+            over: function () {
+                $(this).addClass('drop-target').attr('data-selected', 'true').css('border', '2px solid blue');
+            },
+            out: function () {
+                $(this).removeClass('drop-target').removeAttr('data-selected').css('border', '');
+            },
+            drop: function (event, ui) {
+                const blockType = ui.helper.data('type');
+                const sectionIdx = $(this).data('section');
+                const columnIdx = $(this).data('column');
+
+                const blockData = { type: blockType, content: {} };
+                const columnBlocks = pageData.sections[sectionIdx].columns[columnIdx].blocks;
+
+                // Clear existing blocks and add the new block
+                columnBlocks.splice(0, columnBlocks.length);
+                columnBlocks.push(blockData);
+
+                const block = addBlock(blockType, blockData, sectionIdx, columnIdx);
+
+                // Update the UI with the new block
+                $(this).html(block.blockPreview)
+                    .addClass('drop-target')
+                    .attr('data-selected', 'true')
+                    .attr('data-target', 'true')
+                    .attr('data-type', blockType)
+                    .css('border', '2px solid blue');
+
+                $('.column').not(this).removeClass('drop-target').removeAttr('data-selected').css('border', '');
+            }
+        });
     }
 
     // EVENT LISTENERS
@@ -654,15 +734,12 @@
                 console.error(`Invalid section or column index: Section ${sectionIdx}, Column ${columnIdx}`);
                 return;
             }
-            // console.log(pageData, 'pageData');
-            // console.log(pageData.sections[sectionIdx].columns[columnIdx], 'clicked column');
             
             if (!pageData.sections[sectionIdx].columns[columnIdx].blocks) {
                 pageData.sections[sectionIdx].columns[columnIdx].blocks = [];
             }
 
             const block = addBlock(blockType, pageData.sections[sectionIdx].columns[columnIdx].blocks[0], sectionIdx, columnIdx);
-            // console.log({ block }, 'Block created successfully');
 
             $('#block-properties').html(block.blockInputs);
         } else {
@@ -671,27 +748,16 @@
 
         $('.column').removeClass('selected-column').removeAttr('data-selected').css('border', '');
         $(this).addClass('selected-column').attr('data-selected', 'true').css('border', '2px solid blue');
-        // console.log('Selected column:', $(this));
-        // console.log('pageData after column click', pageData)
     });
-
-
-    
     // Update block content in the data structure
     function updateBlockContent(sectionIdx, columnIdx, input, key) {
         const value = $(input).val();
         const block = pageData.sections[sectionIdx].columns[columnIdx].blocks.slice(-1)[0];
         block.content[key] = value;
     }
-
-    // Serialize data for submission
-    function collectPageData() {
-        console.log('Collected Page Data:', JSON.stringify(pageData));
-        // Submit via AJAX or another method
-    }
     function handleBlockInputChange(fieldName, inputElement, sectionIdx, columnIdx, blockIdx = 0, previewId = '') {
-        console.log('handleBlockInputChange triggered');
-        console.log('handleBlockInputChange fieldName', fieldName, 'inputElement', inputElement, 'sectionIdx', sectionIdx, 'previewId', previewId);
+        // console.log('handleBlockInputChange triggered');
+        // console.log('handleBlockInputChange fieldName', fieldName, 'inputElement', inputElement, 'sectionIdx', sectionIdx, 'previewId', previewId);
 
         // Retrieve the block from pageData using indexes
         const block = pageData.sections[sectionIdx].columns[columnIdx].blocks[blockIdx];
@@ -725,16 +791,18 @@
     }
 
     $(document).on('click', '#saveButton', function (e) {
-        console.log(pageData, 'pageData');
+        // console.log(pageData, 'pageData');
         $.ajax({
             url: '/page-builder/saveSection',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(pageData),
+            data: JSON.stringify({pageData, pageId}),
             success: function (response) {
-                console.log('Server Response:', response);
+                infoMessage(response.message, response.status);
+                // console.log('Server Response:', response);
             },
             error: function (xhr, status, error) {
+                infoMessage(xhr.responseText, 'danger');
                 console.error('Error:', status, error);
                 console.error('Response Text:', xhr.responseText);
             }

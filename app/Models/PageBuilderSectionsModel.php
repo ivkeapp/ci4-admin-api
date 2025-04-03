@@ -12,7 +12,7 @@ class PageBuilderSectionsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['data'];
+    protected $allowedFields    = ['page_id', 'data'];
 
     protected bool $allowEmptyInserts = false;
 
