@@ -93,13 +93,14 @@
     left: 0;
     height: 100%;
     overflow-y: auto; /* Add scroll if content overflows */
+    /* overflow-x: hidden; */
     background-color: #343a40; /* Adjust background color as needed */
     z-index: 1000; /* Ensure it stays above other content */
 }
 @media (max-width: 768px) {
     #accordionSidebar {
-        width: 100%;
-        height: auto;
+        /* width: 100%; */
+        /* height: auto; */
         position: relative;
     }
 
@@ -128,7 +129,7 @@
     margin-left: 80px;
 }
 #accordionSidebar:not(.toggled) + #content-wrapper {
-    margin-left: 14rem;
+    margin-left: 16rem;
 }
 
 #content {
