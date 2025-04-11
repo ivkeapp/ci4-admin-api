@@ -107,4 +107,68 @@ class Validation extends BaseConfig
             ],
         ],
     ];
+
+    public array $blogRules = [
+        'seo_title' => [
+            'rules' => 'required|min_length[3]|max_length[255]',
+            'errors' => [
+                'required' => 'The seo title field is required',
+                'min_length' => 'The seo title field must be at least 3 characters in length.',
+                'max_length' => 'The seo title field must be not greater than 255 characters in length.',
+            ],
+        ],
+        'seo_description' => [
+            'rules' => 'required|min_length[5]|max_length[255]',
+            'errors' => [
+                'required' => 'The seo description field is required',
+                'min_length' => 'The seo description field must be at least 5 characters in length.',
+                'max_length' => 'The seo description field must be not greater than 255 characters in length.',
+            ],
+        ],
+        'title' => 'required|min_length[3]|max_length[255]',
+        'subtitle' => 'required|min_length[3]|max_length[255]',
+        'content' => 'required|min_length[10]|max_length[1000]',
+        'image' => [
+            'label' => 'Image File',
+            'rules' => [
+                'uploaded[image]',
+                'is_image[image]',
+                'mime_in[image,image/jpg,image/jpeg,image/gif,image/png,image/webp]',
+                'max_size[image,10000]',
+                'max_dims[image,1920,1080]',
+            ],
+        ],
+    ];
+
+    public array $blogRulesUpdate = [
+        'seo_title' => [
+            'rules' => 'required|min_length[3]|max_length[255]',
+            'errors' => [
+                'required' => 'The seo title field is required',
+                'min_length' => 'The seo title field must be at least 3 characters in length.',
+                'max_length' => 'The seo title field must be not greater than 255 characters in length.',
+            ],
+        ],
+        'seo_description' => [
+            'rules' => 'required|min_length[5]|max_length[255]',
+            'errors' => [
+                'required' => 'The seo description field is required',
+                'min_length' => 'The seo description field must be at least 5 characters in length.',
+                'max_length' => 'The seo description field must be not greater than 255 characters in length.',
+            ],
+        ],
+        'title' => 'required|min_length[3]|max_length[255]',
+        'subtitle' => 'required|min_length[3]|max_length[255]',
+        'content' => 'required|min_length[10]|max_length[1000]',
+        'image' => [
+            'label' => 'Image File',
+            'rules' => [
+                'is_image[image]',
+                'mime_in[image,image/jpg,image/jpeg,image/gif,image/png,image/webp]',
+                'max_size[image,10000]',
+                'max_dims[image,1920,1080]',
+            ],
+        ],
+    ];
+
 }
