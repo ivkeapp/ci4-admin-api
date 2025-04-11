@@ -115,6 +115,7 @@
         gap: 10px;
     }
     .block-item {
+        position: relative;
         height: 160px;
         display: flex;
         align-items: center;
@@ -135,6 +136,24 @@
     .block-item i {
         font-size: 24px;
         margin-bottom: 10px;
+    }
+    .block-item .remove-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 16px;
+        color: #dc3545;
+        background-color: white;
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+        display: none; /* Initially hidden */
+        z-index: 10;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .block-item:hover .remove-icon {
+        display: block; /* Show the trashcan icon on hover */
     }
     .column {
         text-align: center;
@@ -287,51 +306,55 @@
             <div class="block-item" data-type="image">
                 <i class="fas fa-image"></i>
                 Image
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         imageTitle: `
-            <div class="block-item" data-type="image">
+            <div class="block-item" data-type="image-title">
                 <i class="fas fa-photo-video"></i>
                 Image with Title
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         text: `
-            <div class="block-item" data-type="image">
+            <div class="block-item" data-type="text">
                 <i class="fas fa-font"></i>
                 Text
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         titleText: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-heading"></i>
                 Title, Subtitle & Text
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         slider: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-sliders-h"></i>
                 Slider
-            </div>`,
-        slider: `
-            <div class="block-item" data-type="image">
-                <i class="fas fa-sliders-h"></i>
-                Slider
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         hero: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-photo-video"></i>
                 Hero Image
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         card: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-id-card"></i>
                 Card
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         button: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-hand-pointer"></i>
                 Button
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
         tinymce: `
             <div class="block-item" data-type="image">
                 <i class="fas fa-edit"></i>
                 TinyMCE
+                <i class="fas fa-trash remove-icon" onclick="removeBlock(event, this)"></i>
             </div>`,
     };
     // ON DOC READY
@@ -808,5 +831,26 @@
             }
         });
     });
+    // Function to handle block removal
+    function removeBlock(event, element) {
+        event.stopPropagation(); // Prevent triggering other click events
+        const blockItem = $(element).closest('.block-item'); // Find the parent block-item
+        const column = blockItem.closest('.column'); // Find the parent column
+        const sectionIdx = column.data('section');
+        const columnIdx = column.data('column');
+
+        // Remove the block from the pageData structure
+        if (pageData.sections[sectionIdx]?.columns[columnIdx]?.blocks) {
+            pageData.sections[sectionIdx].columns[columnIdx].blocks = [];
+        }
+
+        // Remove the block from the UI
+        blockItem.remove();
+
+        // Add a placeholder if the column is now empty
+        if (column.find('.block-item').length === 0) {
+            column.html('<div class="section-content"><i class="fas fa-plus"></i></div>');
+        }
+    }
 </script>
 <?= $this->endSection(); ?>
