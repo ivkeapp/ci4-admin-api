@@ -68,7 +68,6 @@ $routes->post('/footer/update', 'PagesController::updateFooter');
 $routes->delete('footerimages/deleteImage/(:num)', 'PagesController::deleteFooterImage/$1');
 
 $routes->get('/page-builder', 'PagesController::pageBuilder');
-$routes->get('/page-builder/(:num)', 'PagesController::pageBuilder/$1');
 $routes->post('/page-builder/saveSection', 'PagesController::saveSections');
 
 $routes->get('/pages', 'PagesController::index');
@@ -140,3 +139,6 @@ $routes->get('/products/manage-categories', 'ProductController::manageCategories
 $routes->post('/products/save-category', 'ProductController::saveCategory');
 $routes->delete('/products/delete-category/(:num)', 'ProductController::deleteCategory/$1');
 $routes->get('/products/get-categories', 'ProductController::getCategories');
+
+$routes->get('category/tree', 'CategoryController::getCategoryTree');
+$routes->get('categories', 'CategoryController::getCategories');

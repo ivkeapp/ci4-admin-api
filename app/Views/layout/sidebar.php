@@ -66,8 +66,9 @@
                     </a>
                     <div id="categoriesCollapse" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Edit categories:</h6>
-                            <a class="collapse-item" href="<?= site_url('products/manage-categories') ?>">Manage categories</a>
+                            <h6 class="collapse-header">Manage categories:</h6>
+                            <a class="collapse-item" href="<?= site_url('products/manage-categories') ?>">All categories</a>
+                            <a class="collapse-item" href="<?= site_url('categories') ?>">Category tree</a>
                         </div>
                     </div>
                 </li>
