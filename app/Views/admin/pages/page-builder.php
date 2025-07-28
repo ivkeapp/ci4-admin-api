@@ -181,6 +181,14 @@
         height: 100%;
         object-fit: cover;
         border-radius: 4px;
+        cursor: pointer;
+    }
+    .image-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
     }
     .image-input-hidden {
         display: none; /* Fully hide the input */
@@ -476,10 +484,25 @@
             case "image":
                 preview = blockPreview.image;
                 const uniqueId = `image-input-${Date.now()}`;
+                // Ensure image data exists and prepare the src
+                let imageSrc;
+                if (blockData.content?.image && blockData.content.image !== '') {
+                    // Check if it's a base64 string or a file path
+                    if (blockData.content.image.startsWith('data:image/')) {
+                        imageSrc = blockData.content.image; // Base64 string
+                    } else {
+                        // File path - ensure proper base URL
+                        imageSrc = blockData.content.image.startsWith('/') 
+                            ? blockData.content.image 
+                            : '/' + blockData.content.image;
+                    }
+                } else {
+                    imageSrc = '<?= base_url('img/placeholder.png') ?>';
+                }
                 blockInputs = `
                     <div class="block image-block">
                         <label>Image:</label>
-                        <img id="${uniqueId}-preview" src="${(blockData.content?.image ? blockData.content.image : 'img/placeholder.png')}" alt="Click to upload" 
+                        <img id="${uniqueId}-preview" src="${imageSrc}" alt="Click to upload" 
                             class="image-placeholder">
                         <input 
                             type="file" 
@@ -489,16 +512,34 @@
                             accept="image/*"
                             onchange="handleBlockInputChange('image_file', this, ${sectionIdx}, ${columnIdx}, 0, '${uniqueId}-preview')">
                     </div>`;
-                blockData.content.image = '';
+                // Only initialize if image content doesn't exist
+                if (!blockData.content.image) {
+                    blockData.content.image = '';
+                }
                 break;
             case "image-title":
                 preview = blockPreview.imageTitle;
+                const imagePreviewId = `image-preview-${Date.now()}`;
+                const imageTitleInputId = `image-title-input-${Date.now()}`;
+                // Prepare the image source
+                let imagePreviewSrc;
+                if (blockData.content?.image && blockData.content.image !== '') {
+                    if (blockData.content.image.startsWith('data:image/')) {
+                        imagePreviewSrc = blockData.content.image;
+                    } else {
+                        imagePreviewSrc = blockData.content.image.startsWith('/') 
+                            ? blockData.content.image 
+                            : '/' + blockData.content.image;
+                    }
+                } else {
+                    imagePreviewSrc = '<?= base_url('img/placeholder.png') ?>';
+                }
                 blockInputs = `
                     <div class="block image-title-block">
                         <label>Image: 
                             <div class="image-placeholder">
-                                <input type="file" name="image_file" class="form-control image-input" accept="image/*" onchange="previewImage(event, 'image-preview')">
-                                <img id="image-preview" src="img/placeholder.png" alt="Image Placeholder" class="image-preview">
+                                <input type="file" id="${imageTitleInputId}" name="image_file" class="form-control image-input-hidden" accept="image/*" onchange="handleBlockInputChange('image_file', this, ${sectionIdx}, ${columnIdx}, 0, '${imagePreviewId}')">
+                                <img id="${imagePreviewId}" src="${imagePreviewSrc}" alt="Image Placeholder" class="image-preview">
                             </div>
                         </label>
                         <label>
@@ -515,7 +556,10 @@
                             value="${blockData.content.image_subtitle ? blockData.content.image_subtitle : ''}"
                             onchange="handleBlockInputChange('image_subtitle', this.value, ${sectionIdx}, ${columnIdx})"></label>
                     </div>`;
-                blockData.content.imageTitle = '';
+                // Only initialize if content doesn't exist
+                if (!blockData.content.imageTitle) {
+                    blockData.content.imageTitle = '';
+                }
                 break;
             case "text":
                 preview = blockPreview.text;
@@ -547,68 +591,117 @@
                 blockInputs = `
                     <div class="block slider-block">
                         <label>Slider Images (comma-separated URLs): 
-                            <textarea name="slider_images" class="form-control" onchange="handleBlockInputChange('slider_images', this.value, ${sectionIdx}, ${columnIdx})"></textarea>
+                            <textarea name="slider_images" class="form-control" onchange="handleBlockInputChange('slider_images', this.value, ${sectionIdx}, ${columnIdx})">${blockData.content.slider_images ? blockData.content.slider_images : ''}</textarea>
                         </label>
-                        <label>Title: <input type="text" name="slider_title" class="form-control" onchange="handleBlockInputChange('slider_title', this.value, ${sectionIdx}, ${columnIdx})"></label>
-                        <label>"See More" Link: <input type="text" name="slider_link" class="form-control" onchange="handleBlockInputChange('slider_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Title: <input type="text" name="slider_title" class="form-control" value="${blockData.content.slider_title ? blockData.content.slider_title : ''}" onchange="handleBlockInputChange('slider_title', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>"See More" Link: <input type="text" name="slider_link" class="form-control" value="${blockData.content.slider_link ? blockData.content.slider_link : ''}" onchange="handleBlockInputChange('slider_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
                         <label>Show Slider: 
-                            <input type="checkbox" name="show_slider" class="form-control" onchange="handleBlockInputChange('show_slider', this.value, ${sectionIdx}, ${columnIdx})">
+                            <input type="checkbox" name="show_slider" class="form-control" ${blockData.content.show_slider ? 'checked' : ''} onchange="handleBlockInputChange('show_slider', this.checked, ${sectionIdx}, ${columnIdx})">
                         </label>
                     </div>`;
-                blockData.content.slider = '';
+                if (!blockData.content.slider) {
+                    blockData.content.slider = '';
+                }
                 break;
             case "hero":
                 preview = blockPreview.hero;
+                const heroImageId = `hero-image-preview-${Date.now()}`;
+                const heroInputId = `hero-input-${Date.now()}`;
+                let heroImageSrc;
+                if (blockData.content?.hero_image && blockData.content.hero_image !== '') {
+                    if (blockData.content.hero_image.startsWith('data:image/')) {
+                        heroImageSrc = blockData.content.hero_image;
+                    } else {
+                        heroImageSrc = blockData.content.hero_image.startsWith('/') 
+                            ? blockData.content.hero_image 
+                            : '/' + blockData.content.hero_image;
+                    }
+                } else {
+                    heroImageSrc = '<?= base_url('img/placeholder.png') ?>';
+                }
                 blockInputs = `
                     <div class="block hero-block">
                         <label>Hero Image: 
                             <div class="image-placeholder">
-                                <input type="file" name="hero_image" class="form-control image-input" accept="image/*" onchange="previewImage(event, 'hero-image-preview')">
-                                <img id="hero-image-preview" src="https://via.placeholder.com/150" alt="Hero Image Placeholder" class="image-preview">
+                                <input type="file" id="${heroInputId}" name="hero_image" class="form-control image-input-hidden" accept="image/*" onchange="handleBlockInputChange('hero_image', this, ${sectionIdx}, ${columnIdx}, 0, '${heroImageId}')">
+                                <img id="${heroImageId}" src="${heroImageSrc}" alt="Hero Image Placeholder" class="image-preview">
                             </div>
                         </label>
-                        <label>Title: <input type="text" name="hero_title" class="form-control"></label>
-                        <label>Subtitle: <input type="text" name="hero_subtitle" class="form-control"></label>
-                        <label>Button Text: <input type="text" name="hero_button_text" class="form-control"></label>
-                        <label>Button Link: <input type="text" name="hero_button_link" class="form-control"></label>
+                        <label>Title: <input type="text" name="hero_title" class="form-control" value="${blockData.content.hero_title ? blockData.content.hero_title : ''}" onchange="handleBlockInputChange('hero_title', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Subtitle: <input type="text" name="hero_subtitle" class="form-control" value="${blockData.content.hero_subtitle ? blockData.content.hero_subtitle : ''}" onchange="handleBlockInputChange('hero_subtitle', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Button Text: <input type="text" name="hero_button_text" class="form-control" value="${blockData.content.hero_button_text ? blockData.content.hero_button_text : ''}" onchange="handleBlockInputChange('hero_button_text', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Button Link: <input type="text" name="hero_button_link" class="form-control" value="${blockData.content.hero_button_link ? blockData.content.hero_button_link : ''}" onchange="handleBlockInputChange('hero_button_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
                     </div>`;
-                blockData.content.hero = '';
+                if (!blockData.content.hero) {
+                    blockData.content.hero = '';
+                }
                 break;
             case "card":
                 preview = blockPreview.card;
+                const cardImageId = `card-image-preview-${Date.now()}`;
+                const cardInputId = `card-input-${Date.now()}`;
+                let cardImageSrc;
+                if (blockData.content?.card_image && blockData.content.card_image !== '') {
+                    if (blockData.content.card_image.startsWith('data:image/')) {
+                        cardImageSrc = blockData.content.card_image;
+                    } else {
+                        cardImageSrc = blockData.content.card_image.startsWith('/') 
+                            ? blockData.content.card_image 
+                            : '/' + blockData.content.card_image;
+                    }
+                } else {
+                    cardImageSrc = '<?= base_url('img/placeholder.png') ?>';
+                }
                 blockInputs = `
                     <div class="block card-block">
                         <label>Card Image: 
                             <div class="image-placeholder">
-                                <input type="file" name="card_image" class="form-control image-input" accept="image/*" onchange="previewImage(event, 'card-image-preview')">
-                                <img id="card-image-preview" src="https://via.placeholder.com/150" alt="Card Image Placeholder" class="image-preview">
+                                <input type="file" id="${cardInputId}" name="card_image" class="form-control image-input-hidden" accept="image/*" onchange="handleBlockInputChange('card_image', this, ${sectionIdx}, ${columnIdx}, 0, '${cardImageId}')">
+                                <img id="${cardImageId}" src="${cardImageSrc}" alt="Card Image Placeholder" class="image-preview">
                             </div>
                         </label>
-                        <label>Title: <input type="text" name="card_title" class="form-control"></label>
-                        <label>Subtitle: <input type="text" name="card_subtitle" class="form-control"></label>
-                        <label>Text: <textarea name="card_text" class="form-control"></textarea></label>
-                        <label>Button Text: <input type="text" name="card_button_text" class="form-control"></label>
-                        <label>Button Link: <input type="text" name="card_button_link" class="form-control"></label>
+                        <label>Title: <input type="text" name="card_title" class="form-control" value="${blockData.content.card_title ? blockData.content.card_title : ''}" onchange="handleBlockInputChange('card_title', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Subtitle: <input type="text" name="card_subtitle" class="form-control" value="${blockData.content.card_subtitle ? blockData.content.card_subtitle : ''}" onchange="handleBlockInputChange('card_subtitle', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Text: <textarea name="card_text" class="form-control" onchange="handleBlockInputChange('card_text', this.value, ${sectionIdx}, ${columnIdx})">${blockData.content.card_text ? blockData.content.card_text : ''}</textarea></label>
+                        <label>Button Text: <input type="text" name="card_button_text" class="form-control" value="${blockData.content.card_button_text ? blockData.content.card_button_text : ''}" onchange="handleBlockInputChange('card_button_text', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Button Link: <input type="text" name="card_button_link" class="form-control" value="${blockData.content.card_button_link ? blockData.content.card_button_link : ''}" onchange="handleBlockInputChange('card_button_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
                     </div>`;
-                blockData.content.card = '';
+                if (!blockData.content.card) {
+                    blockData.content.card = '';
+                }
                 break;
             case "button":
                 preview = blockPreview.button;
                 blockInputs = `
                     <div class="block button-block">
-                        <label>Button Text: <input type="text" name="button_text" class="form-control"></label>
-                        <label>Button Link: <input type="text" name="button_link" class="form-control"></label>
+                        <label>Button Text: <input type="text" name="button_text" class="form-control" value="${blockData.content.button_text ? blockData.content.button_text : ''}" onchange="handleBlockInputChange('button_text', this.value, ${sectionIdx}, ${columnIdx})"></label>
+                        <label>Button Link: <input type="text" name="button_link" class="form-control" value="${blockData.content.button_link ? blockData.content.button_link : ''}" onchange="handleBlockInputChange('button_link', this.value, ${sectionIdx}, ${columnIdx})"></label>
                     </div>`;
-                blockData.content.button = '';
+                if (!blockData.content.button) {
+                    blockData.content.button = '';
+                }
                 break;
             case "tinymce":
                 preview = blockPreview.tinymce;
+                const tinymceId = `tinymce-${Date.now()}`;
                 blockInputs = `
                     <div class="block tinymce-block">
-                        <label>Content: <textarea class="tinymce-editor"></textarea></label>
+                        <label>Content: <textarea id="${tinymceId}" class="tinymce-editor" onchange="handleBlockInputChange('tinymce_content', this.value, ${sectionIdx}, ${columnIdx})">${blockData.content.tinymce_content ? blockData.content.tinymce_content : ''}</textarea></label>
                     </div>`;
-                blockData.content.tinymce = '';
-                tinymce.init({ selector: '.tinymce-editor' });
+                if (!blockData.content.tinymce) {
+                    blockData.content.tinymce = '';
+                }
+                // Initialize TinyMCE for this specific textarea
+                setTimeout(function() {
+                    tinymce.init({ 
+                        selector: '#' + tinymceId,
+                        setup: function (editor) {
+                            editor.on('change', function () {
+                                handleBlockInputChange('tinymce_content', editor.getContent(), sectionIdx, columnIdx);
+                            });
+                        }
+                    });
+                }, 100);
                 break;
             default:
                 preview = `<div class="block"><p>Unknown block type.</p></div>`;
@@ -762,9 +855,14 @@
                 pageData.sections[sectionIdx].columns[columnIdx].blocks = [];
             }
 
-            const block = addBlock(blockType, pageData.sections[sectionIdx].columns[columnIdx].blocks[0], sectionIdx, columnIdx);
-
-            $('#block-properties').html(block.blockInputs);
+            // Get the existing block data or create new one
+            const existingBlock = pageData.sections[sectionIdx].columns[columnIdx].blocks[0];
+            if (existingBlock) {
+                const block = addBlock(blockType, existingBlock, sectionIdx, columnIdx);
+                $('#block-properties').html(block.blockInputs);
+            } else {
+                console.error('No block found in column');
+            }
         } else {
             infoMessage('Drag block onto column to add!', 'info');
         }
@@ -787,14 +885,22 @@
 
         // Update the corresponding field in the block content
         if (block && block.content) {
-            if (fieldName === 'image_file') {
+            if (fieldName === 'image_file' || fieldName === 'hero_image' || fieldName === 'card_image') {
                 const file = inputElement.files[0]; // Access the first file in the input
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function (event) {
                         // Set the image URL as base64 string
                         // console.log(event.target.result, 'event.target.result')
-                        block.content.image = event.target.result;
+                        
+                        // Store the image data in the appropriate field
+                        if (fieldName === 'image_file') {
+                            block.content.image = event.target.result;
+                        } else if (fieldName === 'hero_image') {
+                            block.content.hero_image = event.target.result;
+                        } else if (fieldName === 'card_image') {
+                            block.content.card_image = event.target.result;
+                        }
 
                         // Update the preview
                         const previewElement = document.getElementById(previewId);
