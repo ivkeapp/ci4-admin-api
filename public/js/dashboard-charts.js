@@ -28,6 +28,16 @@ const colorPalettes = {
 
 // Initialize all charts when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the dashboard page by looking for dashboard-specific elements
+    const isDashboardPage = document.querySelector('#monthlyProductsChart') || 
+                           document.querySelector('#categoryDistributionChart') || 
+                           document.querySelector('.dashboard-content');
+    
+    if (!isDashboardPage) {
+        console.log('Not on dashboard page, skipping chart initialization');
+        return;
+    }
+    
     console.log('DOM loaded, checking dependencies...');
     console.log('Chart.js available:', typeof Chart !== 'undefined');
     if (typeof Chart !== 'undefined') {
@@ -55,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 clearInterval(checkData);
                 if (!window.dashboardData) {
-                    console.error('Dashboard data never became available');
+                    console.log('Dashboard data not available after timeout - this is normal for non-dashboard pages');
                 }
             }, 5000);
         }
@@ -66,6 +76,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Backup initialization on window load
 window.addEventListener('load', function() {
+    // Check if we're on the dashboard page
+    const isDashboardPage = document.querySelector('#monthlyProductsChart') || 
+                           document.querySelector('#categoryDistributionChart') || 
+                           document.querySelector('.dashboard-content');
+    
+    if (!isDashboardPage) {
+        return;
+    }
+    
     console.log('Window loaded, checking if charts need initialization...');
     if (typeof Chart !== 'undefined' && window.dashboardData && !monthlyProductsChart) {
         console.log('Initializing charts on window load...');

@@ -55,6 +55,7 @@
                             <h6 class="collapse-header">Edit products:</h6>
                             <a class="collapse-item" href="<?= site_url('products') ?>">All Products</a>
                             <a class="collapse-item" href="<?= site_url('products/create') ?>">Add Product</a>
+                            <a class="collapse-item" href="<?= site_url('products/addImages') ?>">Product Images</a>
                         </div>
                     </div>
                 </li>

@@ -136,6 +136,8 @@ $routes->post('/products/storeImage/(:num)', 'ProductController::storeImage/$1')
 $routes->get('/products/get-productimages/(:num)', 'ProductController::getProductImages/$1');
 $routes->post('/products/storeImages', 'ProductController::storeImages');
 $routes->get('/products/deleteImage/(:num)', 'ProductController::deleteImage/$1');
+$routes->get('/products/deleteAllImages/(:num)', 'ProductController::deleteAllImages/$1');
+$routes->get('/products/setMainImage/(:num)', 'ProductController::setMainImage/$1');
 $routes->get('/products/manage-categories', 'ProductController::manageCategories');
 $routes->post('/products/save-category', 'ProductController::saveCategory');
 $routes->delete('/products/delete-category/(:num)', 'ProductController::deleteCategory/$1');

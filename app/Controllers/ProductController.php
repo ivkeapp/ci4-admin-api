@@ -59,6 +59,49 @@ class ProductController extends BaseController
     {
         $productModel = new ProductModel();
 
+        // Set up validation rules
+        $validationRules = [
+            'sku' => [
+                'rules' => 'required|is_unique[tb_products.sku]',
+                'errors' => [
+                    'required' => 'SKU is required.',
+                    'is_unique' => 'This SKU already exists. Please use a different SKU.'
+                ]
+            ],
+            'short_name' => [
+                'rules' => 'required|min_length[3]',
+                'errors' => [
+                    'required' => 'Short name is required.',
+                    'min_length' => 'Short name must be at least 3 characters long.'
+                ]
+            ],
+            'price_in' => [
+                'rules' => 'required|decimal',
+                'errors' => [
+                    'required' => 'Price is required.',
+                    'decimal' => 'Price must be a valid decimal number.'
+                ]
+            ]
+        ];
+
+        if (!$this->validate($validationRules)) {
+            $errors = $this->validator->getErrors();
+            $errorMessage = implode(' ', $errors);
+            
+            // Check if it's an AJAX request
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'errors' => $errors
+                ]);
+            } else {
+                // For regular form submission, set flash data and redirect back
+                session()->setFlashdata('error', $errorMessage);
+                return redirect()->back()->withInput();
+            }
+        }
+
         $metadata = $this->request->getPost('metadata');
         if (empty($metadata)) {
             $metadata = '{}'; // Default to empty JSON object if metadata is not provided
@@ -90,9 +133,49 @@ class ProductController extends BaseController
             'user_id' => $this->auth->id()
         ];
 
-        $productModel->insert($data);
-
-        return redirect()->to('/products');
+        try {
+            $productId = $productModel->insert($data);
+            
+            if ($productId) {
+                // Handle image uploads if any
+                $files = $this->request->getFiles();
+                if (isset($files['product_images']) && is_array($files['product_images'])) {
+                    $this->handleImageUpload($productId, $files['product_images']);
+                }
+                
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Product created successfully!',
+                        'product_id' => $productId
+                    ]);
+                } else {
+                    session()->setFlashdata('success', 'Product created successfully!');
+                    return redirect()->to('/products');
+                }
+            } else {
+                throw new \Exception('Failed to create product');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Product creation error: ' . $e->getMessage());
+            
+            // Check for duplicate key error
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false && strpos($e->getMessage(), 'sku') !== false) {
+                $errorMessage = 'This SKU already exists. Please use a different SKU.';
+            } else {
+                $errorMessage = 'An error occurred while creating the product. Please try again.';
+            }
+            
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => $errorMessage
+                ]);
+            } else {
+                session()->setFlashdata('error', $errorMessage);
+                return redirect()->back()->withInput();
+            }
+        }
     }
     public function getCategories()
     {
@@ -266,6 +349,24 @@ class ProductController extends BaseController
         }
     }
 
+    public function setMainImage($imageId)
+    {
+        $productImageModel = new ProductImageModel();
+        $image = $productImageModel->find($imageId);
+        
+        if (!$image) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Image not found.']);
+        }
+        
+        // First, remove main status from all images of this product
+        $productImageModel->where('product_id', $image['product_id'])->set(['is_main' => false])->update();
+        
+        // Then set this image as main
+        $productImageModel->update($imageId, ['is_main' => true]);
+        
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Main image updated successfully.']);
+    }
+
     private function setNewMainImage($productId)
     {
         $productImageModel = new ProductImageModel();
@@ -274,6 +375,54 @@ class ProductController extends BaseController
         if ($newMainImage) {
             $productImageModel->update($newMainImage['id'], ['is_main' => true]);
         }
+    }
+
+    /**
+     * Handle image upload for a product
+     * 
+     * @param int $productId
+     * @param array $files
+     * @return array
+     */
+    private function handleImageUpload($productId, $files)
+    {
+        $productImageModel = new ProductImageModel();
+        $isMain = $productImageModel->where('product_id', $productId)->countAllResults() == 0;
+        
+        $uploadResults = [];
+        
+        foreach ($files as $file) {
+            if ($file->isValid() && !$file->hasMoved()) {
+                $newName = $file->getRandomName();
+                if ($file->move(FCPATH . 'public/uploads', $newName)) {
+                    $data = [
+                        'product_id' => $productId,
+                        'image_path' => 'public/uploads/' . $newName,
+                        'is_main' => $isMain
+                    ];
+                    
+                    $imageId = $productImageModel->insert($data);
+                    $uploadResults[] = [
+                        'success' => true,
+                        'image_id' => $imageId,
+                        'image_path' => 'public/uploads/' . $newName
+                    ];
+                    $isMain = false; // Only the first image is set as main
+                } else {
+                    $uploadResults[] = [
+                        'success' => false,
+                        'error' => $file->getErrorString()
+                    ];
+                }
+            } else {
+                $uploadResults[] = [
+                    'success' => false,
+                    'error' => $file->getErrorString()
+                ];
+            }
+        }
+        
+        return $uploadResults;
     }
     public function manageCategories()
     {
