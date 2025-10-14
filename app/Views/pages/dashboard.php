@@ -15,83 +15,161 @@
                 <!-- Content Row -->
                 <div class="row">
 
-                    <!-- Earnings (Monthly) Card Example -->
+                    <!-- Total Products Card -->
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Earnings (Monthly)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                            Total Products</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($totalProducts) ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        <i class="fas fa-box fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Earnings (Monthly) Card Example -->
+                    <!-- Total Categories Card -->
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Earnings (Annual)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            Categories</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($totalCategories) ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        <i class="fas fa-tags fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Earnings (Monthly) Card Example -->
+                    <!-- Blog Posts Progress Card -->
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-info shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Blog Posts
                                         </div>
                                         <div class="row no-gutters align-items-center">
                                             <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?= number_format($totalBlogPosts) ?></div>
                                             </div>
                                             <div class="col">
                                                 <div class="progress progress-sm mr-2">
+                                                    <?php 
+                                                    $blogProgress = $totalBlogPosts > 0 ? min(($recentActivity['posts_30d'] / max($totalBlogPosts, 1)) * 100, 100) : 0;
+                                                    ?>
                                                     <div class="progress-bar bg-info" role="progressbar"
-                                                        style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                                        style="width: <?= $blogProgress ?>%" aria-valuenow="<?= $blogProgress ?>" aria-valuemin="0"
                                                         aria-valuemax="100"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        <i class="fas fa-blog fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pending Requests Card Example -->
+                    <!-- Unread Messages Card -->
                     <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left-warning shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Pending Requests</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                            Unread Messages</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($unreadMessages) ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row of Stats -->
+                <div class="row">
+                    <!-- Total Users Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-dark shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                                            Total Users</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($totalUsers) ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Pages Card -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-secondary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                            Total Pages</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($totalPages) ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Products (30 days) -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            New Products (30d)</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($recentActivity['products_30d']) ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-plus-circle fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Pages (30 days) -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            New Pages (30d)</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?= number_format($recentActivity['pages_30d']) ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-file-plus fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -103,13 +181,13 @@
 
                 <div class="row">
 
-                    <!-- Area Chart -->
+                    <!-- Monthly Products Line Chart -->
                     <div class="col-xl-8 col-lg-7">
                         <div class="card shadow mb-4">
                             <!-- Card Header - Dropdown -->
                             <div
                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Monthly Product Additions</h6>
                                 <div class="dropdown no-arrow">
                                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -117,60 +195,60 @@
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                         aria-labelledby="dropdownMenuLink">
-                                        <div class="dropdown-header">Dropdown Header:</div>
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
+                                        <div class="dropdown-header">Chart Options:</div>
+                                        <a class="dropdown-item" href="#" onclick="refreshChart()">Refresh Data</a>
+                                        <a class="dropdown-item" href="#" onclick="toggleChartType()">Toggle Chart Type</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Something else here</a>
+                                        <a class="dropdown-item" href="#" onclick="exportChart()">Export Chart</a>
                                     </div>
                                 </div>
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
                                 <div class="chart-area">
-                                    <canvas id="myAreaChart"></canvas>
+                                    <canvas id="monthlyProductsChart"></canvas>
+                                </div>
+                                <hr>
+                                <div class="text-center text-muted">
+                                    <small>Products added over the last 12 months</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pie Chart -->
+                    <!-- Category Distribution Pie Chart -->
                     <div class="col-xl-4 col-lg-5">
                         <div class="card shadow mb-4">
                             <!-- Card Header - Dropdown -->
                             <div
                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Product Categories</h6>
                                 <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink2"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                        aria-labelledby="dropdownMenuLink">
-                                        <div class="dropdown-header">Dropdown Header:</div>
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
+                                        aria-labelledby="dropdownMenuLink2">
+                                        <div class="dropdown-header">View Options:</div>
+                                        <a class="dropdown-item" href="#" onclick="showAllCategories()">Show All</a>
+                                        <a class="dropdown-item" href="#" onclick="showTopCategories()">Top 5 Only</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Something else here</a>
+                                        <a class="dropdown-item" href="<?= site_url('categories') ?>">Manage Categories</a>
                                     </div>
                                 </div>
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
                                 <div class="chart-pie pt-4 pb-2">
-                                    <canvas id="myPieChart"></canvas>
+                                    <canvas id="categoryDistributionChart"></canvas>
                                 </div>
-                                <div class="mt-4 text-center small">
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-primary"></i> Direct
-                                    </span>
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-success"></i> Social
-                                    </span>
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-info"></i> Referral
-                                    </span>
+                                <div class="mt-4 text-center small" id="categoryLegend">
+                                    <!-- Dynamic legend will be populated by JavaScript -->
+                                </div>
+                                <hr>
+                                <div class="text-center text-muted">
+                                    <small>Distribution of products by category</small>
                                 </div>
                             </div>
                         </div>
@@ -183,110 +261,125 @@
                     <!-- Content Column -->
                     <div class="col-lg-6 mb-4">
 
-                        <!-- Project Card Example -->
+                        <!-- Content Progress Card -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Content Management Progress</h6>
                             </div>
                             <div class="card-body">
-                                <h4 class="small font-weight-bold">Server Migration <span
-                                        class="float-right">20%</span></h4>
+                                <?php 
+                                // Calculate progress percentages
+                                $productGoal = 100;
+                                $blogGoal = 50;
+                                $pageGoal = 25;
+                                $categoryGoal = 20;
+                                
+                                $productProgress = min(($totalProducts / $productGoal) * 100, 100);
+                                $blogProgress = min(($totalBlogPosts / $blogGoal) * 100, 100);
+                                $pageProgress = min(($totalPages / $pageGoal) * 100, 100);
+                                $categoryProgress = min(($totalCategories / $categoryGoal) * 100, 100);
+                                ?>
+                                
+                                <h4 class="small font-weight-bold">Product Catalog <span
+                                        class="float-right"><?= number_format($productProgress, 1) ?>% (<?= $totalProducts ?>/<?= $productGoal ?>)</span></h4>
                                 <div class="progress mb-4">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                                        aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar <?= $productProgress < 50 ? 'bg-danger' : ($productProgress < 80 ? 'bg-warning' : 'bg-success') ?>" 
+                                         role="progressbar" style="width: <?= $productProgress ?>%"
+                                         aria-valuenow="<?= $productProgress ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                                <h4 class="small font-weight-bold">Sales Tracking <span
-                                        class="float-right">40%</span></h4>
+                                
+                                <h4 class="small font-weight-bold">Blog Content <span
+                                        class="float-right"><?= number_format($blogProgress, 1) ?>% (<?= $totalBlogPosts ?>/<?= $blogGoal ?>)</span></h4>
                                 <div class="progress mb-4">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                                        aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar <?= $blogProgress < 50 ? 'bg-danger' : ($blogProgress < 80 ? 'bg-warning' : 'bg-success') ?>" 
+                                         role="progressbar" style="width: <?= $blogProgress ?>%"
+                                         aria-valuenow="<?= $blogProgress ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                                <h4 class="small font-weight-bold">Customer Database <span
-                                        class="float-right">60%</span></h4>
+                                
+                                <h4 class="small font-weight-bold">Static Pages <span
+                                        class="float-right"><?= number_format($pageProgress, 1) ?>% (<?= $totalPages ?>/<?= $pageGoal ?>)</span></h4>
                                 <div class="progress mb-4">
-                                    <div class="progress-bar" role="progressbar" style="width: 60%"
-                                        aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar <?= $pageProgress < 50 ? 'bg-danger' : ($pageProgress < 80 ? 'bg-warning' : 'bg-success') ?>" 
+                                         role="progressbar" style="width: <?= $pageProgress ?>%"
+                                         aria-valuenow="<?= $pageProgress ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                                <h4 class="small font-weight-bold">Payout Details <span
-                                        class="float-right">80%</span></h4>
+                                
+                                <h4 class="small font-weight-bold">Product Categories <span
+                                        class="float-right"><?= $categoryProgress >= 100 ? 'Complete!' : number_format($categoryProgress, 1) . '%' ?> (<?= $totalCategories ?>/<?= $categoryGoal ?>)</span></h4>
                                 <div class="progress mb-4">
-                                    <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                                        aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar <?= $categoryProgress >= 100 ? 'bg-success' : ($categoryProgress < 50 ? 'bg-info' : 'bg-primary') ?>" 
+                                         role="progressbar" style="width: <?= min($categoryProgress, 100) ?>%"
+                                         aria-valuenow="<?= $categoryProgress ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                                <h4 class="small font-weight-bold">Account Setup <span
-                                        class="float-right">Complete!</span></h4>
+                                
+                                <h4 class="small font-weight-bold">Recent Activity (30 days) <span
+                                        class="float-right"><?= $recentActivity['products_30d'] + $recentActivity['posts_30d'] + $recentActivity['pages_30d'] ?> items</span></h4>
                                 <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                                        aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <?php 
+                                    $recentTotal = max($recentActivity['products_30d'] + $recentActivity['posts_30d'] + $recentActivity['pages_30d'], 1);
+                                    $productPortion = ($recentActivity['products_30d'] / $recentTotal) * 100;
+                                    $postPortion = ($recentActivity['posts_30d'] / $recentTotal) * 100;
+                                    $pagePortion = ($recentActivity['pages_30d'] / $recentTotal) * 100;
+                                    ?>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: <?= $productPortion ?>%"
+                                         title="Products: <?= $recentActivity['products_30d'] ?>"></div>
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: <?= $postPortion ?>%"
+                                         title="Posts: <?= $recentActivity['posts_30d'] ?>"></div>
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: <?= $pagePortion ?>%"
+                                         title="Pages: <?= $recentActivity['pages_30d'] ?>"></div>
+                                </div>
+                                <div class="mt-2 text-center small">
+                                    <span class="mr-2"><i class="fas fa-circle text-success"></i> Products (<?= $recentActivity['products_30d'] ?>)</span>
+                                    <span class="mr-2"><i class="fas fa-circle text-info"></i> Posts (<?= $recentActivity['posts_30d'] ?>)</span>
+                                    <span class="mr-2"><i class="fas fa-circle text-warning"></i> Pages (<?= $recentActivity['pages_30d'] ?>)</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Color System -->
-                        <div class="row">
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-primary text-white shadow">
-                                    <div class="card-body">
-                                        Primary
-                                        <div class="text-white-50 small">#4e73df</div>
-                                    </div>
-                                </div>
+                        <!-- Product Price Analysis -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Product Price Distribution</h6>
                             </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-success text-white shadow">
-                                    <div class="card-body">
-                                        Success
-                                        <div class="text-white-50 small">#1cc88a</div>
-                                    </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <?php if (!empty($productsByPrice)): ?>
+                                        <?php foreach ($productsByPrice as $index => $priceRange): ?>
+                                            <?php 
+                                            $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary'];
+                                            $color = $colors[$index % count($colors)];
+                                            ?>
+                                            <div class="col-lg-6 mb-3">
+                                                <div class="card bg-<?= $color ?> text-white shadow">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <div class="font-weight-bold"><?= esc($priceRange['price_range']) ?></div>
+                                                                <div class="text-white-75 small"><?= number_format($priceRange['count']) ?> products</div>
+                                                            </div>
+                                                            <div>
+                                                                <i class="fas fa-dollar-sign fa-2x"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <div class="col-12">
+                                            <div class="alert alert-info" role="alert">
+                                                <i class="fas fa-info-circle"></i> No product pricing data available yet. Add some products with prices to see the distribution.
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-info text-white shadow">
-                                    <div class="card-body">
-                                        Info
-                                        <div class="text-white-50 small">#36b9cc</div>
-                                    </div>
+                                
+                                <?php if (!empty($productsByPrice)): ?>
+                                <hr>
+                                <div class="text-center">
+                                    <canvas id="priceRangeChart" width="400" height="200"></canvas>
                                 </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-warning text-white shadow">
-                                    <div class="card-body">
-                                        Warning
-                                        <div class="text-white-50 small">#f6c23e</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-danger text-white shadow">
-                                    <div class="card-body">
-                                        Danger
-                                        <div class="text-white-50 small">#e74a3b</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-secondary text-white shadow">
-                                    <div class="card-body">
-                                        Secondary
-                                        <div class="text-white-50 small">#858796</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-light text-black shadow">
-                                    <div class="card-body">
-                                        Light
-                                        <div class="text-black-50 small">#f8f9fc</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-dark text-white shadow">
-                                    <div class="card-body">
-                                        Dark
-                                        <div class="text-white-50 small">#5a5c69</div>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -294,36 +387,89 @@
 
                     <div class="col-lg-6 mb-4">
 
-                        <!-- Illustrations -->
+                        <!-- Quick Actions -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
                             </div>
                             <div class="card-body">
-                                <div class="text-center">
-                                    <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                        src="img/undraw_posting_photo.svg" alt="...">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <a href="<?= site_url('products/create') ?>" class="btn btn-primary btn-block">
+                                            <i class="fas fa-plus fa-sm"></i> Add Product
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="<?= site_url('blog/create') ?>" class="btn btn-success btn-block">
+                                            <i class="fas fa-edit fa-sm"></i> Write Post
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="<?= site_url('pages/create') ?>" class="btn btn-info btn-block">
+                                            <i class="fas fa-file-alt fa-sm"></i> Create Page
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="<?= site_url('categories') ?>" class="btn btn-warning btn-block">
+                                            <i class="fas fa-tags fa-sm"></i> Manage Categories
+                                        </a>
+                                    </div>
                                 </div>
-                                <p>Add some quality, svg illustrations to your project courtesy of <a
-                                        target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                                    constantly updated collection of beautiful svg images that you can use
-                                    completely free and without attribution!</p>
-                                <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                                    unDraw &rarr;</a>
+                                <hr>
+                                <div class="text-center">
+                                    <h6 class="font-weight-bold text-gray-900 mb-3">System Overview</h6>
+                                    <div class="row text-center">
+                                        <div class="col">
+                                            <div class="h4 font-weight-bold text-primary"><?= date('M j, Y') ?></div>
+                                            <div class="small text-muted">Today</div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="h4 font-weight-bold text-success"><?= number_format($totalProducts + $totalBlogPosts + $totalPages) ?></div>
+                                            <div class="small text-muted">Total Content</div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="h4 font-weight-bold text-info"><?= $userData->username ?></div>
+                                            <div class="small text-muted">Logged In</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Approach -->
+                        <!-- System Statistics -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">System Health</h6>
                             </div>
                             <div class="card-body">
-                                <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                    CSS bloat and poor page performance. Custom CSS classes are used to create
-                                    custom components and custom utility classes.</p>
-                                <p class="mb-0">Before working with this theme, you should become familiar with the
-                                    Bootstrap framework, especially the utility classes.</p>
+                                <div class="row">
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Database</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <i class="fas fa-check-circle text-success"></i> Connected
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Cache</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <i class="fas fa-bolt text-info"></i> Active
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Version</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <i class="fas fa-code text-warning"></i> CI4
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="text-center">
+                                    <small class="text-muted">Last updated: <?= date('H:i:s') ?></small>
+                                    <br>
+                                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="refreshDashboard()">
+                                        <i class="fas fa-sync-alt"></i> Refresh Data
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -357,4 +503,22 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden data for JavaScript -->
+<script type="text/javascript">
+// Dashboard data for charts
+window.dashboardData = {
+    monthlyProductsData: <?= json_encode($monthlyProductsData) ?>,
+    categoryDistribution: <?= json_encode($categoryDistribution) ?>,
+    productsByPrice: <?= json_encode($productsByPrice) ?>,
+    totalProducts: <?= $totalProducts ?>,
+    totalCategories: <?= $totalCategories ?>,
+    totalBlogPosts: <?= $totalBlogPosts ?>,
+    totalUsers: <?= $totalUsers ?>,
+    totalPages: <?= $totalPages ?>,
+    unreadMessages: <?= $unreadMessages ?>,
+    recentActivity: <?= json_encode($recentActivity) ?>
+};
+</script>
+
 <?= $this->endSection() ?>

@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'DashboardController::index');
+$routes->get('/dashboard/apiData', 'DashboardController::apiData');
 // $routes->get('/users', 'Users::index');
 // $routes->get('/insert-user', 'Users::insertUser');
 // $routes->get('/update-user', 'Users::updateUser');
